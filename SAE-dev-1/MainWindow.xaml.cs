@@ -45,7 +45,11 @@ namespace SAE_dev_1
             imagePolice.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\font.png"));
             imageObjets.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objects.png"));
             fenetreInitialisation.Chargement(100);
-            
+
+            fenetreInitialisation.Close();
+
+            this.Show();
+
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();

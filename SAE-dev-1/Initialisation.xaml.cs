@@ -32,10 +32,5 @@ namespace SAE_dev_1
                 nomChargement.Content = nom;
             }
         }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
     }
 }

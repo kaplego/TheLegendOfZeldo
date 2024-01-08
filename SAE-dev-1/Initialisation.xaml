@@ -8,7 +8,6 @@
     Title="Initialisation"
     Width="1600"
     Height="900"
-    Closed="Window_Closed"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
