@@ -6,8 +6,28 @@
     xmlns:local="clr-namespace:SAE_dev_1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
-    Width="800"
-    Height="450"
+    Width="1600"
+    Height="900"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Canvas />
+
+    <Canvas
+        x:Name="CanvasJeux"
+        Width="1598"
+        Height="884"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
+
+        <Rectangle
+            x:Name="Joueur"
+            Canvas.Left="759"
+            Canvas.Top="405"
+            Width="80"
+            Height="74"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Stroke="Black" />
+
+    </Canvas>
 </Window>

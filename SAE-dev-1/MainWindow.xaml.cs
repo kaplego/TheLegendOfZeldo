@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace SAE_dev_1
 {
@@ -20,9 +21,19 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DispatcherTimer MinuteurJeu = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
+            MinuteurJeu.Tick += MoteurDeJeu;
+            MinuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
+            
+
+        }
+
+        private void MoteurDeJeu(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
