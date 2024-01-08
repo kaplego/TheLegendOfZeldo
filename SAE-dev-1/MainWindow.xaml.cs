@@ -28,6 +28,9 @@ namespace SAE_dev_1
         private ImageBrush imageObjets = new ImageBrush();
 
         int vitesseJ = 5;
+        int vieJ = 5;
+        int degat = 1;
+        int vitesseE = 5;
         bool droite , gauche, bas, haut;
 
         public MainWindow()
@@ -70,8 +73,6 @@ namespace SAE_dev_1
             {
                 haut = true;
             }
-
-
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
@@ -100,11 +101,11 @@ namespace SAE_dev_1
             {
                 Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
             }
-            if (droite && Canvas.GetRight(Joueur) > 0)
+            if (droite && Canvas.GetLeft(Joueur) < this.Width)
             {
                 Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) + vitesseJ);
             }
-            if (bas && Canvas.GetBottom(Joueur) > 0)
+            if (bas && Canvas.GetTop(Joueur) < this.Height)
             {
                 Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) + vitesseJ);
             }
