@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -70,6 +71,11 @@ namespace SAE_dev_1
             {
                 haut = true;
             }
+
+            if (e.Key == Key.S)
+            {
+                CreeEnemisCC(2,"slime");
+            }
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
@@ -89,6 +95,29 @@ namespace SAE_dev_1
             if (e.Key == Key.Up)
             {
                 haut = false;
+            }
+        }
+
+        private void CreeEnemisCC (int nombre, string type)
+        {
+            int total = nombre;
+            Random endroit = new Random();
+            for (int i = 0; i < total; i++)
+            {
+                int hautEnemi = (int)(endroit.Next(200));
+                int gaucheEnemi = (int)(endroit.Next(1000));
+                //ImageBrush apparenceEnemi = new ImageBrush();
+                Rectangle nouveauxEnnemy = new Rectangle
+                {
+                    Tag = "enemis,"+type,
+                    Height = 80,
+                    Width = 80,
+                    Fill = Brushes.Red
+                };
+                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + hautEnemi);
+                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + gaucheEnemi);
+                CanvasJeux.Children.Add(nouveauxEnnemy);
+                //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
         }
 
