@@ -21,19 +21,81 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DispatcherTimer MinuteurJeu = new DispatcherTimer();
+        int vitesseJ = 5;
+        bool droite , gauche, bas, haut;
+
+
+        
+
+        private DispatcherTimer minuteurJeu = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
-            MinuteurJeu.Tick += MoteurDeJeu;
-            MinuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
-            
+            minuteurJeu.Tick += MoteurDeJeu;
+            minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
+            minuteurJeu.Start();
+        }
 
+        private void CanvasKeyIsDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Right) 
+            {
+                droite = true;
+            }
+            if (e.Key == Key.Left)
+            {
+                gauche = true;
+            }
+            if (e.Key == Key.Down)
+            {
+                bas = true;
+            }
+            if (e.Key == Key.Up)
+            {
+                haut = true;
+            }
+
+
+        }
+
+        private void CanvasKeyIsUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Right)
+            {
+                droite = false;
+            }
+            if (e.Key == Key.Left)
+            {
+                gauche = false;
+            }
+            if (e.Key == Key.Down)
+            {
+                bas = false;
+            }
+            if (e.Key == Key.Up)
+            {
+                haut = false;
+            }
         }
 
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (gauche && Canvas.GetLeft(Joueur) > 0)
+            {
+                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
+            }
+            if (droite && Canvas.GetRight(Joueur) > 0)
+            {
+                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) + vitesseJ);
+            }
+            if (bas && Canvas.GetBottom(Joueur) > 0)
+            {
+                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) + vitesseJ);
+            }
+            if (haut && Canvas.GetTop(Joueur) > 0)
+            {
+                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) - vitesseJ);
+            }
         }
     }
 }

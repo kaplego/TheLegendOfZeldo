@@ -8,6 +8,7 @@
     Title="MainWindow"
     Width="1600"
     Height="900"
+    FocusManager.FocusedElement="{Binding ElementName=CanvasJeux}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -17,7 +18,10 @@
         Width="1598"
         Height="884"
         HorizontalAlignment="Left"
-        VerticalAlignment="Top">
+        VerticalAlignment="Top"
+        Focusable="True"
+        KeyDown="CanvasKeyIsDown"
+        KeyUp="CanvasKeyIsUp">
 
         <Rectangle
             x:Name="Joueur"
