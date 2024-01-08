@@ -21,16 +21,31 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DispatcherTimer minuteurJeu = new DispatcherTimer();
+        private ImageBrush imageCarte = new ImageBrush();
+        private ImageBrush imagePersonnage = new ImageBrush();
+        private ImageBrush imagePolice = new ImageBrush();
+        private ImageBrush imageObjets = new ImageBrush();
+
         int vitesseJ = 5;
         bool droite , gauche, bas, haut;
 
-
-        
-
-        private DispatcherTimer minuteurJeu = new DispatcherTimer();
         public MainWindow()
         {
             InitializeComponent();
+
+            this.Hide();
+
+            Initialisation fenetreInitialisation = new Initialisation();
+            fenetreInitialisation.Show();
+
+            fenetreInitialisation.Chargement(0, "Chargement des textures...");
+            imageCarte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\Overworld.png"));
+            imagePersonnage.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\character.png"));
+            imagePolice.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\font.png"));
+            imageObjets.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objects.png"));
+            fenetreInitialisation.Chargement(100);
+            
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();

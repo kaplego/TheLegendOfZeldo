@@ -9,28 +9,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="assets\cave.png">
+    <None Update="ressources\cave.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\character.png">
+    <None Update="ressources\character.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\font.png">
+    <None Update="ressources\font.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\Inner.png">
+    <None Update="ressources\Inner.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\log.png">
+    <None Update="ressources\log.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\NPC_test.png">
+    <None Update="ressources\NPC_test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\objects.png">
+    <None Update="ressources\objects.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\Overworld.png">
+    <None Update="ressources\Overworld.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
