@@ -35,11 +35,12 @@ namespace SAE_dev_1
 
         private int carteActuelle = 0;
 
+        // Textures
+
+
+
+        // Discord
         private Discord.Discord? discord;
-        public Activity discordActivity = new Activity()
-        {
-            State = "Dans le menu"
-        };
 
         public MainWindow()
         {
@@ -63,11 +64,19 @@ namespace SAE_dev_1
             minuteurJeu.Start();
         }
 
-        public void InitialiserDiscord()
+        private void InitialiserDiscord()
         {
             this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.Default);
 
-            discord.GetActivityManager().UpdateActivity(discordActivity, (result) => {});
+            MettreAJourActiviteDiscord(new Activity()
+            {
+                State = "Dans le menu"
+            });
+        }
+
+        public void MettreAJourActiviteDiscord(Activity activite)
+        {
+            discord?.GetActivityManager().UpdateActivity(activite, (result) => { });
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -140,7 +149,7 @@ namespace SAE_dev_1
 
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
-            discord.RunCallbacks();
+            discord?.RunCallbacks();
 
             if (gauche && Canvas.GetLeft(Joueur) > 0)
             {
