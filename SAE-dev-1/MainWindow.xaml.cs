@@ -101,11 +101,11 @@ namespace SAE_dev_1
             {
                 Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
             }
-            if (droite && Canvas.GetLeft(Joueur) < this.Width)
+            if (droite && Canvas.GetLeft(Joueur) < this.Width - Joueur.Width)
             {
                 Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) + vitesseJ);
             }
-            if (bas && Canvas.GetTop(Joueur) < this.Height)
+            if (bas && Canvas.GetTop(Joueur) < this.Height - Joueur.Height)
             {
                 Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) + vitesseJ);
             }
