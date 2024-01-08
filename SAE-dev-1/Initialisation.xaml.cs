@@ -48,6 +48,7 @@ namespace SAE_dev_1
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
             mainWindow?.Show();
+            mainWindow.discordActivity.State = "En jeu";
             this.Close();
         }
     }

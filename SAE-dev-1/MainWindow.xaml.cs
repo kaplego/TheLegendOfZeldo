@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,8 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly long DISCORD_CLIENT_ID = 1194049899059224636;
+
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
         private int vitesseJ = 8;
@@ -32,9 +35,16 @@ namespace SAE_dev_1
 
         private int carteActuelle = 0;
 
+        private Discord.Discord? discord;
+        public Activity discordActivity = new Activity()
+        {
+            State = "Dans le menu"
+        };
+
         public MainWindow()
         {
             InitializeComponent();
+            InitialiserDiscord();
 
             this.Hide();
 
@@ -51,6 +61,13 @@ namespace SAE_dev_1
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
+        }
+
+        public void InitialiserDiscord()
+        {
+            this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.Default);
+
+            discord.GetActivityManager().UpdateActivity(discordActivity, (result) => {});
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -123,6 +140,8 @@ namespace SAE_dev_1
 
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
+            discord.RunCallbacks();
+
             if (gauche && Canvas.GetLeft(Joueur) > 0)
             {
                 Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
