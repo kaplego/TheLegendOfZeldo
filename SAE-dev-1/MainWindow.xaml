@@ -21,7 +21,9 @@
         VerticalAlignment="Top"
         Focusable="True"
         KeyDown="CanvasKeyIsDown"
-        KeyUp="CanvasKeyIsUp">
+        KeyUp="CanvasKeyIsUp"
+        RenderOptions.BitmapScalingMode="NearestNeighbor"
+        RenderOptions.EdgeMode="Aliased">
 
         <Rectangle
             x:Name="Joueur"

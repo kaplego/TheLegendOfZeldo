@@ -19,7 +19,7 @@ namespace SAE_dev_1
     /// </summary>
     public partial class Initialisation : Window
     {
-        private MainWindow mainWindow;
+        private MainWindow? mainWindow;
 
         public Initialisation()
         {
@@ -47,7 +47,7 @@ namespace SAE_dev_1
 
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.Show();
+            mainWindow?.Show();
             this.Close();
         }
     }
