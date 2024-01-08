@@ -19,6 +19,8 @@ namespace SAE_dev_1
     /// </summary>
     public partial class Initialisation : Window
     {
+        private MainWindow mainWindow;
+
         public Initialisation()
         {
             InitializeComponent();
@@ -31,6 +33,22 @@ namespace SAE_dev_1
             {
                 nomChargement.Content = nom;
             }
+        }
+
+        public void Termine(MainWindow mainWindow)
+        {
+            chargement.Visibility = Visibility.Hidden;
+            nomChargement.Visibility = Visibility.Hidden;
+
+            btnJouer.Visibility = Visibility.Visible;
+
+            this.mainWindow = mainWindow;
+        }
+
+        private void btnJouer_Click(object sender, RoutedEventArgs e)
+        {
+            mainWindow.Show();
+            this.Close();
         }
     }
 }
