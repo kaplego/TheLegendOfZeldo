@@ -15,6 +15,19 @@
     WindowState="Maximized"
     mc:Ignorable="d" Background="#FF090300">
     <Grid>
+        <Rectangle
+            x:Name="chargement"
+            Canvas.Left="0"
+            Canvas.Top="0"
+            Width="1200"
+            Height="600"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Panel.ZIndex="1000"
+            Visibility="Hidden"
+            Fill="Black">
+        </Rectangle>
+
         <Canvas
             x:Name="CanvasJeux"
             Width="1200"
@@ -30,10 +43,10 @@
             <Rectangle
                 x:Name="joueur"
                 Canvas.Left="560"
-                Canvas.Top="300"
+                Canvas.Top="260"
                 Width="80"
-                Height="74"
-                HorizontalAlignment="Left"
+                Height="80"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Stroke="White" Panel.ZIndex="100" />
             <Label Content="0" Canvas.Left="1164" Canvas.Top="10" Height="38" Width="36" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>

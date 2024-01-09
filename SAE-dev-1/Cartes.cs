@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SAE_dev_1
 {
@@ -6,6 +7,7 @@ namespace SAE_dev_1
     {
         public static readonly string[,] CARTE_MAISON = new string[10, 20]
         {
+            // Y = 0
             {
                 "mur_no",
                 "mur_n",
@@ -28,6 +30,7 @@ namespace SAE_dev_1
                 "mur_n",
                 "mur_ne"
             },
+            // Y = 1
             {
                 "mur_o",
                 "planches",
@@ -50,6 +53,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 2
             {
                 "mur_o",
                 "planches",
@@ -72,6 +76,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 3
             {
                 "mur_o",
                 "planches",
@@ -94,6 +99,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 4
             {
                 "mur_o",
                 "planches",
@@ -116,6 +122,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 5
             {
                 "mur_o",
                 "planches",
@@ -138,6 +145,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 6
             {
                 "mur_o",
                 "planches",
@@ -160,6 +168,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 7
             {
                 "mur_o",
                 "planches",
@@ -182,6 +191,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 8
             {
                 "mur_o",
                 "planches",
@@ -204,6 +214,7 @@ namespace SAE_dev_1
                 "planches",
                 "mur_e"
             },
+            // Y = 9
             {
                 "mur_so",
                 "mur_s",
@@ -227,10 +238,244 @@ namespace SAE_dev_1
                 "mur_se"
             },
         };
+        public static readonly string[,] CARTE_JARDIN = new string[10, 20]
+        {
+            // Y = 0
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 1
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 2
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 3
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "chemin_L_0",
+                "chemin_I_0",
+                "chemin_I_0",
+                "chemin_L_90",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 4
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "chemin_I_270",
+                "chemin",
+                "chemin",
+                "chemin_I_90",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 5
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "chemin_I_270",
+                "chemin",
+                "chemin",
+                "chemin_I_90",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 6
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "chemin_L_270",
+                "chemin_I_180",
+                "chemin_I_180",
+                "chemin_L_180",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 7
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 8
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+            // Y = 9
+            {
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe",
+                "herbe"
+            },
+        };
 
         public static readonly string[][,] CARTES = new string[][,]
         {
-            CARTE_MAISON
+            CARTE_MAISON,
+            CARTE_JARDIN
         };
 
         public static readonly string[] NOMS_CARTES = new string[]
@@ -240,12 +485,17 @@ namespace SAE_dev_1
         };
 
         //                           nom     x    y    rotation
-        public static readonly List<(string, int, int, int)>[] OBJECTS_CARTES = new List<(string, int, int, int)>[]
+        public static readonly List<(string, int, int, int, Action<MainWindow>)>?[] OBJECTS_CARTES = new List<(string, int, int, int, Action<MainWindow>)>?[]
         {
-            new List<(string, int, int, int)>
+            new List<(string, int, int, int, Action<MainWindow>)>
             {
-                ("porte", 10, 9, 180)
-            }
+                ("porte", 10, 9, 180, (mainWindow) =>
+                    {
+                        mainWindow.ChangerCarte(1);
+                    }
+                )
+            },
+            null
         };
     }
 }

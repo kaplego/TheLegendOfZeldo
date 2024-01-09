@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -75,17 +75,23 @@ namespace SAE_dev_1
 
         private Rect hitboxJoueur;
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
-        private List<System.Windows.Rect> hitboxObjets = new List<System.Windows.Rect>();
+        private List<(System.Windows.Rect, Action<MainWindow>)> hitboxObjets = new List<(System.Windows.Rect, Action<MainWindow>)>();
 
         // RegExps Textures
 
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
+        private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
 
         // Textures
 
         private BitmapImage textureMurDroit;
         private BitmapImage textureMurAngle;
         private BitmapImage texturePlanches;
+        private BitmapImage textureHerbe;
+        private BitmapImage textureChemin;
+        private BitmapImage textureCheminI;
+        private BitmapImage textureCheminL;
+        private BitmapImage textureCheminU;
 
         private BitmapImage texturePorte;
 
@@ -115,14 +121,22 @@ namespace SAE_dev_1
                 Y = Canvas.GetTop(joueur)
             };
 
-            fenetreInitialisation.Chargement(5, "Chargement des textures...");
+            fenetreInitialisation.Chargement(5, "Chargement des textures de terrain...");
 
             textureMurDroit = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_droit.png"));
             textureMurAngle = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_angle.png"));
             texturePlanches = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\planches.png"));
+            textureHerbe = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\herbe.png"));
+            textureChemin = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin.png"));
+            textureCheminI = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-I.png"));
+            textureCheminL = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-L.png"));
+            textureCheminU = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-U.png"));
+
+            fenetreInitialisation.Chargement(35, "Chargement des textures d'objets...");
+
             texturePorte = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\porte.png"));
 
-            fenetreInitialisation.Chargement(50, "Génération de la carte");
+            fenetreInitialisation.Chargement(65, "Génération de la carte");
 
             GenererCarte();
 
@@ -193,19 +207,16 @@ namespace SAE_dev_1
         {
             string[,] carte = Cartes.CARTES[carteActuelle];
 
-            double largeurTuile = this.Width / carte.GetLength(1);
-            double hauteurTuile = this.Height / carte.GetLength(0);
-
             for (int y = 0; y < carte.GetLength(0); y++)
             {
                 for (int x = 0; x < carte.GetLength(1); x++)
                 {
-                    System.Windows.Rect? tuileHitbox = null;
+                    System.Windows.Rect? tuileHitbox;
 
                     Rectangle tuile = new Rectangle()
                     {
-                        Width = largeurTuile,
-                        Height = hauteurTuile,
+                        Width = MainWindow.TAILLE_TUILE,
+                        Height = TAILLE_TUILE,
                     };
                     ImageBrush? fondTuile = new ImageBrush();
                     fondTuile.Stretch = Stretch.Uniform;
@@ -216,10 +227,10 @@ namespace SAE_dev_1
                     {
                         tuileHitbox = new Rect()
                         {
-                            X = x * hauteurTuile,
-                            Y = y * hauteurTuile,
-                            Width = largeurTuile,
-                            Height = hauteurTuile
+                            X = x * TAILLE_TUILE,
+                            Y = y * TAILLE_TUILE,
+                            Width = TAILLE_TUILE,
+                            Height = TAILLE_TUILE
                         };
                         hitboxTerrain.Add((Rect)tuileHitbox);
 
@@ -268,12 +279,60 @@ namespace SAE_dev_1
                                 };
                         }
                     }
+                    else if (regexTextureChemin.IsMatch(textureTuile))
+                    {
+                        Match correspondance = regexTextureChemin.Match(textureTuile);
+                        string type = correspondance.Groups[1].Value;
+                        string orientation = correspondance.Groups[2].Value;
+
+                        switch (type)
+                        {
+                            case "I":
+                                fondTuile.ImageSource = textureCheminI;
+                                break;
+                            case "L":
+                                fondTuile.ImageSource = textureCheminL;
+                                break;
+                            case "U":
+                                fondTuile.ImageSource = textureCheminU;
+                                break;
+                        }
+
+                        tuile.LayoutTransform = new RotateTransform()
+                        {
+                            CenterX = 8,
+                            CenterY = 8,
+                            Angle = int.Parse(orientation)
+                        };
+                    }
                     else
                     {
+                        Random aleatoire = new Random();
+
                         switch (textureTuile)
                         {
                             case "planches":
                                 fondTuile.ImageSource = texturePlanches;
+                                break;
+                            case "herbe":
+                                fondTuile.ImageSource = textureHerbe;
+
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    CenterX = 8,
+                                    CenterY = 8,
+                                    Angle = aleatoire.Next(4) * 90
+                                };
+                                break;
+                            case "chemin":
+                                fondTuile.ImageSource = textureChemin;
+
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    CenterX = 8,
+                                    CenterY = 8,
+                                    Angle = aleatoire.Next(4) * 90
+                                };
                                 break;
                         }
                     }
@@ -284,66 +343,111 @@ namespace SAE_dev_1
                     tuile.Fill = fondTuile;
 
                     Panel.SetZIndex(tuile, 1);
-                    Canvas.SetTop(tuile, y * hauteurTuile);
-                    Canvas.SetLeft(tuile, x * largeurTuile);
+                    Canvas.SetTop(tuile, y * TAILLE_TUILE);
+                    Canvas.SetLeft(tuile, x * TAILLE_TUILE);
                     CanvasJeux.Children.Add(tuile);
                 }
             }
 
-            foreach ((string, int, int, int) objet in Cartes.OBJECTS_CARTES[carteActuelle])
-            {
-                string nomObjet = objet.Item1;
-                int positionX = objet.Item2;
-                int positionY = objet.Item3;
-                int rotationObjet = objet.Item4;
-
-                int largeurObjet = 0,
-                    hauteurObjet = 0;
-                ImageBrush texture = new ImageBrush();
-                texture.Stretch = Stretch.Uniform;
-
-                switch (nomObjet)
+            if (Cartes.OBJECTS_CARTES[carteActuelle] != null)
+                foreach ((string, int, int, int, Action<MainWindow>) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
                 {
-                    case "porte":
-                        largeurObjet = 1;
-                        hauteurObjet = 1;
+                    string nomObjet = objet.Item1;
+                    int positionX = objet.Item2;
+                    int positionY = objet.Item3;
+                    int rotationObjet = objet.Item4;
+                    Action<MainWindow> action = objet.Item5;
 
-                        texture.ImageSource = texturePorte;
-                        break;
-                }
+                    int largeurObjet = 0,
+                        hauteurObjet = 0;
+                    ImageBrush texture = new ImageBrush();
+                    texture.Stretch = Stretch.Uniform;
 
-                Rectangle rectangleObjet = new Rectangle()
-                {
-                    Width = largeurObjet * TAILLE_TUILE,
-                    Height = hauteurObjet * TAILLE_TUILE,
-                };
-
-                if (rotationObjet != 0)
-                {
-                    rectangleObjet.LayoutTransform = new RotateTransform()
+                    switch (nomObjet)
                     {
-                        CenterX = largeurObjet * 16 / 2,
-                        CenterY = hauteurObjet * 16 / 2,
-                        Angle = rotationObjet
+                        case "porte":
+                            largeurObjet = 1;
+                            hauteurObjet = 1;
+
+                            texture.ImageSource = texturePorte;
+                            break;
+                    }
+
+                    Rectangle rectangleObjet = new Rectangle()
+                    {
+                        Width = largeurObjet * MainWindow.TAILLE_TUILE,
+                        Height = hauteurObjet * MainWindow.TAILLE_TUILE,
                     };
+
+                    if (rotationObjet != 0)
+                    {
+                        rectangleObjet.LayoutTransform = new RotateTransform()
+                        {
+                            CenterX = largeurObjet * 16 / 2,
+                            CenterY = hauteurObjet * 16 / 2,
+                            Angle = rotationObjet
+                        };
+                    }
+
+                    rectangleObjet.Fill = texture;
+                    Panel.SetZIndex(rectangleObjet, 50);
+                    Canvas.SetLeft(rectangleObjet, positionX * MainWindow.TAILLE_TUILE);
+                    Canvas.SetTop(rectangleObjet, positionY * MainWindow.TAILLE_TUILE);
+                    CanvasJeux.Children.Add(rectangleObjet);
+
+                    Rect hitboxObjet = new Rect()
+                    {
+                        Width = largeurObjet * MainWindow.TAILLE_TUILE,
+                        Height = hauteurObjet * MainWindow.TAILLE_TUILE,
+                        X = positionX * MainWindow.TAILLE_TUILE,
+                        Y = positionY * MainWindow.TAILLE_TUILE,
+                    };
+
+                    hitboxObjets.Add((hitboxObjet, action));
                 }
+        }
 
-                rectangleObjet.Fill = texture;
-                Panel.SetZIndex(rectangleObjet, 50);
-                Canvas.SetLeft(rectangleObjet, positionX * TAILLE_TUILE);
-                Canvas.SetTop(rectangleObjet, positionY * TAILLE_TUILE);
-                CanvasJeux.Children.Add(rectangleObjet);
+        public async void ChangerCarte(int nouvelleCarte, int apparitionX = 0, int apparitionY = 0)
+        {
+            minuteurJeu.Stop();
 
-                Rect hitboxObjet = new Rect()
-                {
-                    Width = largeurObjet * TAILLE_TUILE,
-                    Height = hauteurObjet * TAILLE_TUILE,
-                    X = positionX * TAILLE_TUILE,
-                    Y = positionY * TAILLE_TUILE,
-                };
-
-                hitboxObjets.Add(hitboxObjet);
+            chargement.Opacity = 0;
+            chargement.Visibility = Visibility.Visible;
+            while (chargement.Opacity < 1)
+            {
+                chargement.Opacity += 0.2;
+                await Task.Delay(TimeSpan.FromMilliseconds(150));
             }
+
+            CanvasJeux.Children.Clear();
+            hitboxTerrain.Clear();
+            hitboxObjets.Clear();
+            carteActuelle = nouvelleCarte;
+            GenererCarte();
+            CanvasJeux.Children.Add(joueur);
+            Canvas.SetTop(joueur, apparitionY);
+            Canvas.SetLeft(joueur, apparitionX);
+            hitboxJoueur.X = Canvas.GetLeft(joueur);
+            hitboxJoueur.Y = Canvas.GetTop(joueur);
+
+            chargement.Opacity = 1;
+            while (chargement.Opacity > 0)
+            {
+                chargement.Opacity -= 0.2;
+                await Task.Delay(TimeSpan.FromMilliseconds(150));
+            }
+
+            MettreAJourActiviteDiscord(new Discord.Activity()
+            {
+                Details = $"Dans {Cartes.NOMS_CARTES[carteActuelle].ToLower()}",
+                State = $"{vieJ} PV",
+                Timestamps =
+                {
+                    Start = horodatageDebut
+                }
+            });
+
+            minuteurJeu.Start();
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -533,16 +637,30 @@ namespace SAE_dev_1
                     ));
                 }
 
-                foreach (Rect hitbox in hitboxTerrain.Concat(hitboxObjets))
+                foreach (Rect terrain in hitboxTerrain)
                 {
-                    if (hitbox.IntersectsWith(hitboxJoueur))
+                    if (terrain.IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetLeft(
                             joueur,
-                            gauche ? hitbox.X + hitbox.Width + 1
-                                : hitbox.X - joueur.Width - 1
+                            gauche ? terrain.X + terrain.Width + 1
+                                : terrain.X - joueur.Width - 1
                         );
                         hitboxJoueur.X = Canvas.GetLeft(joueur);
+                        break;
+                    }
+                }
+                foreach ((Rect, Action<MainWindow>) objet in hitboxObjets)
+                {
+                    if (objet.Item1.IntersectsWith(hitboxJoueur))
+                    {
+                        Canvas.SetLeft(
+                            joueur,
+                            gauche ? objet.Item1.X + objet.Item1.Width + 1
+                                : objet.Item1.X - joueur.Width - 1
+                        );
+                        hitboxJoueur.X = Canvas.GetLeft(joueur);
+                        objet.Item2(this);
                         break;
                     }
                 }
@@ -567,14 +685,28 @@ namespace SAE_dev_1
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
-                foreach (Rect hitbox in hitboxTerrain.Concat(hitboxObjets))
+                foreach ((Rect, Action<MainWindow>) objet in hitboxObjets)
                 {
-                    if (hitbox.IntersectsWith(hitboxJoueur))
+                    if (objet.Item1.IntersectsWith(hitboxJoueur))
+                    {
+                        Canvas.SetLeft(
+                            joueur,
+                            gauche ? objet.Item1.X + objet.Item1.Width + 1
+                                : objet.Item1.X - joueur.Width - 1
+                        );
+                        hitboxJoueur.X = Canvas.GetLeft(joueur);
+                        objet.Item2(this);
+                        break;
+                    }
+                }
+                foreach (Rect terrain in hitboxTerrain)
+                {
+                    if (terrain.IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetTop(
                             joueur,
-                            bas ? hitbox.Y - joueur.Height - 1
-                                : hitbox.Y + hitbox.Height + 1
+                            bas ? terrain.Y - joueur.Height - 1
+                                : terrain.Y + terrain.Height + 1
                         );
                         hitboxJoueur.Y = Canvas.GetTop(joueur);
                         break;
