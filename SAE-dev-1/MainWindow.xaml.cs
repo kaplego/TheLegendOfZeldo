@@ -74,9 +74,12 @@ namespace SAE_dev_1
             });
         }
 
-        public void MettreAJourActiviteDiscord(Activity activite)
+        public void MettreAJourActiviteDiscord(Activity? activite)
         {
-            discord?.GetActivityManager().UpdateActivity(activite, (result) => { });
+            if (activite != null)
+                discord?.GetActivityManager().UpdateActivity((Activity) activite, (result) => { });
+            else
+                discord?.GetActivityManager().ClearActivity((result) => { });
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
