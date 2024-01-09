@@ -28,14 +28,14 @@
             VerticalAlignment="Center" MinHeight="600" MinWidth="600">
 
             <Rectangle
-                    x:Name="joueur"
-                    Canvas.Left="560"
-                    Canvas.Top="300"
-                    Width="80"
-                    Height="74"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Stroke="White" Panel.ZIndex="100" />
+                x:Name="joueur"
+                Canvas.Left="560"
+                Canvas.Top="300"
+                Width="80"
+                Height="74"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Stroke="White" Panel.ZIndex="100" />
             <Label Content="0" Canvas.Left="1164" Canvas.Top="10" Height="38" Width="36" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Canvas x:Name="ZoneApparition" Width="651" Height="114" Canvas.Left="130" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top"></Canvas>
         </Canvas>
@@ -61,7 +61,7 @@
             x:Name="btnReprendre"
             Width="300"
             Height="70"
-            Margin="0,0,325,100"
+            Margin="0,0,650,100"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Background="DimGray"
@@ -76,16 +76,34 @@
                 </Button.Resources>
             </Button>
             <Button
-            x:Name="btnQuitter"
-            Width="300"
-            Height="70"
-            Margin="325,0,0,100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            Background="DimGray"
-            Content="Quitter"
-            FontSize="36"
-            Foreground="White" Click="btnQuitter_Click">
+                x:Name="btnOptions"
+                Width="300"
+                Height="70"
+                Margin="0,0,0,100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Background="DimGray"
+                Content="Options"
+                FontSize="36"
+                Foreground="White" Click="btnOptions_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button
+                x:Name="btnQuitter"
+                Width="300"
+                Height="70"
+                Margin="650,0,0,100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Background="DimGray"
+                Content="Quitter"
+                FontSize="36"
+                Foreground="White"
+                Click="btnQuitter_Click">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="8" />

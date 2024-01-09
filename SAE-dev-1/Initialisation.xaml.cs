@@ -32,6 +32,7 @@ namespace SAE_dev_1
             nomChargement.Visibility = Visibility.Hidden;
 
             btnJouer.Visibility = Visibility.Visible;
+            btnOptions.Visibility = Visibility.Visible;
             btnQuitter.Visibility = Visibility.Visible;
         }
 
@@ -40,6 +41,13 @@ namespace SAE_dev_1
             mainWindow.Show();
             mainWindow.Demarrer();
             this.Close();
+        }
+
+        private void btnOptions_Click(object sender, RoutedEventArgs e)
+        {
+            Options options = new Options(mainWindow, this);
+            options.Show();
+            this.Hide();
         }
 
         private void btnQuitter_Click(object sender, RoutedEventArgs e)

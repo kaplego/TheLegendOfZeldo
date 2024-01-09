@@ -30,6 +30,37 @@ namespace SAE_dev_1
 
         private bool jeuEnPause = false;
 
+        // Réglages
+
+        private Key[,] touches = new Key[3, 6]
+        {
+            {
+                Key.Left,
+                Key.Right,
+                Key.Up,
+                Key.Down,
+                Key.E,
+                Key.R
+            },
+            {
+                Key.Q,
+                Key.D,
+                Key.Z,
+                Key.S,
+                Key.O,
+                Key.P
+            },
+            {
+                Key.A,
+                Key.D,
+                Key.W,
+                Key.S,
+                Key.O,
+                Key.P
+            }
+        };
+        public int combinaisonTouches = 0;
+
         // Hitbox
 
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
@@ -240,24 +271,24 @@ namespace SAE_dev_1
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Right)
-            {
-                droite = true;
-            }
-            if (e.Key == Key.Left)
+            if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = true;
             }
-            if (e.Key == Key.Down)
+            if (e.Key == touches[combinaisonTouches, 1])
             {
-                bas = true;
+                droite = true;
             }
-            if (e.Key == Key.Up)
+            if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = true;
             }
+            if (e.Key == touches[combinaisonTouches, 3])
+            {
+                bas = true;
+            }
 
-            if (e.Key == Key.S)
+            if (e.Key == Key.NumPad1)
             {
                 CreeEnemisCC(2, "slime");
             }
@@ -269,6 +300,13 @@ namespace SAE_dev_1
             grilleMenuPause.Visibility = Visibility.Hidden;
             minuteurJeu.Start();
             CanvasJeux.Focus();
+        }
+
+        private void btnOptions_Click(object sender, RoutedEventArgs e)
+        {
+            Options options = new Options(this);
+            options.Show();
+            this.Hide();
         }
 
         private void btnQuitter_Click(object sender, RoutedEventArgs e)
@@ -289,21 +327,21 @@ namespace SAE_dev_1
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Right)
-            {
-                droite = false;
-            }
-            if (e.Key == Key.Left)
+            if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = false;
             }
-            if (e.Key == Key.Down)
+            if (e.Key == touches[combinaisonTouches, 1])
             {
-                bas = false;
+                droite = false;
             }
-            if (e.Key == Key.Up)
+            if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = false;
+            }
+            if (e.Key == touches[combinaisonTouches, 3])
+            {
+                bas = false;
             }
 
             if (e.Key == Key.Escape)
@@ -345,10 +383,17 @@ namespace SAE_dev_1
             }
         }
 
+        #region Moteur du jeu
+
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
             discord?.RunCallbacks();
 
+            Deplacement();
+        }
+
+        private void Deplacement()
+        {
             if ((gauche || droite) && !(gauche && droite))
             {
                 if (gauche)
@@ -416,5 +461,7 @@ namespace SAE_dev_1
                 }
             }
         }
+
+        #endregion
     }
 }
