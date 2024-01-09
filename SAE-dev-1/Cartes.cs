@@ -1,4 +1,6 @@
-﻿namespace SAE_dev_1
+﻿using System.Collections.Generic;
+
+namespace SAE_dev_1
 {
     internal class Cartes
     {
@@ -235,6 +237,15 @@
         {
             "La maison",
             "Le jardin"
+        };
+
+        //                           nom     x    y    rotation
+        public static readonly List<(string, int, int, int)>[] OBJECTS_CARTES = new List<(string, int, int, int)>[]
+        {
+            new List<(string, int, int, int)>
+            {
+                ("porte", 10, 9, 180)
+            }
         };
     }
 }
