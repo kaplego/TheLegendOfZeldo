@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,9 +36,15 @@ namespace SAE_dev_1
 
         private int carteActuelle = 0;
 
+        // RegExps Textures
+
+        private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
+
         // Textures
 
-
+        private BitmapImage textureMurDroit;
+        private BitmapImage textureMurAngle;
+        private BitmapImage texturePlanches;
 
         // Discord
         private Discord.Discord? discord;
@@ -54,7 +61,13 @@ namespace SAE_dev_1
 
             fenetreInitialisation.Chargement(0, "Chargement des textures...");
 
-            // TODO: Charger les textures
+            textureMurDroit = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_droit.png"));
+            textureMurAngle = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_angle.png"));
+            texturePlanches = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\planches.png"));
+
+            fenetreInitialisation.Chargement(50, "Génération de la carte");
+
+            GenererCarte();
 
             fenetreInitialisation.Chargement(100);
             fenetreInitialisation.Termine(this);
@@ -63,6 +76,8 @@ namespace SAE_dev_1
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
         }
+
+        #region Discord
 
         private void InitialiserDiscord()
         {
@@ -80,6 +95,76 @@ namespace SAE_dev_1
                 discord?.GetActivityManager().UpdateActivity((Activity) activite, (result) => { });
             else
                 discord?.GetActivityManager().ClearActivity((result) => { });
+        }
+
+        #endregion Discord
+
+        private void GenererCarte()
+        {
+            string[,] carte = Cartes.CARTES[carteActuelle];
+
+            double largeurTuile = this.Width / carte.GetLength(1);
+            double hauteurTuile = this.Height / carte.GetLength(0);
+
+            for (int y = 0; y < carte.GetLength(0); y++)
+            {
+                for (int x = 0; x < carte.GetLength(1); x++)
+                {
+                    Rectangle tuile = new Rectangle()
+                    {
+                        Width = largeurTuile,
+                        Height = hauteurTuile,
+                    };
+                    ImageBrush? fondTuile = new ImageBrush();
+                    fondTuile.Stretch = Stretch.Uniform;
+
+                    string textureTuile = carte[y, x];
+
+                    if (regexTextureMur.IsMatch(textureTuile))
+                    {
+                        Match correspondance = regexTextureMur.Match(textureTuile); 
+                        string orientation = correspondance.Groups[1].Value;
+
+                        if (orientation == "n" || orientation == "s")
+                        {
+                            fondTuile.ImageSource = textureMurDroit;
+                            tuile.LayoutTransform = new RotateTransform()
+                            {
+                                CenterX = 8,
+                                CenterY = 8,
+                                Angle = orientation == "n" ? 90 : -90
+                            };
+                        }
+                        else if (orientation == "e" || orientation == "o")
+                        {
+                            fondTuile.ImageSource = textureMurDroit;
+
+                            if (orientation == "e")
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    CenterX = 8,
+                                    CenterY = 8,
+                                    Angle = 180
+                                };
+                        }
+                    }
+                    else
+                    {
+                        switch (textureTuile)
+                        {
+                            case "planches":
+                                fondTuile.ImageSource = texturePlanches;
+                                break;
+                        }
+                    }
+
+                    tuile.Fill = fondTuile;
+
+                    Canvas.SetTop(tuile, y * hauteurTuile);
+                    Canvas.SetLeft(tuile, x * largeurTuile);
+                    CanvasJeux.Children.Add(tuile);
+                }
+            }
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)

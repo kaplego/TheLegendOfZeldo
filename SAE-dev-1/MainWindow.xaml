@@ -15,8 +15,8 @@
 
     <Canvas
         x:Name="CanvasJeux"
-        Width="1598"
-        Height="884"
+        Width="1200"
+        Height="675"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         Focusable="True"
@@ -27,13 +27,13 @@
 
         <Rectangle
             x:Name="Joueur"
-            Canvas.Left="759"
-            Canvas.Top="405"
+            Canvas.Left="560"
+            Canvas.Top="300"
             Width="80"
             Height="74"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Stroke="Black" />
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Stroke="Black" Panel.ZIndex="100" />
         <Label Content="0" Canvas.Left="1552" Canvas.Top="10" Height="38" Width="36" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <Canvas x:Name="ZoneApparition" Width="651" Height="114" Canvas.Left="130" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top"></Canvas>
 
