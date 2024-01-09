@@ -10,13 +10,15 @@
     Height="675"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    WindowState="Maximized"
     mc:Ignorable="d">
     <Grid Background="#FF2F2F2F">
         <Label x:Name="titreDuJeu"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            FontSize="150"
-            Foreground="White">
+            FontSize="110"
+            Foreground="White" Margin="0,0,0,135">
             La Légende de Zeldo
         </Label>
         <ProgressBar
@@ -41,8 +43,8 @@
         <Button
             x:Name="btnJouer"
             Width="300"
-            Height="75"
-            Margin="0,0,0,100"
+            Height="70"
+            Margin="0,0,325,100"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Background="DimGray"
@@ -51,6 +53,24 @@
             FontSize="36"
             Foreground="White"
             Visibility="Hidden">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Button
+            x:Name="btnQuitter"
+            Width="300"
+            Height="70"
+            Margin="325,0,0,100"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Background="DimGray"
+            Content="Quitter"
+            FontSize="36"
+            Foreground="White"
+            Visibility="Hidden" Click="btnQuitter_Click">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="8" />

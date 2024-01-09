@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SAE_dev_1
+﻿namespace SAE_dev_1
 {
     internal class Cartes
     {
-        public static readonly string[,] CARTE_MAISON = new string[10,20]
+        public static readonly string[,] CARTE_MAISON = new string[10, 20]
         {
             {
                 "mur_no",

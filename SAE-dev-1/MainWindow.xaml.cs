@@ -1,19 +1,11 @@
 ﻿using Discord;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -32,9 +24,11 @@ namespace SAE_dev_1
         private int vieJ = 5;
         private int degat = 1;
         private int vitesseE = 5;
-        private bool droite , gauche, bas, haut;
+        private bool droite, gauche, bas, haut;
 
         private int carteActuelle = 0;
+
+        private bool jeuEnPause = false;
 
         // RegExps Textures
 
@@ -56,7 +50,7 @@ namespace SAE_dev_1
 
             this.Hide();
 
-            Initialisation fenetreInitialisation = new Initialisation();
+            Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
             fenetreInitialisation.Chargement(0, "Chargement des textures...");
@@ -70,7 +64,7 @@ namespace SAE_dev_1
             GenererCarte();
 
             fenetreInitialisation.Chargement(100);
-            fenetreInitialisation.Termine(this);
+            fenetreInitialisation.Termine();
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
@@ -85,15 +79,18 @@ namespace SAE_dev_1
             {
                 // Essayer de lancer Discord
                 this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.NoRequireDiscord);
-
-                MettreAJourActiviteDiscord(new Activity()
-                {
-                    State = "Dans le menu"
-                });
-            } catch {
+            }
+            catch
+            {
                 // Discord n'est pas lancé
                 this.discord = null;
+                return;
             }
+
+            MettreAJourActiviteDiscord(new Activity()
+            {
+                State = "Dans le menu"
+            });
         }
 
         public void MettreAJourActiviteDiscord(Activity? activite)
@@ -102,7 +99,7 @@ namespace SAE_dev_1
                 return;
 
             if (activite != null)
-                discord?.GetActivityManager().UpdateActivity((Activity) activite, (result) => { });
+                discord?.GetActivityManager().UpdateActivity((Activity)activite, (result) => { });
             else
                 discord?.GetActivityManager().ClearActivity((result) => { });
         }
@@ -132,11 +129,12 @@ namespace SAE_dev_1
 
                     if (regexTextureMur.IsMatch(textureTuile))
                     {
-                        Match correspondance = regexTextureMur.Match(textureTuile); 
+                        Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
 
                         if (orientation == "n" || orientation == "s")
                         {
+                            // Nord / Sud
                             fondTuile.ImageSource = textureMurDroit;
                             tuile.LayoutTransform = new RotateTransform()
                             {
@@ -147,6 +145,7 @@ namespace SAE_dev_1
                         }
                         else if (orientation == "e" || orientation == "o")
                         {
+                            // Est / Ouest
                             fondTuile.ImageSource = textureMurDroit;
 
                             if (orientation == "e")
@@ -155,6 +154,23 @@ namespace SAE_dev_1
                                     CenterX = 8,
                                     CenterY = 8,
                                     Angle = 180
+                                };
+                        }
+                        else
+                        {
+                            // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
+                            fondTuile.ImageSource = textureMurAngle;
+
+                            if (orientation != "no")
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    CenterX = 8,
+                                    CenterY = 8,
+                                    Angle = orientation == "ne"
+                                        ? 90
+                                        : orientation == "se"
+                                            ? 180
+                                            : -90
                                 };
                         }
                     }
@@ -168,6 +184,9 @@ namespace SAE_dev_1
                         }
                     }
 
+                    RenderOptions.SetBitmapScalingMode(tuile, BitmapScalingMode.NearestNeighbor);
+                    RenderOptions.SetEdgeMode(tuile, EdgeMode.Aliased);
+
                     tuile.Fill = fondTuile;
 
                     Canvas.SetTop(tuile, y * hauteurTuile);
@@ -179,7 +198,7 @@ namespace SAE_dev_1
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Right) 
+            if (e.Key == Key.Right)
             {
                 droite = true;
             }
@@ -198,7 +217,31 @@ namespace SAE_dev_1
 
             if (e.Key == Key.S)
             {
-                CreeEnemisCC(2,"slime");
+                CreeEnemisCC(2, "slime");
+            }
+        }
+
+        private void btnReprendre_Click(object sender, RoutedEventArgs e)
+        {
+            jeuEnPause = false;
+            grilleMenuPause.Visibility = Visibility.Hidden;
+            minuteurJeu.Start();
+            CanvasJeux.Focus();
+        }
+
+        private void btnQuitter_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                MessageBox.Show(
+                    "Êtes-vous sûr(e) de vouloir quitter le jeu ?",
+                    "Quitter le jeu ?",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning,
+                    MessageBoxResult.No
+                ) == MessageBoxResult.Yes
+            )
+            {
+                this.Close();
             }
         }
 
@@ -220,9 +263,24 @@ namespace SAE_dev_1
             {
                 haut = false;
             }
+
+            if (e.Key == Key.Escape)
+            {
+                jeuEnPause = !jeuEnPause;
+                if (jeuEnPause)
+                {
+                    grilleMenuPause.Visibility = Visibility.Visible;
+                    minuteurJeu.Stop();
+                }
+                else
+                {
+                    grilleMenuPause.Visibility = Visibility.Hidden;
+                    minuteurJeu.Start();
+                }
+            }
         }
 
-        private void CreeEnemisCC (int nombre, string type)
+        private void CreeEnemisCC(int nombre, string type)
         {
             int total = nombre;
             Random endroit = new Random();
@@ -233,7 +291,7 @@ namespace SAE_dev_1
                 //ImageBrush apparenceEnemi = new ImageBrush();
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
-                    Tag = "enemis,"+type,
+                    Tag = "enemis," + type,
                     Height = 80,
                     Width = 80,
                     Fill = Brushes.Red
