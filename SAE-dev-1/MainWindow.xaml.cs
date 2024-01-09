@@ -81,16 +81,26 @@ namespace SAE_dev_1
 
         private void InitialiserDiscord()
         {
-            this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.Default);
-
-            MettreAJourActiviteDiscord(new Activity()
+            try
             {
-                State = "Dans le menu"
-            });
+                // Essayer de lancer Discord
+                this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.NoRequireDiscord);
+
+                MettreAJourActiviteDiscord(new Activity()
+                {
+                    State = "Dans le menu"
+                });
+            } catch {
+                // Discord n'est pas lancé
+                this.discord = null;
+            }
         }
 
         public void MettreAJourActiviteDiscord(Activity? activite)
         {
+            if (discord == null)
+                return;
+
             if (activite != null)
                 discord?.GetActivityManager().UpdateActivity((Activity) activite, (result) => { });
             else
