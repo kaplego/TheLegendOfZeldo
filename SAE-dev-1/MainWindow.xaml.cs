@@ -307,21 +307,35 @@ namespace SAE_dev_1
         {
             discord?.RunCallbacks();
 
-            if (gauche && Canvas.GetLeft(Joueur) > 0)
+            if (gauche)
             {
-                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
+                Canvas.SetLeft(Joueur, Math.Max(
+                    0,
+                    Canvas.GetLeft(Joueur) - vitesseJ
+                ));
             }
-            if (droite && Canvas.GetLeft(Joueur) < this.Width - Joueur.Width)
+
+            if (droite)
             {
-                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) + vitesseJ);
+                Canvas.SetLeft(Joueur, Math.Min(
+                    CanvasJeux.Width - Joueur.Width,
+                    Canvas.GetLeft(Joueur) + vitesseJ
+                ));
             }
-            if (bas && Canvas.GetTop(Joueur) < this.Height - Joueur.Height)
+
+            if (bas)
             {
-                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) + vitesseJ);
+                Canvas.SetTop(Joueur, Math.Min(
+                    CanvasJeux.Height - Joueur.Height,
+                    Canvas.GetTop(Joueur) + vitesseJ
+                ));
             }
             if (haut && Canvas.GetTop(Joueur) > 0)
             {
-                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) - vitesseJ);
+                Canvas.SetTop(Joueur, Math.Max(
+                    0,
+                    Canvas.GetTop(Joueur) - vitesseJ
+                ));
             }
         }
     }

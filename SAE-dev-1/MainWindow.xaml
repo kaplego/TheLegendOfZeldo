@@ -16,14 +16,16 @@
     mc:Ignorable="d">
     <Grid>
         <Canvas
-                x:Name="CanvasJeux"
-                Width="1200"
-                Height="600"
-                Focusable="True"
-                KeyDown="CanvasKeyIsDown"
-                KeyUp="CanvasKeyIsUp"
-                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                RenderOptions.EdgeMode="Aliased" HorizontalAlignment="Center" VerticalAlignment="Center">
+            x:Name="CanvasJeux"
+            Width="1200"
+            Height="600"
+            Focusable="True"
+            KeyDown="CanvasKeyIsDown"
+            KeyUp="CanvasKeyIsUp"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            RenderOptions.EdgeMode="Aliased"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center" MinHeight="600" MinWidth="600">
 
             <Rectangle
                     x:Name="Joueur"
