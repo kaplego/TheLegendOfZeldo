@@ -1,5 +1,4 @@
-﻿using Discord;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -34,6 +33,7 @@ namespace SAE_dev_1
         // Hitbox
 
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
+        private Rect hitboxJoueur;
 
         // RegExps Textures
 
@@ -60,7 +60,17 @@ namespace SAE_dev_1
             Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0, "Chargement des textures...");
+            fenetreInitialisation.Chargement(0, "Chargement des hitbox...");
+
+            hitboxJoueur = new Rect()
+            {
+                Height = joueur.Height,
+                Width = joueur.Width,
+                X = Canvas.GetLeft(joueur),
+                Y = Canvas.GetTop(joueur)
+            };
+
+            fenetreInitialisation.Chargement(5, "Chargement des textures...");
 
             textureMurDroit = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_droit.png"));
             textureMurAngle = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_angle.png"));
@@ -81,7 +91,7 @@ namespace SAE_dev_1
         {
             horodatageDebut = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
-            MettreAJourActiviteDiscord(new Activity()
+            MettreAJourActiviteDiscord(new Discord.Activity()
             {
                 Details = $"Dans {Cartes.NOMS_CARTES[carteActuelle].ToLower()}",
                 State = $"{vieJ} PV",
@@ -108,19 +118,19 @@ namespace SAE_dev_1
                 return;
             }
 
-            MettreAJourActiviteDiscord(new Activity()
+            MettreAJourActiviteDiscord(new Discord.Activity()
             {
                 Details = "Dans le menu"
             });
         }
 
-        public void MettreAJourActiviteDiscord(Activity? activite)
+        public void MettreAJourActiviteDiscord(Discord.Activity? activite)
         {
             if (discord == null)
                 return;
 
             if (activite != null)
-                discord?.GetActivityManager().UpdateActivity((Activity)activite, (result) => { });
+                discord?.GetActivityManager().UpdateActivity((Discord.Activity)activite, (result) => { });
             else
                 discord?.GetActivityManager().ClearActivity((result) => { });
         }
@@ -152,15 +162,14 @@ namespace SAE_dev_1
 
                     if (regexTextureMur.IsMatch(textureTuile))
                     {
-                        tuileHitbox = new System.Windows.Rect()
+                        tuileHitbox = new Rect()
                         {
-                            X = x,
-                            Y = y,
+                            X = x * hauteurTuile,
+                            Y = y * hauteurTuile,
                             Width = largeurTuile,
                             Height = hauteurTuile
                         };
-
-                        hitboxTerrain.Add((System.Windows.Rect)tuileHitbox);
+                        hitboxTerrain.Add((Rect)tuileHitbox);
 
                         Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
@@ -340,36 +349,71 @@ namespace SAE_dev_1
         {
             discord?.RunCallbacks();
 
-            if (gauche)
+            if ((gauche || droite) && !(gauche && droite))
             {
-                Canvas.SetLeft(Joueur, Math.Max(
-                    0,
-                    Canvas.GetLeft(Joueur) - vitesseJ
-                ));
+                if (gauche)
+                {
+                    Canvas.SetLeft(joueur, Math.Max(
+                        0,
+                        Canvas.GetLeft(joueur) - vitesseJ
+                    ));
+                }
+                else
+                {
+                    Canvas.SetLeft(joueur, Math.Min(
+                        CanvasJeux.Width - joueur.Width,
+                        Canvas.GetLeft(joueur) + vitesseJ
+                    ));
+                }
+                hitboxJoueur.X = Canvas.GetLeft(joueur);
+
+                foreach (Rect terrain in hitboxTerrain)
+                {
+                    if (terrain.IntersectsWith(hitboxJoueur))
+                    {
+                        Canvas.SetLeft(
+                            joueur,
+                            gauche ? terrain.X + terrain.Width + 1
+                                : terrain.X - joueur.Width - 1
+                        );
+                        hitboxJoueur.X = Canvas.GetLeft(joueur);
+                        break;
+                    }
+                }
             }
 
-            if (droite)
+            if ((bas || haut) && !(bas && haut))
             {
-                Canvas.SetLeft(Joueur, Math.Min(
-                    CanvasJeux.Width - Joueur.Width,
-                    Canvas.GetLeft(Joueur) + vitesseJ
-                ));
-            }
+                if (bas)
+                {
+                    Canvas.SetTop(joueur, Math.Min(
+                        CanvasJeux.Height - joueur.Height,
+                        Canvas.GetTop(joueur) + vitesseJ
+                    ));
+                    hitboxJoueur.Y = Canvas.GetLeft(joueur);
+                }
+                else
+                {
+                    Canvas.SetTop(joueur, Math.Max(
+                        0,
+                        Canvas.GetTop(joueur) - vitesseJ
+                    ));
+                }
+                hitboxJoueur.Y = Canvas.GetTop(joueur);
 
-            if (bas)
-            {
-                Canvas.SetTop(Joueur, Math.Min(
-                    CanvasJeux.Height - Joueur.Height,
-                    Canvas.GetTop(Joueur) + vitesseJ
-                ));
-            }
-
-            if (haut)
-            {
-                Canvas.SetTop(Joueur, Math.Max(
-                    0,
-                    Canvas.GetTop(Joueur) - vitesseJ
-                ));
+                foreach (Rect terrain in hitboxTerrain)
+                {
+                    if (terrain.IntersectsWith(hitboxJoueur))
+                    {
+                        Canvas.SetTop(
+                            joueur,
+                            bas ? terrain.Y - joueur.Height - 1
+                                : terrain.Y + terrain.Height + 1
+                        );
+                        hitboxJoueur.Y = Canvas.GetTop(joueur);
+                        break;
+                    }
+                }
             }
         }
     }

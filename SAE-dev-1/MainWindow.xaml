@@ -28,7 +28,7 @@
             VerticalAlignment="Center" MinHeight="600" MinWidth="600">
 
             <Rectangle
-                    x:Name="Joueur"
+                    x:Name="joueur"
                     Canvas.Left="560"
                     Canvas.Top="300"
                     Width="80"
