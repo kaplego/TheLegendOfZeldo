@@ -1,5 +1,7 @@
 ﻿using Discord;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SAE_dev_1
 {
@@ -25,6 +28,14 @@ namespace SAE_dev_1
         private int degat = 1;
         private int vitesseE = 5;
         private bool droite, gauche, bas, haut;
+
+        //piece
+        private int nombrePiece = 0;
+        private int nbPieceTerrain = 0;
+        List<Rectangle> pieces = new List<Rectangle>();
+        List<System.Windows.Rect> rPiece = new List<System.Windows.Rect>();
+    
+
 
         private int carteActuelle = 0;
 
@@ -48,6 +59,7 @@ namespace SAE_dev_1
             InitializeComponent();
             InitialiserDiscord();
 
+
             this.Hide();
 
             Initialisation fenetreInitialisation = new Initialisation(this);
@@ -66,6 +78,7 @@ namespace SAE_dev_1
             fenetreInitialisation.Chargement(100);
             fenetreInitialisation.Termine();
 
+            NBPiece.Content = nombrePiece;
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
@@ -263,6 +276,10 @@ namespace SAE_dev_1
             {
                 haut = false;
             }
+            if (e.Key == Key.P)
+            {
+                CreePiece();
+            }
 
             if (e.Key == Key.Escape)
             {
@@ -280,14 +297,12 @@ namespace SAE_dev_1
             }
         }
 
-        private void CreeEnemisCC(int nombre, string type)
+        public void CreeEnemisCC(int nombre, string type)
         {
             int total = nombre;
             Random endroit = new Random();
             for (int i = 0; i < total; i++)
             {
-                int hautEnemi = (int)(endroit.Next(200));
-                int gaucheEnemi = (int)(endroit.Next(1000));
                 //ImageBrush apparenceEnemi = new ImageBrush();
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
@@ -296,16 +311,62 @@ namespace SAE_dev_1
                     Width = 80,
                     Fill = Brushes.Red
                 };
-                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + hautEnemi);
-                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + gaucheEnemi);
+                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
+                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + endroit.Next(1000));
                 CanvasJeux.Children.Add(nouveauxEnnemy);
                 //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
         }
 
+        public void CreePiece()
+        {
+            Random endroit = new Random();
+            Rectangle Piece = new Rectangle
+            {
+                Tag = "object",
+                Height = 20,
+                Width = 20,
+                Fill = Brushes.Yellow
+            };
+            Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition)+ endroit.Next(200));
+            Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition)+ endroit.Next(200));
+            CanvasJeux.Children.Add(Piece);
+            pieces.Add(Piece);
+
+            nbPieceTerrain ++;
+            System.Windows.Rect piece = new System.Windows.Rect
+            {
+                X = Canvas.GetLeft(Piece),
+                Y = Canvas.GetTop(Piece),
+                Width = Piece.Width,
+                Height = Piece.Height
+            };
+            rPiece.Add(piece);
+
+            
+            
+            //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/.png"));
+        }
+        
+
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
             discord?.RunCallbacks();
+
+            System.Windows.Rect joueur = new System.Windows.Rect
+            {
+                X = Canvas.GetLeft(Joueur),
+                Y = Canvas.GetTop(Joueur),
+                Width = Joueur.Width,
+                Height = Joueur.Height
+            };
+            System.Windows.Rect porte = new System.Windows.Rect
+            {
+                X = Canvas.GetLeft(Porte),
+                Y = Canvas.GetTop(Porte),
+                Width = Porte.Width,
+                Height = Porte.Height
+            };
 
             if (gauche)
             {
@@ -337,6 +398,29 @@ namespace SAE_dev_1
                     Canvas.GetTop(Joueur) - vitesseJ
                 ));
             }
+
+            if (joueur.IntersectsWith(porte))
+            {
+                
+            }
+            if (nbPieceTerrain > 0)
+            {
+                for(int i = 0; i< nbPieceTerrain; i++)
+                {
+                    if (joueur.IntersectsWith(rPiece[i]))
+                    {
+                        nombrePiece++;
+                        nbPieceTerrain --;
+                        NBPiece.Content = nombrePiece;
+                        CanvasJeux.Children.Remove(pieces[i]);
+                        pieces.Remove(pieces[i]);
+                        rPiece.Remove(rPiece[i]);
+                    }
+                }
+
+
+            }
+
         }
     }
 }
