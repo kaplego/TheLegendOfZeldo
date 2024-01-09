@@ -230,5 +230,11 @@
         {
             CARTE_MAISON
         };
+
+        public static readonly string[] NOMS_CARTES = new string[]
+        {
+            "La maison",
+            "Le jardin"
+        };
     }
 }

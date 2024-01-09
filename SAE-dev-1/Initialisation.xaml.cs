@@ -32,17 +32,22 @@ namespace SAE_dev_1
             nomChargement.Visibility = Visibility.Hidden;
 
             btnJouer.Visibility = Visibility.Visible;
+            btnOptions.Visibility = Visibility.Visible;
             btnQuitter.Visibility = Visibility.Visible;
         }
 
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
             mainWindow.Show();
-            mainWindow.MettreAJourActiviteDiscord(new Discord.Activity()
-            {
-                State = "En jeu"
-            });
+            mainWindow.Demarrer();
             this.Close();
+        }
+
+        private void btnOptions_Click(object sender, RoutedEventArgs e)
+        {
+            Options options = new Options(mainWindow, this);
+            options.Show();
+            this.Hide();
         }
 
         private void btnQuitter_Click(object sender, RoutedEventArgs e)
