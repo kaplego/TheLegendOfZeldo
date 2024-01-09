@@ -38,10 +38,7 @@ namespace SAE_dev_1
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
             mainWindow.Show();
-            mainWindow.MettreAJourActiviteDiscord(new Discord.Activity()
-            {
-                State = "En jeu"
-            });
+            mainWindow.Demarrer();
             this.Close();
         }
 

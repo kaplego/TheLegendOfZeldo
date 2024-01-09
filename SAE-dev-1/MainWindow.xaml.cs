@@ -1,5 +1,6 @@
 ﻿using Discord;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +31,10 @@ namespace SAE_dev_1
 
         private bool jeuEnPause = false;
 
+        // Hitbox
+
+        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
+
         // RegExps Textures
 
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
@@ -42,11 +47,13 @@ namespace SAE_dev_1
 
         // Discord
         private Discord.Discord? discord;
+        private long horodatageDebut;
 
         public MainWindow()
         {
             InitializeComponent();
             InitialiserDiscord();
+            discord?.RunCallbacks();
 
             this.Hide();
 
@@ -63,12 +70,26 @@ namespace SAE_dev_1
 
             GenererCarte();
 
-            fenetreInitialisation.Chargement(100);
             fenetreInitialisation.Termine();
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
+        }
+
+        public void Demarrer()
+        {
+            horodatageDebut = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+
+            MettreAJourActiviteDiscord(new Activity()
+            {
+                Details = $"Dans {Cartes.NOMS_CARTES[carteActuelle].ToLower()}",
+                State = $"{vieJ} PV",
+                Timestamps =
+                {
+                    Start = horodatageDebut
+                }
+            });
         }
 
         #region Discord
@@ -89,7 +110,7 @@ namespace SAE_dev_1
 
             MettreAJourActiviteDiscord(new Activity()
             {
-                State = "Dans le menu"
+                Details = "Dans le menu"
             });
         }
 
@@ -117,6 +138,8 @@ namespace SAE_dev_1
             {
                 for (int x = 0; x < carte.GetLength(1); x++)
                 {
+                    System.Windows.Rect? tuileHitbox = null;
+
                     Rectangle tuile = new Rectangle()
                     {
                         Width = largeurTuile,
@@ -129,6 +152,16 @@ namespace SAE_dev_1
 
                     if (regexTextureMur.IsMatch(textureTuile))
                     {
+                        tuileHitbox = new System.Windows.Rect()
+                        {
+                            X = x,
+                            Y = y,
+                            Width = largeurTuile,
+                            Height = hauteurTuile
+                        };
+
+                        hitboxTerrain.Add((System.Windows.Rect)tuileHitbox);
+
                         Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
 
@@ -330,7 +363,8 @@ namespace SAE_dev_1
                     Canvas.GetTop(Joueur) + vitesseJ
                 ));
             }
-            if (haut && Canvas.GetTop(Joueur) > 0)
+
+            if (haut)
             {
                 Canvas.SetTop(Joueur, Math.Max(
                     0,
