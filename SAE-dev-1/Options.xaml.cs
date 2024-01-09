@@ -15,6 +15,7 @@ namespace SAE_dev_1
             InitializeComponent();
             this.mainWindow = mainWindow;
             this.parent = parent;
+            comboboxTouches.SelectedIndex = mainWindow.combinaisonTouches;
         }
 
         private void btnAnnuler_Click(object sender, RoutedEventArgs e)
@@ -22,6 +23,7 @@ namespace SAE_dev_1
             (parent == null
                 ? mainWindow
                 : parent).Show();
+            mainWindow.FocusCanvas();
             Close();
         }
 
@@ -32,6 +34,7 @@ namespace SAE_dev_1
             (parent == null
                 ? mainWindow
                 : parent).Show();
+            mainWindow.FocusCanvas();
             Close();
         }
     }

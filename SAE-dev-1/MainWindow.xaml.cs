@@ -133,6 +133,11 @@ namespace SAE_dev_1
             });
         }
 
+        public void FocusCanvas()
+        {
+            CanvasJeux.Focus();
+        }
+
         #region Discord
 
         private void InitialiserDiscord()
