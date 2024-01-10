@@ -19,23 +19,29 @@ namespace SAE_dev_1
     {
         private static readonly long TAILLE_TUILE = 60;
 
+        private static readonly int ZINDEX_PAUSE = 1000;
+        private static readonly int ZINDEX_HUD = 500;
+        private static readonly int ZINDEX_JOUEUR = 100;
+        private static readonly int ZINDEX_ENTITES = 75;
+        private static readonly int ZINDEX_ITEMS = 50;
+        private static readonly int ZINDEX_OBJETS = 25;
+        private static readonly int ZINDEX_TERRAIN = 1;
+
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
         //personnage
-        private int vitesseJ = 8;
-        private int vieJ = 5;
+        private int vitesseJoueur = 8;
+        private int vieJoueur = 5;
         private int degat = 1;
-        private int vitesseE = 5;
+        private int vitesseEnnemis = 5;
         private bool droite, gauche, bas, haut;
-        private int imageapparence = 0;
+        private int apparenceJoueur = 0;
 
         //piece
         private int nombrePiece = 0;
         private int nbPieceTerrain = 0;
         List<Rectangle> pieces = new List<Rectangle>();
         List<System.Windows.Rect> rPiece = new List<System.Windows.Rect>();
-
-
 
         private int carteActuelle = 0;
 
@@ -235,9 +241,9 @@ namespace SAE_dev_1
             };
 
             joueur.Fill = textureJoueurFace[0];
+            Canvas.SetZIndex(joueur, ZINDEX_JOUEUR);
 
             fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
-
 
             pieceIcone = new Rectangle()
             {
@@ -266,16 +272,17 @@ namespace SAE_dev_1
 
             RenderOptions.SetBitmapScalingMode(pieceIcone, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetEdgeMode(pieceIcone, EdgeMode.Aliased);
+            Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
             Canvas.SetLeft(pieceIcone, CanvasJeux.Width - pieceIcone.Width - 5);
             Canvas.SetTop(pieceIcone, -5 - pieceIcone.Height);
             CanvasJeux.Children.Add(pieceIcone);
 
+            Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
             Canvas.SetLeft(pieceNombre, CanvasJeux.Width - pieceIcone.Width - 5 - pieceNombre.Width);
             Canvas.SetTop(pieceNombre, -5 - pieceNombre.Height);
             CanvasJeux.Children.Add(pieceNombre);
 
             coeurs = new Rectangle[5];
-
             for (int i = 0; i < coeurs.Length; i++)
             {
                 coeurs[i] = new Rectangle()
@@ -287,11 +294,11 @@ namespace SAE_dev_1
 
                 RenderOptions.SetBitmapScalingMode(coeurs[i], BitmapScalingMode.NearestNeighbor);
                 RenderOptions.SetEdgeMode(coeurs[i], EdgeMode.Aliased);
+                Canvas.SetZIndex(coeurs[i], ZINDEX_HUD);
                 Canvas.SetLeft(coeurs[i], i * 35 + 5);
                 Canvas.SetTop(coeurs[i], -5 - coeurs[i].Height);
                 CanvasJeux.Children.Add(coeurs[i]);
             }
-
 
             fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
 
@@ -317,6 +324,7 @@ namespace SAE_dev_1
         {
             string[,] carte = Cartes.CARTES[carteActuelle];
 
+            // Parcourir toutes les tuiles de la carte
             for (int y = 0; y < carte.GetLength(0); y++)
             {
                 for (int x = 0; x < carte.GetLength(1); x++)
@@ -335,6 +343,7 @@ namespace SAE_dev_1
 
                     if (regexTextureMur.IsMatch(textureTuile))
                     {
+                        // La tuile est un mur
                         tuileHitbox = new Rect()
                         {
                             X = x * TAILLE_TUILE,
@@ -391,6 +400,7 @@ namespace SAE_dev_1
                     }
                     else if (regexTextureChemin.IsMatch(textureTuile))
                     {
+                        // La tuile est un chemin
                         Match correspondance = regexTextureChemin.Match(textureTuile);
                         string type = correspondance.Groups[1].Value;
                         string orientation = correspondance.Groups[2].Value;
@@ -427,6 +437,7 @@ namespace SAE_dev_1
                             case "herbe":
                                 fondTuile = textureHerbe;
 
+                                // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
                                     CenterX = 8,
@@ -437,6 +448,7 @@ namespace SAE_dev_1
                             case "chemin":
                                 fondTuile = textureChemin;
 
+                                // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
                                     CenterX = 8,
@@ -452,13 +464,14 @@ namespace SAE_dev_1
 
                     tuile.Fill = fondTuile;
 
-                    Panel.SetZIndex(tuile, 1);
+                    Panel.SetZIndex(tuile, ZINDEX_TERRAIN);
                     Canvas.SetTop(tuile, y * TAILLE_TUILE);
                     Canvas.SetLeft(tuile, x * TAILLE_TUILE);
                     CanvasJeux.Children.Add(tuile);
                 }
             }
 
+            // Ajouter les objets de la carte
             if (Cartes.OBJECTS_CARTES[carteActuelle] != null)
                 foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
                 {
@@ -495,6 +508,7 @@ namespace SAE_dev_1
                         Height = hauteurObjet * MainWindow.TAILLE_TUILE,
                     };
 
+                    // Rotation aléatoire de l'objet
                     if (rotationObjet == null)
                     {
                         Random aleatoire = new Random();
@@ -512,7 +526,7 @@ namespace SAE_dev_1
                     }
 
                     rectangleObjet.Fill = texture;
-                    Panel.SetZIndex(rectangleObjet, 50);
+                    Panel.SetZIndex(rectangleObjet, ZINDEX_OBJETS);
                     Canvas.SetLeft(rectangleObjet, positionX * MainWindow.TAILLE_TUILE);
                     Canvas.SetTop(rectangleObjet, positionY * MainWindow.TAILLE_TUILE);
                     CanvasJeux.Children.Add(rectangleObjet);
@@ -537,15 +551,17 @@ namespace SAE_dev_1
             chargement.Visibility = Visibility.Visible;
             while (chargement.Opacity < 1)
             {
-                chargement.Opacity += 0.2;
-                await Task.Delay(TimeSpan.FromMilliseconds(150));
+                chargement.Opacity += 0.05;
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
 
             CanvasJeux.Children.Clear();
             hitboxTerrain.Clear();
             hitboxObjets.Clear();
             carteActuelle = nouvelleCarte;
+
             GenererCarte();
+
             CanvasJeux.Children.Add(joueur);
             Canvas.SetTop(joueur, apparitionY);
             Canvas.SetLeft(joueur, apparitionX);
@@ -563,8 +579,8 @@ namespace SAE_dev_1
             chargement.Opacity = 1;
             while (chargement.Opacity > 0)
             {
-                chargement.Opacity -= 0.2;
-                await Task.Delay(TimeSpan.FromMilliseconds(150));
+                chargement.Opacity -= 0.05;
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
 
             minuteurJeu.Start();
@@ -575,22 +591,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = true;
-                imageapparence = 1;
+                apparenceJoueur = 1;
             }
             if (e.Key == touches[combinaisonTouches, 1])
             {
                 droite = true;
-                imageapparence = 1;
+                apparenceJoueur = 1;
             }
             if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = true;
-                imageapparence = 1;
+                apparenceJoueur = 1;
             }
             if (e.Key == touches[combinaisonTouches, 3])
             {
                 bas = true;
-                imageapparence = 1;
+                apparenceJoueur = 1;
             }
 
             if (e.Key == Key.L)
@@ -659,7 +675,6 @@ namespace SAE_dev_1
                 haut = false;
             }
 
-
             if (e.Key == Key.Escape)
             {
                 jeuEnPause = !jeuEnPause;
@@ -680,9 +695,8 @@ namespace SAE_dev_1
 
         public void CreeEnemisCC(int nombre, string type)
         {
-            int total = nombre;
-            Random endroit = new Random();
-            for (int i = 0; i < total; i++)
+            Random aleatoire = new Random();
+            for (int i = 0; i < nombre; i++)
             {
                 //ImageBrush apparenceEnemi = new ImageBrush();
                 Rectangle nouveauxEnnemy = new Rectangle
@@ -693,9 +707,9 @@ namespace SAE_dev_1
 
                     Fill = Brushes.Red
                 };
-                Canvas.SetZIndex(nouveauxEnnemy, 75);
-                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
-                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + endroit.Next(500));
+                Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
+                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + aleatoire.Next(200));
+                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500));
                 CanvasJeux.Children.Add(nouveauxEnnemy);
                 //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
@@ -703,22 +717,22 @@ namespace SAE_dev_1
 
         public void CreePiece()
         {
-            Random endroit = new Random();
+            Random aleatoire = new Random();
             Rectangle Piece = new Rectangle
             {
-                Tag = "object",
+                Tag = "objet",
                 Height = 20,
                 Width = 20,
                 Fill = texturePiece
             };
-            Canvas.SetZIndex(Piece, 25);
-            Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
-            Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition) + endroit.Next(200));
+            Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
+            Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition) + aleatoire.Next(200));
+            Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition) + aleatoire.Next(200));
             CanvasJeux.Children.Add(Piece);
             pieces.Add(Piece);
 
             nbPieceTerrain++;
-            System.Windows.Rect piece = new System.Windows.Rect
+            Rect piece = new Rect
             {
                 X = Canvas.GetLeft(Piece),
                 Y = Canvas.GetTop(Piece),
@@ -738,37 +752,40 @@ namespace SAE_dev_1
 
         private void Deplacement()
         {
+            // Ne rien faire si les touches gauche et droite sont appuyées simultanément
             if ((gauche || droite) && !(gauche && droite))
             {
                 if (gauche)
                 {
+                    // Joueur va à gauche
                     Canvas.SetLeft(joueur, Math.Max(
                         0,
-                        Canvas.GetLeft(joueur) - vitesseJ
+                        Canvas.GetLeft(joueur) - vitesseJoueur
                     ));
-                    joueur.Fill = textureJoueurGauche[imageapparence];
-                    imageapparence++;
-                    if (imageapparence > 2)
+                    joueur.Fill = textureJoueurGauche[apparenceJoueur];
+                    apparenceJoueur++;
+                    if (apparenceJoueur > 2)
                     {
-                        imageapparence = 0;
+                        apparenceJoueur = 0;
                     }
-
                 }
                 else
                 {
+                    // Joueur va à droite
                     Canvas.SetLeft(joueur, Math.Min(
                         CanvasJeux.Width - joueur.Width,
-                        Canvas.GetLeft(joueur) + vitesseJ
+                        Canvas.GetLeft(joueur) + vitesseJoueur
                     ));
-                    joueur.Fill = textureJoueurDroite[imageapparence];
-                    imageapparence++;
-                    if (imageapparence > 2)
+                    joueur.Fill = textureJoueurDroite[apparenceJoueur];
+                    apparenceJoueur++;
+                    if (apparenceJoueur > 2)
                     {
-                        imageapparence = 0;
+                        apparenceJoueur = 0;
                     }
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
 
+                // Vérifier la collision avec les objets
                 foreach (Rect terrain in hitboxTerrain)
                 {
                     if (terrain.IntersectsWith(hitboxJoueur))
@@ -782,6 +799,7 @@ namespace SAE_dev_1
                         break;
                     }
                 }
+                // Vérifier la collision avec le terrain
                 foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
                 {
                     if (objet.Item1.IntersectsWith(hitboxJoueur))
@@ -799,31 +817,35 @@ namespace SAE_dev_1
                 }
             }
 
+            // Ne rien faire si les touches haut et bas sont appuyées simultanément
             if ((bas || haut) && !(bas && haut))
             {
                 if (bas)
                 {
+                    // Joueur va en bas
                     Canvas.SetTop(joueur, Math.Min(
                         CanvasJeux.Height - joueur.Height,
-                        Canvas.GetTop(joueur) + vitesseJ
+                        Canvas.GetTop(joueur) + vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurFace[0];
                 }
                 else
                 {
+                    // Joueur va en haut
                     Canvas.SetTop(joueur, Math.Max(
                         0,
-                        Canvas.GetTop(joueur) - vitesseJ
+                        Canvas.GetTop(joueur) - vitesseJoueur
                     ));
-                    joueur.Fill = textureJoueurDos[imageapparence];
-                    imageapparence++;
-                    if (imageapparence > 2)
+                    joueur.Fill = textureJoueurDos[apparenceJoueur];
+                    apparenceJoueur++;
+                    if (apparenceJoueur > 2)
                     {
-                        imageapparence = 0;
+                        apparenceJoueur = 0;
                     }
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
+                // Vérifier la collision avec les objets
                 foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
                 {
                     if (objet.Item1.IntersectsWith(hitboxJoueur))
@@ -839,6 +861,7 @@ namespace SAE_dev_1
                         break;
                     }
                 }
+                // Vérifier la collision avec le terrain
                 foreach (Rect terrain in hitboxTerrain)
                 {
                     if (terrain.IntersectsWith(hitboxJoueur))
@@ -854,10 +877,6 @@ namespace SAE_dev_1
                 }
             }
 
-            //if (hitboxJoueur.IntersectsWith(hit))
-            //{
-
-            //}
             if (nbPieceTerrain > 0)
             {
                 for (int i = 0; i < nbPieceTerrain; i++)
@@ -872,10 +891,7 @@ namespace SAE_dev_1
                         rPiece.Remove(rPiece[i]);
                     }
                 }
-
-
             }
-
         }
 
         #endregion
