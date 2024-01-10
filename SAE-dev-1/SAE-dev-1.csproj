@@ -13,11 +13,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ressources\icone.png" />
+    <Resource Include="ressources\icone.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ressources\buisson.png">
+    <None Update="ressources\hud\coeur.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\objets\buisson.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\cartes\maison.png">
@@ -29,31 +34,31 @@
     <None Update="ressources\character.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\chemin-herbe-I.png">
+    <None Update="ressources\terrain\chemin-herbe-I.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\chemin-herbe-L.png">
+    <None Update="ressources\terrain\chemin-herbe-L.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\chemin-herbe-U.png">
+    <None Update="ressources\terrain\chemin-herbe-U.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\chemin.png">
+    <None Update="ressources\terrain\chemin.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\coeur_plein.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\coeur_vide.png">
+    <None Update="ressources\hud\coeur_vide.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\fenetre.png">
+    <None Update="ressources\terrain\fenetre.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\font.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\herbe.png">
+    <None Update="ressources\terrain\herbe.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\Inner.png">
@@ -62,10 +67,10 @@
     <None Update="ressources\log.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\mur_angle.png">
+    <None Update="ressources\terrain\mur_angle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\mur_droit.png">
+    <None Update="ressources\terrain\mur_droit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\NPC_test.png">
@@ -77,13 +82,46 @@
     <None Update="ressources\Overworld.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\piece.png">
+    <None Update="ressources\pause.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\planches.png">
+    <None Update="ressources\hud\piece.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\porte.png">
+    <None Update="ressources\terrain\planches.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\objets\porte.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteD1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteD2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteD3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteG1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteG2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-coteG3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-dos1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-dos2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-dos3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-face1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ressources\tilesets\cave.png">

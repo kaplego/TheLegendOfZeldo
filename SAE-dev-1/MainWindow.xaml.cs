@@ -27,7 +27,7 @@ namespace SAE_dev_1
         private int degat = 1;
         private int vitesseE = 5;
         private bool droite, gauche, bas, haut;
-        private int imageapparence = 1;
+        private int imageapparence = 0;
 
         //piece
         private int nombrePiece = 0;
@@ -87,29 +87,32 @@ namespace SAE_dev_1
 
         // Terrain
 
-        private BitmapImage textureMurDroit;
-        private BitmapImage textureMurAngle;
-        private BitmapImage texturePlanches;
-        private BitmapImage textureHerbe;
-        private BitmapImage textureChemin;
-        private BitmapImage textureCheminI;
-        private BitmapImage textureCheminL;
-        private BitmapImage textureCheminU;
+        private ImageBrush textureMurDroit = new ImageBrush();
+        private ImageBrush textureMurAngle = new ImageBrush();
+        private ImageBrush texturePlanches = new ImageBrush();
+        private ImageBrush textureHerbe = new ImageBrush();
+        private ImageBrush textureChemin = new ImageBrush();
+        private ImageBrush textureCheminI = new ImageBrush();
+        private ImageBrush textureCheminL = new ImageBrush();
+        private ImageBrush textureCheminU = new ImageBrush();
 
         // Objets
 
-        private BitmapImage texturePorte;
-        private BitmapImage textureBuisson;
+        private ImageBrush texturePorte = new ImageBrush();
+        private ImageBrush textureBuisson = new ImageBrush();
 
         // HUD
 
-        private BitmapImage texturePiece;
+        private ImageBrush texturePiece = new ImageBrush();
+        private ImageBrush textureCoeur = new ImageBrush();
+        private ImageBrush textureCoeurVide = new ImageBrush();
 
-        //Personnage
-        ImageBrush joueurAppFace = new ImageBrush();
-        ImageBrush joueurAppCoteD = new ImageBrush();
-        ImageBrush joueurAppCoteG = new ImageBrush();
-        ImageBrush joueurAppDos = new ImageBrush();
+        //Personnages
+
+        private ImageBrush[] textureJoueurFace;
+        private ImageBrush[] textureJoueurDos;
+        private ImageBrush[] textureJoueurDroite;
+        private ImageBrush[] textureJoueurGauche;
 
         #endregion Textures
 
@@ -117,6 +120,8 @@ namespace SAE_dev_1
 
         private Rectangle pieceIcone;
         private Label pieceNombre;
+
+        private Rectangle[] coeurs;
 
         #endregion HUD
 
@@ -139,42 +144,106 @@ namespace SAE_dev_1
                 Y = Canvas.GetTop(joueur)
             };
 
-            fenetreInitialisation.Chargement(5, "Chargement des textures de terrain...");
+            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures de terrain...");
 
-            textureMurDroit = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_droit.png"));
-            textureMurAngle = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\mur_angle.png"));
-            texturePlanches = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\planches.png"));
-            textureHerbe = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\herbe.png"));
-            textureChemin = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin.png"));
-            textureCheminI = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-I.png"));
-            textureCheminL = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-L.png"));
-            textureCheminU = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-U.png"));
+            textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
+            textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
+            texturePlanches.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\planches.png"));
+            textureHerbe.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\herbe.png"));
+            textureChemin.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin.png"));
+            textureCheminI.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-I.png"));
+            textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
+            textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(24, "Chargement des textures d'objets...");
+            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures d'objets...");
 
-            texturePorte = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\porte.png"));
-            textureBuisson = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\buisson.png"));
+            texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
+            textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
 
-            fenetreInitialisation.Chargement(43, "Chargement des textures du HUD...");
+            fenetreInitialisation.Chargement(3 / 7, "Chargement des textures du HUD...");
 
-            texturePiece = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\piece.png"));
+            texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
+            textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
+            textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(62, "Chargement du HUD...");
+            fenetreInitialisation.Chargement(4 / 7, "Chargement des textures des personnages...");
 
-            joueurAppFace.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-face1.png"));
+            textureJoueurFace = new ImageBrush[1]
+            {
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face1.png")),
+                    Stretch = Stretch.Uniform
+                }
+            };
 
+            textureJoueurDos = new ImageBrush[3]
+            {
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos1.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos2.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos3.png")),
+                    Stretch = Stretch.Uniform
+                }
+            };
 
+            textureJoueurGauche = new ImageBrush[3]
+            {
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG1.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG2.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG3.png")),
+                    Stretch = Stretch.Uniform
+                }
+            };
 
-            joueur.Fill = joueurAppFace;
+            textureJoueurDroite = new ImageBrush[3]
+            {
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD1.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD2.png")),
+                    Stretch = Stretch.Uniform
+                },
+                new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD3.png")),
+                    Stretch = Stretch.Uniform
+                }
+            };
 
-            ImageBrush imagePiece = new ImageBrush();
-            imagePiece.ImageSource = texturePiece;
+            joueur.Fill = textureJoueurFace[0];
+
+            fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
+
 
             pieceIcone = new Rectangle()
             {
                 Width = 30,
                 Height = 30,
-                Fill = imagePiece
+                Fill = texturePiece
             };
 
             pieceNombre = new Label()
@@ -205,7 +274,26 @@ namespace SAE_dev_1
             Canvas.SetTop(pieceNombre, -5 - pieceNombre.Height);
             CanvasJeux.Children.Add(pieceNombre);
 
-            fenetreInitialisation.Chargement(81, "Génération de la carte");
+            coeurs = new Rectangle[5];
+
+            for (int i = 0; i < coeurs.Length; i++)
+            {
+                coeurs[i] = new Rectangle()
+                {
+                    Width = 30,
+                    Height = 30,
+                    Fill = textureCoeur
+                };
+
+                RenderOptions.SetBitmapScalingMode(coeurs[i], BitmapScalingMode.NearestNeighbor);
+                RenderOptions.SetEdgeMode(coeurs[i], EdgeMode.Aliased);
+                Canvas.SetLeft(coeurs[i], i * 35 + 5);
+                Canvas.SetTop(coeurs[i], -5 - coeurs[i].Height);
+                CanvasJeux.Children.Add(coeurs[i]);
+            }
+
+
+            fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
 
             GenererCarte();
 
@@ -262,7 +350,7 @@ namespace SAE_dev_1
                         if (orientation == "n" || orientation == "s")
                         {
                             // Nord / Sud
-                            fondTuile.ImageSource = textureMurDroit;
+                            fondTuile = textureMurDroit;
                             tuile.LayoutTransform = new RotateTransform()
                             {
                                 CenterX = 8,
@@ -273,7 +361,7 @@ namespace SAE_dev_1
                         else if (orientation == "e" || orientation == "o")
                         {
                             // Est / Ouest
-                            fondTuile.ImageSource = textureMurDroit;
+                            fondTuile = textureMurDroit;
 
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -286,7 +374,7 @@ namespace SAE_dev_1
                         else
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
-                            fondTuile.ImageSource = textureMurAngle;
+                            fondTuile = textureMurAngle;
 
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -310,13 +398,13 @@ namespace SAE_dev_1
                         switch (type)
                         {
                             case "I":
-                                fondTuile.ImageSource = textureCheminI;
+                                fondTuile = textureCheminI;
                                 break;
                             case "L":
-                                fondTuile.ImageSource = textureCheminL;
+                                fondTuile = textureCheminL;
                                 break;
                             case "U":
-                                fondTuile.ImageSource = textureCheminU;
+                                fondTuile = textureCheminU;
                                 break;
                         }
 
@@ -334,10 +422,10 @@ namespace SAE_dev_1
                         switch (textureTuile)
                         {
                             case "planches":
-                                fondTuile.ImageSource = texturePlanches;
+                                fondTuile = texturePlanches;
                                 break;
                             case "herbe":
-                                fondTuile.ImageSource = textureHerbe;
+                                fondTuile = textureHerbe;
 
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
@@ -347,7 +435,7 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile.ImageSource = textureChemin;
+                                fondTuile = textureChemin;
 
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
@@ -391,13 +479,13 @@ namespace SAE_dev_1
                             largeurObjet = 1;
                             hauteurObjet = 1;
 
-                            texture.ImageSource = texturePorte;
+                            texture = texturePorte;
                             break;
                         case "buisson":
                             largeurObjet = 1;
                             hauteurObjet = 1;
 
-                            texture.ImageSource = textureBuisson;
+                            texture = textureBuisson;
                             break;
                     }
 
@@ -466,6 +554,11 @@ namespace SAE_dev_1
 
             CanvasJeux.Children.Add(pieceIcone);
             CanvasJeux.Children.Add(pieceNombre);
+
+            foreach (Rectangle coeur in coeurs)
+            {
+                CanvasJeux.Children.Add(coeur);
+            }
 
             chargement.Opacity = 1;
             while (chargement.Opacity > 0)
@@ -611,19 +704,17 @@ namespace SAE_dev_1
         public void CreePiece()
         {
             Random endroit = new Random();
-            ImageBrush apparencePiece = new ImageBrush();
             Rectangle Piece = new Rectangle
             {
                 Tag = "object",
                 Height = 20,
                 Width = 20,
-                Fill = apparencePiece
+                Fill = texturePiece
             };
             Canvas.SetZIndex(Piece, 25);
             Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
             Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition) + endroit.Next(200));
             CanvasJeux.Children.Add(Piece);
-            apparencePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\piece.png"));
             pieces.Add(Piece);
 
             nbPieceTerrain++;
@@ -655,13 +746,11 @@ namespace SAE_dev_1
                         0,
                         Canvas.GetLeft(joueur) - vitesseJ
                     ));
-                    joueur.Width = 60;
-                    joueurAppCoteG.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-coteG"+imageapparence+".png"));
+                    joueur.Fill = textureJoueurGauche[imageapparence];
                     imageapparence++;
-                    joueur.Fill = joueurAppCoteG;
-                    if (imageapparence > 3)
+                    if (imageapparence > 2)
                     {
-                        imageapparence = 1;
+                        imageapparence = 0;
                     }
 
                 }
@@ -671,13 +760,11 @@ namespace SAE_dev_1
                         CanvasJeux.Width - joueur.Width,
                         Canvas.GetLeft(joueur) + vitesseJ
                     ));
-                    joueur.Width = 60;
-                    joueurAppCoteD.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-coteD"+imageapparence+".png"));
+                    joueur.Fill = textureJoueurDroite[imageapparence];
                     imageapparence++;
-                    joueur.Fill = joueurAppCoteD;
-                    if (imageapparence > 3)
+                    if (imageapparence > 2)
                     {
-                        imageapparence = 1;
+                        imageapparence = 0;
                     }
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
@@ -720,9 +807,7 @@ namespace SAE_dev_1
                         CanvasJeux.Height - joueur.Height,
                         Canvas.GetTop(joueur) + vitesseJ
                     ));
-                    hitboxJoueur.Y = Canvas.GetLeft(joueur);
-                    joueur.Fill = joueurAppFace;
-                    joueur.Width = 80;
+                    joueur.Fill = textureJoueurFace[0];
                 }
                 else
                 {
@@ -730,13 +815,11 @@ namespace SAE_dev_1
                         0,
                         Canvas.GetTop(joueur) - vitesseJ
                     ));
-                    joueur.Width = 80;
-                    joueurAppDos.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-Dos"+imageapparence+".png"));
+                    joueur.Fill = textureJoueurDos[imageapparence];
                     imageapparence++;
-                    joueur.Fill = joueurAppDos;
-                    if (imageapparence > 3)
+                    if (imageapparence > 2)
                     {
-                        imageapparence = 1;
+                        imageapparence = 0;
                     }
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
