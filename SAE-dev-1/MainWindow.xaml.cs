@@ -108,14 +108,8 @@ namespace SAE_dev_1
         //Personnage
         ImageBrush joueurAppFace = new ImageBrush();
         ImageBrush joueurAppCoteD = new ImageBrush();
-        ImageBrush joueurAppCoteDAvance = new ImageBrush();
-        ImageBrush joueurAppCoteDAvance2 = new ImageBrush();
         ImageBrush joueurAppCoteG = new ImageBrush();
-        ImageBrush joueurAppCoteGAvance = new ImageBrush();
-        ImageBrush joueurAppCoteGAvance2 = new ImageBrush();
         ImageBrush joueurAppDos = new ImageBrush();
-        ImageBrush joueurAppDosAvance = new ImageBrush();
-        ImageBrush joueurAppDosAvance2 = new ImageBrush();
 
         #endregion Textures
 
