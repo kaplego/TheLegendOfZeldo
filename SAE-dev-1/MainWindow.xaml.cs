@@ -119,12 +119,12 @@ namespace SAE_dev_1
 
         #endregion Textures
 
-        #region HUB
+        #region HUD
 
         private Rectangle pieceIcone;
         private Label pieceNombre;
 
-        #endregion HUB
+        #endregion HUD
 
         public MainWindow()
         {
@@ -425,7 +425,7 @@ namespace SAE_dev_1
                         {
                             CenterX = largeurObjet * 16 / 2,
                             CenterY = hauteurObjet * 16 / 2,
-                            Angle = (int) rotationObjet
+                            Angle = (int)rotationObjet
                         };
                     }
 
@@ -571,7 +571,7 @@ namespace SAE_dev_1
             {
                 haut = false;
             }
-            
+
 
             if (e.Key == Key.Escape)
             {
@@ -603,7 +603,7 @@ namespace SAE_dev_1
                     Tag = "enemis," + type,
                     Height = 80,
                     Width = 80,
-                    
+
                     Fill = Brushes.Red
                 };
                 Canvas.SetZIndex(nouveauxEnnemy, 75);
