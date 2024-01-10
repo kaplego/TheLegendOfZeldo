@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="ressources\buisson.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\cartes\maison.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

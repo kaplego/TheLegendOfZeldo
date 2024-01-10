@@ -75,7 +75,7 @@ namespace SAE_dev_1
 
         private Rect hitboxJoueur;
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
-        private List<(System.Windows.Rect, Action<MainWindow>)> hitboxObjets = new List<(System.Windows.Rect, Action<MainWindow>)>();
+        private List<(System.Windows.Rect, Action<MainWindow>?)> hitboxObjets = new List<(System.Windows.Rect, Action<MainWindow>?)>();
 
         // RegExps Textures
 
@@ -94,6 +94,7 @@ namespace SAE_dev_1
         private BitmapImage textureCheminU;
 
         private BitmapImage texturePorte;
+        private BitmapImage textureBuisson;
 
         public MainWindow()
         {
@@ -128,6 +129,7 @@ namespace SAE_dev_1
             fenetreInitialisation.Chargement(35, "Chargement des textures d'objets...");
 
             texturePorte = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\porte.png"));
+            textureBuisson = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\buisson.png"));
 
             fenetreInitialisation.Chargement(65, "Génération de la carte");
 
@@ -296,13 +298,13 @@ namespace SAE_dev_1
             }
 
             if (Cartes.OBJECTS_CARTES[carteActuelle] != null)
-                foreach ((string, int, int, int, Action<MainWindow>) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
+                foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
                 {
                     string nomObjet = objet.Item1;
                     int positionX = objet.Item2;
                     int positionY = objet.Item3;
-                    int rotationObjet = objet.Item4;
-                    Action<MainWindow> action = objet.Item5;
+                    int? rotationObjet = objet.Item4;
+                    Action<MainWindow>? action = objet.Item5;
 
                     int largeurObjet = 0,
                         hauteurObjet = 0;
@@ -317,6 +319,12 @@ namespace SAE_dev_1
 
                             texture.ImageSource = texturePorte;
                             break;
+                        case "buisson":
+                            largeurObjet = 1;
+                            hauteurObjet = 1;
+
+                            texture.ImageSource = textureBuisson;
+                            break;
                     }
 
                     Rectangle rectangleObjet = new Rectangle()
@@ -325,13 +333,19 @@ namespace SAE_dev_1
                         Height = hauteurObjet * MainWindow.TAILLE_TUILE,
                     };
 
+                    if (rotationObjet == null)
+                    {
+                        Random aleatoire = new Random();
+                        rotationObjet = aleatoire.Next(4) * 90;
+                    }
+
                     if (rotationObjet != 0)
                     {
                         rectangleObjet.LayoutTransform = new RotateTransform()
                         {
                             CenterX = largeurObjet * 16 / 2,
                             CenterY = hauteurObjet * 16 / 2,
-                            Angle = rotationObjet
+                            Angle = (int) rotationObjet
                         };
                     }
 
@@ -579,7 +593,7 @@ namespace SAE_dev_1
                         break;
                     }
                 }
-                foreach ((Rect, Action<MainWindow>) objet in hitboxObjets)
+                foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
                 {
                     if (objet.Item1.IntersectsWith(hitboxJoueur))
                     {
@@ -589,7 +603,8 @@ namespace SAE_dev_1
                                 : objet.Item1.X - joueur.Width - 1
                         );
                         hitboxJoueur.X = Canvas.GetLeft(joueur);
-                        objet.Item2(this);
+                        if (objet.Item2 != null)
+                            objet.Item2(this);
                         break;
                     }
                 }
@@ -614,17 +629,18 @@ namespace SAE_dev_1
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
-                foreach ((Rect, Action<MainWindow>) objet in hitboxObjets)
+                foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
                 {
                     if (objet.Item1.IntersectsWith(hitboxJoueur))
                     {
-                        Canvas.SetLeft(
+                        Canvas.SetTop(
                             joueur,
-                            gauche ? objet.Item1.X + objet.Item1.Width + 1
-                                : objet.Item1.X - joueur.Width - 1
+                            bas ? objet.Item1.Y - joueur.Height - 1
+                                : objet.Item1.Y + objet.Item1.Height + 1
                         );
-                        hitboxJoueur.X = Canvas.GetLeft(joueur);
-                        objet.Item2(this);
+                        hitboxJoueur.Y = Canvas.GetTop(joueur);
+                        if (objet.Item2 != null)
+                            objet.Item2(this);
                         break;
                     }
                 }

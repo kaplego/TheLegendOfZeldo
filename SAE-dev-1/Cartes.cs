@@ -485,9 +485,10 @@ namespace SAE_dev_1
         };
 
         //                           nom     x    y    rotation
-        public static readonly List<(string, int, int, int, Action<MainWindow>)>?[] OBJECTS_CARTES = new List<(string, int, int, int, Action<MainWindow>)>?[]
+        // Si rotation = null, rotation est aléatoire
+        public static readonly List<(string, int, int, int?, Action<MainWindow>?)>?[] OBJECTS_CARTES = new List<(string, int, int, int?, Action<MainWindow>?)>?[]
         {
-            new List<(string, int, int, int, Action<MainWindow>)>
+            new List<(string, int, int, int?, Action<MainWindow>?)>
             {
                 ("porte", 10, 9, 180, (mainWindow) =>
                     {
@@ -495,7 +496,10 @@ namespace SAE_dev_1
                     }
                 )
             },
-            null
+            new List<(string, int, int, int?, Action<MainWindow>?)>
+            {
+                ("buisson", 3, 0, null, null)
+            }
         };
     }
 }
