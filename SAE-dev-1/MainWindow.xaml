@@ -13,7 +13,8 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     WindowState="Maximized"
-    mc:Ignorable="d" Background="#FF090300">
+    mc:Ignorable="d" Background="#FF090300"
+    Cursor="None">
     <Grid>
         <Rectangle
             x:Name="chargement"
@@ -58,70 +59,84 @@
             <Grid.Background>
                 <SolidColorBrush Color="#FF2F2F2F" Opacity="0.8"/>
             </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
             <Label x:Name="labelPause"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             FontSize="36"
-            Foreground="White" Margin="0,20,0,0">
+            Foreground="White" Margin="0,20,0,0" Grid.ColumnSpan="2">
                 PAUSE
             </Label>
-            <Label x:Name="titreDuJeu"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="110"
-            Foreground="White" Margin="0,0,0,135">
+            <TextBlock
+                x:Name="titreDuJeu"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="110"
+                Foreground="White"
+                Margin="0,-150,0,0"
+                Padding="80,0,80,0"
+                Grid.Column="1"
+                TextWrapping="WrapWithOverflow">
                 La Légende de Zeldo
-            </Label>
+            </TextBlock>
             <Button
-            x:Name="btnReprendre"
-            Width="300"
-            Height="70"
-            Margin="0,0,650,100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            Background="DimGray"
-            Content="Reprendre"
-            FontSize="36"
-            Foreground="White"
-            Click="btnReprendre_Click">
+                x:Name="btnReprendre"
+                Width="400"
+                Height="70"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="DimGray"
+                Content="Jouer"
+                FontSize="36"
+                Foreground="White"
+                Click="btnReprendre_Click" Margin="0,0,0,250"
+                HorizontalContentAlignment="Left"
+                Padding="30,5,30,5">
                 <Button.Resources>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8" />
+                        <Setter Property="CornerRadius" Value="0,8,8,0" />
                     </Style>
                 </Button.Resources>
             </Button>
             <Button
                 x:Name="btnOptions"
-                Width="300"
-                Height="70"
-                Margin="0,0,0,100"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
+                Width="{Binding Width, ElementName=btnReprendre}"
+                Height="{Binding Height, ElementName=btnReprendre}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
                 Background="DimGray"
                 Content="Options"
                 FontSize="36"
-                Foreground="White" Click="btnOptions_Click">
+                Foreground="White"
+                Click="btnOptions_Click"
+                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
+                Padding="{Binding Padding, ElementName=btnReprendre}">
                 <Button.Resources>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8" />
+                        <Setter Property="CornerRadius" Value="0,8,8,0" />
                     </Style>
                 </Button.Resources>
             </Button>
             <Button
                 x:Name="btnQuitter"
-                Width="300"
-                Height="70"
-                Margin="650,0,0,100"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
+                Width="{Binding Width, ElementName=btnReprendre}"
+                Height="{Binding Height, ElementName=btnReprendre}"
+                Margin="0,250,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
                 Background="DimGray"
                 Content="Quitter"
                 FontSize="36"
                 Foreground="White"
-                Click="btnQuitter_Click">
+                Click="btnQuitter_Click"
+                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
+                Padding="{Binding Padding, ElementName=btnReprendre}">
                 <Button.Resources>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8" />
+                        <Setter Property="CornerRadius" Value="0,8,8,0" />
                     </Style>
                 </Button.Resources>
             </Button>

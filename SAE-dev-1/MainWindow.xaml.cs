@@ -50,23 +50,23 @@ namespace SAE_dev_1
                 Key.Up,
                 Key.Down,
                 Key.E,
-                Key.R
+                Key.A
             },
             {
                 Key.Q,
                 Key.D,
                 Key.Z,
                 Key.S,
-                Key.O,
-                Key.P
+                Key.E,
+                Key.A
             },
             {
                 Key.A,
                 Key.D,
                 Key.W,
                 Key.S,
-                Key.O,
-                Key.P
+                Key.E,
+                Key.Q
             }
         };
         public int combinaisonTouches = 0;
@@ -95,16 +95,9 @@ namespace SAE_dev_1
 
         private BitmapImage texturePorte;
 
-        // Discord
-        private Discord.Discord? discord;
-        private long horodatageDebut;
-
         public MainWindow()
         {
             InitializeComponent();
-            InitialiserDiscord();
-            discord?.RunCallbacks();
-
 
             this.Hide();
 
@@ -141,67 +134,20 @@ namespace SAE_dev_1
             GenererCarte();
 
             fenetreInitialisation.Termine();
+        }
 
+        public void Demarrer()
+        {
             NBPiece.Content = nombrePiece;
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
         }
 
-        public void Demarrer()
-        {
-            horodatageDebut = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
-
-            MettreAJourActiviteDiscord(new Discord.Activity()
-            {
-                Details = $"Dans {Cartes.NOMS_CARTES[carteActuelle].ToLower()}",
-                State = $"{vieJ} PV",
-                Timestamps =
-                {
-                    Start = horodatageDebut
-                }
-            });
-        }
-
         public void FocusCanvas()
         {
             CanvasJeux.Focus();
         }
-
-        #region Discord
-
-        private void InitialiserDiscord()
-        {
-            try
-            {
-                // Essayer de lancer Discord
-                this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.NoRequireDiscord);
-            }
-            catch
-            {
-                // Discord n'est pas lancé
-                this.discord = null;
-                return;
-            }
-
-            MettreAJourActiviteDiscord(new Discord.Activity()
-            {
-                Details = "Dans le menu"
-            });
-        }
-
-        public void MettreAJourActiviteDiscord(Discord.Activity? activite)
-        {
-            if (discord == null)
-                return;
-
-            if (activite != null)
-                discord?.GetActivityManager().UpdateActivity((Discord.Activity)activite, (result) => { });
-            else
-                discord?.GetActivityManager().ClearActivity((result) => { });
-        }
-
-        #endregion Discord
 
         private void GenererCarte()
         {
@@ -437,16 +383,6 @@ namespace SAE_dev_1
                 await Task.Delay(TimeSpan.FromMilliseconds(150));
             }
 
-            MettreAJourActiviteDiscord(new Discord.Activity()
-            {
-                Details = $"Dans {Cartes.NOMS_CARTES[carteActuelle].ToLower()}",
-                State = $"{vieJ} PV",
-                Timestamps =
-                {
-                    Start = horodatageDebut
-                }
-            });
-
             minuteurJeu.Start();
         }
 
@@ -469,7 +405,7 @@ namespace SAE_dev_1
                 bas = true;
             }
 
-            if (e.Key == Key.NumPad1)
+            if (e.Key == Key.L)
             {
                 CreeEnemisCC(2, "slime");
             }
@@ -479,6 +415,7 @@ namespace SAE_dev_1
         {
             jeuEnPause = false;
             grilleMenuPause.Visibility = Visibility.Hidden;
+            this.Cursor = Cursors.None;
             minuteurJeu.Start();
             CanvasJeux.Focus();
         }
@@ -528,7 +465,7 @@ namespace SAE_dev_1
             {
                 haut = false;
             }
-            if (e.Key == Key.P)
+            if (e.Key == Key.M)
             {
                 CreePiece();
             }
@@ -539,11 +476,13 @@ namespace SAE_dev_1
                 if (jeuEnPause)
                 {
                     grilleMenuPause.Visibility = Visibility.Visible;
+                    this.Cursor = null;
                     minuteurJeu.Stop();
                 }
                 else
                 {
                     grilleMenuPause.Visibility = Visibility.Hidden;
+                    this.Cursor = Cursors.None;
                     minuteurJeu.Start();
                 }
             }
@@ -604,8 +543,6 @@ namespace SAE_dev_1
 
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
-            discord?.RunCallbacks();
-
             Deplacement();
         }
 
@@ -628,14 +565,6 @@ namespace SAE_dev_1
                     ));
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
-
-                if (gauche)
-                {
-                    Canvas.SetLeft(joueur, Math.Max(
-                        0,
-                        Canvas.GetLeft(joueur) - vitesseJ
-                    ));
-                }
 
                 foreach (Rect terrain in hitboxTerrain)
                 {

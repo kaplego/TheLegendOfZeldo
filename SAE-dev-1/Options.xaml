@@ -38,9 +38,9 @@
                 Height="30"
                 VerticalContentAlignment="Center"
                 Padding="8,3,8,3" FontSize="14">
-                <ComboBoxItem x:Name="touchesFleches" Content="Flèches directionelles ; E/R" IsSelected="True"/>
-                <ComboBoxItem x:Name="touchesZQSD" Content="Z/Q/S/D ; O/P"/>
-                <ComboBoxItem x:Name="touchesWASD" Content="W/A/S/D ; O/P"/>
+                <ComboBoxItem x:Name="touchesFleches" Content="Flèches directionelles ; E/A" IsSelected="True"/>
+                <ComboBoxItem x:Name="touchesZQSD" Content="Z/Q/S/D ; E/A"/>
+                <ComboBoxItem x:Name="touchesWASD" Content="W/A/S/D ; E/Q"/>
 
             </ComboBox>
 

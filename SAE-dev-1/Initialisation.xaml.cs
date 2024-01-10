@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace SAE_dev_1
 {
@@ -30,6 +31,10 @@ namespace SAE_dev_1
 
             chargement.Visibility = Visibility.Hidden;
             nomChargement.Visibility = Visibility.Hidden;
+
+            Grid.SetColumn(titreDuJeu, 1);
+            Grid.SetColumnSpan(titreDuJeu, 1);
+            titreDuJeu.FontSize = 130;
 
             btnJouer.Visibility = Visibility.Visible;
             btnOptions.Visibility = Visibility.Visible;
