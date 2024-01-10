@@ -200,7 +200,7 @@ namespace SAE_dev_1
 
         public void Demarrer()
         {
-            NBPiece.Content = nombrePiece;
+
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
@@ -486,6 +486,11 @@ namespace SAE_dev_1
             {
                 CreeEnemisCC(2, "slime");
             }
+
+            if (e.Key == Key.M)
+            {
+                CreePiece();
+            }
         }
 
         private void btnReprendre_Click(object sender, RoutedEventArgs e)
@@ -542,10 +547,7 @@ namespace SAE_dev_1
             {
                 haut = false;
             }
-            if (e.Key == Key.M)
-            {
-                CreePiece();
-            }
+            
 
             if (e.Key == Key.Escape)
             {
@@ -577,10 +579,12 @@ namespace SAE_dev_1
                     Tag = "enemis," + type,
                     Height = 80,
                     Width = 80,
+                    
                     Fill = Brushes.Red
                 };
+                Canvas.SetZIndex(nouveauxEnnemy, 75);
                 Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
-                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + endroit.Next(1000));
+                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + endroit.Next(500));
                 CanvasJeux.Children.Add(nouveauxEnnemy);
                 //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
@@ -589,16 +593,19 @@ namespace SAE_dev_1
         public void CreePiece()
         {
             Random endroit = new Random();
+            ImageBrush apparencePiece = new ImageBrush();
             Rectangle Piece = new Rectangle
             {
                 Tag = "object",
                 Height = 20,
                 Width = 20,
-                Fill = Brushes.Yellow
+                Fill = apparencePiece
             };
+            Canvas.SetZIndex(Piece, 25);
             Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition) + endroit.Next(200));
             Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition) + endroit.Next(200));
             CanvasJeux.Children.Add(Piece);
+            apparencePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\piece.png"));
             pieces.Add(Piece);
 
             nbPieceTerrain++;
@@ -611,9 +618,6 @@ namespace SAE_dev_1
             };
             rPiece.Add(piece);
 
-
-
-            //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/.png"));
         }
 
         #region Moteur du jeu
@@ -734,7 +738,7 @@ namespace SAE_dev_1
                     {
                         nombrePiece++;
                         nbPieceTerrain--;
-                        NBPiece.Content = nombrePiece;
+                        pieceNombre.Content = nombrePiece;
                         CanvasJeux.Children.Remove(pieces[i]);
                         pieces.Remove(pieces[i]);
                         rPiece.Remove(rPiece[i]);

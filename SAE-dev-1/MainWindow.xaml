@@ -52,8 +52,7 @@
                 VerticalAlignment="Top"
                 Stroke="White" Panel.ZIndex="100" />
             <Label Content="0" Canvas.Left="1164" Canvas.Top="10" Height="38" Width="36" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Label x:Name="NBPiece" Content="0" Canvas.Left="1084" Canvas.Top="48" Height="38" Width="57" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="1"/>
-            <Canvas x:Name="ZoneApparition" Width="651" Height="114" Canvas.Left="130" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top"></Canvas>
+            <Canvas x:Name="ZoneApparition" Width="651" Height="114" Canvas.Left="83" Canvas.Top="67" HorizontalAlignment="Left" VerticalAlignment="Top"></Canvas>
         </Canvas>
         <!--///////////////////////////////////Menu//////////////////////////////////////////-->
         <Grid x:Name="grilleMenuPause" Panel.ZIndex="1000" Visibility="Hidden">
