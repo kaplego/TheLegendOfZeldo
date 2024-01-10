@@ -17,7 +17,6 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly long DISCORD_CLIENT_ID = 1194049899059224636;
         private static readonly long TAILLE_TUILE = 60;
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
@@ -82,7 +81,9 @@ namespace SAE_dev_1
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
         private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
 
-        // Textures
+        #region Textures
+
+        // Terrain
 
         private BitmapImage textureMurDroit;
         private BitmapImage textureMurAngle;
@@ -93,8 +94,23 @@ namespace SAE_dev_1
         private BitmapImage textureCheminL;
         private BitmapImage textureCheminU;
 
+        // Objets
+
         private BitmapImage texturePorte;
         private BitmapImage textureBuisson;
+
+        // HUD
+
+        private BitmapImage texturePiece;
+
+        #endregion Textures
+
+        #region HUB
+
+        private Rectangle pieceIcone;
+        private Label pieceNombre;
+
+        #endregion HUB
 
         public MainWindow()
         {
@@ -126,12 +142,56 @@ namespace SAE_dev_1
             textureCheminL = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-L.png"));
             textureCheminU = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(35, "Chargement des textures d'objets...");
+            fenetreInitialisation.Chargement(24, "Chargement des textures d'objets...");
 
             texturePorte = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\porte.png"));
             textureBuisson = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\buisson.png"));
 
-            fenetreInitialisation.Chargement(65, "Génération de la carte");
+            fenetreInitialisation.Chargement(43, "Chargement des textures du HUD...");
+
+            texturePiece = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\piece.png"));
+
+            fenetreInitialisation.Chargement(62, "Chargement du HUD...");
+
+            ImageBrush imagePiece = new ImageBrush();
+            imagePiece.ImageSource = texturePiece;
+
+            pieceIcone = new Rectangle()
+            {
+                Width = 30,
+                Height = 30,
+                Fill = imagePiece
+            };
+
+            pieceNombre = new Label()
+            {
+                Width = 30,
+                Height = 30,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                FontSize = 24,
+                Foreground = Brushes.White,
+                Padding = new Thickness()
+                {
+                    Top = 0,
+                    Right = 0,
+                    Bottom = 0,
+                    Left = 0
+                },
+                Content = nombrePiece.ToString()
+            };
+
+            RenderOptions.SetBitmapScalingMode(pieceIcone, BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetEdgeMode(pieceIcone, EdgeMode.Aliased);
+            Canvas.SetLeft(pieceIcone, CanvasJeux.Width - pieceIcone.Width - 5);
+            Canvas.SetTop(pieceIcone, -5 - pieceIcone.Height);
+            CanvasJeux.Children.Add(pieceIcone);
+
+            Canvas.SetLeft(pieceNombre, CanvasJeux.Width - pieceIcone.Width - 5 - pieceNombre.Width);
+            Canvas.SetTop(pieceNombre, -5 - pieceNombre.Height);
+            CanvasJeux.Children.Add(pieceNombre);
+
+            fenetreInitialisation.Chargement(81, "Génération de la carte");
 
             GenererCarte();
 
@@ -389,6 +449,9 @@ namespace SAE_dev_1
             Canvas.SetLeft(joueur, apparitionX);
             hitboxJoueur.X = Canvas.GetLeft(joueur);
             hitboxJoueur.Y = Canvas.GetTop(joueur);
+
+            CanvasJeux.Children.Add(pieceIcone);
+            CanvasJeux.Children.Add(pieceNombre);
 
             chargement.Opacity = 1;
             while (chargement.Opacity > 0)

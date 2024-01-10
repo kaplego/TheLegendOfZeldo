@@ -77,6 +77,9 @@
     <None Update="ressources\Overworld.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\piece.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\planches.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
