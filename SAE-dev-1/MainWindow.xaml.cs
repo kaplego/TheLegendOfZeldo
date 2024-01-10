@@ -660,18 +660,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = false;
+                joueur.Fill = textureJoueurGauche[0];
             }
             if (e.Key == touches[combinaisonTouches, 1])
             {
                 droite = false;
+                joueur.Fill = textureJoueurDroite[0];
             }
             if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = false;
+                joueur.Fill = textureJoueurDos[0];
             }
             if (e.Key == touches[combinaisonTouches, 3])
             {
                 bas = false;
+                joueur.Fill = textureJoueurFace[0];
             }
 
             if (e.Key == touches[combinaisonTouches, 4])
