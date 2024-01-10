@@ -17,7 +17,11 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        // Constantes
+
         private static readonly long TAILLE_TUILE = 60;
+        private static readonly long TAILLE_PIECE = 20;
+        private static readonly long TAILLE_ENNEMI = 80;
 
         private static readonly int ZINDEX_PAUSE = 1000;
         private static readonly int ZINDEX_HUD = 500;
@@ -27,14 +31,23 @@ namespace SAE_dev_1
         private static readonly int ZINDEX_OBJETS = 25;
         private static readonly int ZINDEX_TERRAIN = 1;
 
+        private static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
+        private static readonly int NOMBRE_APPARENCES = 3;
+
+        private static readonly int TAILLE_ICONES = 30;
+
+        // Moteur du jeu
+
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
-        //personnage
+        // Joueur
         private int vitesseJoueur = 8;
         private int vieJoueur = 5;
         private int degat = 1;
         private int vitesseEnnemis = 5;
         private bool droite, gauche, bas, haut;
+
+        private int prochainChangementApparence = 0;
         private int apparenceJoueur = 0;
 
         //piece
@@ -247,18 +260,19 @@ namespace SAE_dev_1
 
             pieceIcone = new Rectangle()
             {
-                Width = 30,
-                Height = 30,
+                Width = TAILLE_ICONES,
+                Height = TAILLE_ICONES,
                 Fill = texturePiece
             };
 
             pieceNombre = new Label()
             {
-                Width = 30,
-                Height = 30,
+                Width = TAILLE_ICONES,
+                Height = TAILLE_ICONES,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 FontSize = 24,
+                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
                 Foreground = Brushes.White,
                 Padding = new Thickness()
                 {
@@ -273,13 +287,13 @@ namespace SAE_dev_1
             RenderOptions.SetBitmapScalingMode(pieceIcone, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetEdgeMode(pieceIcone, EdgeMode.Aliased);
             Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
-            Canvas.SetLeft(pieceIcone, CanvasJeux.Width - pieceIcone.Width - 5);
-            Canvas.SetTop(pieceIcone, -5 - pieceIcone.Height);
+            Canvas.SetLeft(pieceIcone, CanvasJeux.Width - TAILLE_ICONES - 5);
+            Canvas.SetTop(pieceIcone, -5 - TAILLE_ICONES);
             CanvasJeux.Children.Add(pieceIcone);
 
             Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
-            Canvas.SetLeft(pieceNombre, CanvasJeux.Width - pieceIcone.Width - 5 - pieceNombre.Width);
-            Canvas.SetTop(pieceNombre, -5 - pieceNombre.Height);
+            Canvas.SetLeft(pieceNombre, CanvasJeux.Width - TAILLE_ICONES - 5 - TAILLE_ICONES);
+            Canvas.SetTop(pieceNombre, -5 - TAILLE_ICONES);
             CanvasJeux.Children.Add(pieceNombre);
 
             coeurs = new Rectangle[5];
@@ -287,16 +301,16 @@ namespace SAE_dev_1
             {
                 coeurs[i] = new Rectangle()
                 {
-                    Width = 30,
-                    Height = 30,
-                    Fill = textureCoeur
+                    Width = TAILLE_ICONES,
+                    Height = TAILLE_ICONES,
+                    Fill = i > 2 ? textureCoeurVide : textureCoeur
                 };
 
                 RenderOptions.SetBitmapScalingMode(coeurs[i], BitmapScalingMode.NearestNeighbor);
                 RenderOptions.SetEdgeMode(coeurs[i], EdgeMode.Aliased);
                 Canvas.SetZIndex(coeurs[i], ZINDEX_HUD);
-                Canvas.SetLeft(coeurs[i], i * 35 + 5);
-                Canvas.SetTop(coeurs[i], -5 - coeurs[i].Height);
+                Canvas.SetLeft(coeurs[i], i * (TAILLE_ICONES + 5) + 5);
+                Canvas.SetTop(coeurs[i], -5 - TAILLE_ICONES);
                 CanvasJeux.Children.Add(coeurs[i]);
             }
 
@@ -362,8 +376,6 @@ namespace SAE_dev_1
                             fondTuile = textureMurDroit;
                             tuile.LayoutTransform = new RotateTransform()
                             {
-                                CenterX = 8,
-                                CenterY = 8,
                                 Angle = orientation == "n" ? 90 : -90
                             };
                         }
@@ -375,8 +387,6 @@ namespace SAE_dev_1
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
-                                    CenterX = 8,
-                                    CenterY = 8,
                                     Angle = 180
                                 };
                         }
@@ -388,8 +398,6 @@ namespace SAE_dev_1
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
-                                    CenterX = 8,
-                                    CenterY = 8,
                                     Angle = orientation == "ne"
                                         ? 90
                                         : orientation == "se"
@@ -420,8 +428,6 @@ namespace SAE_dev_1
 
                         tuile.LayoutTransform = new RotateTransform()
                         {
-                            CenterX = 8,
-                            CenterY = 8,
                             Angle = int.Parse(orientation)
                         };
                     }
@@ -440,8 +446,6 @@ namespace SAE_dev_1
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
-                                    CenterX = 8,
-                                    CenterY = 8,
                                     Angle = aleatoire.Next(4) * 90
                                 };
                                 break;
@@ -451,8 +455,6 @@ namespace SAE_dev_1
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
                                 {
-                                    CenterX = 8,
-                                    CenterY = 8,
                                     Angle = aleatoire.Next(4) * 90
                                 };
                                 break;
@@ -519,8 +521,6 @@ namespace SAE_dev_1
                     {
                         rectangleObjet.LayoutTransform = new RotateTransform()
                         {
-                            CenterX = largeurObjet * 16 / 2,
-                            CenterY = hauteurObjet * 16 / 2,
                             Angle = (int)rotationObjet
                         };
                     }
@@ -702,8 +702,8 @@ namespace SAE_dev_1
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
                     Tag = "enemis," + type,
-                    Height = 80,
-                    Width = 80,
+                    Height = TAILLE_ENNEMI,
+                    Width = TAILLE_ENNEMI,
 
                     Fill = Brushes.Red
                 };
@@ -721,8 +721,8 @@ namespace SAE_dev_1
             Rectangle Piece = new Rectangle
             {
                 Tag = "objet",
-                Height = 20,
-                Width = 20,
+                Height = TAILLE_PIECE,
+                Width = TAILLE_PIECE,
                 Fill = texturePiece
             };
             Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
@@ -752,9 +752,13 @@ namespace SAE_dev_1
 
         private void Deplacement()
         {
+            bool deplace = false;
+
             // Ne rien faire si les touches gauche et droite sont appuyées simultanément
             if ((gauche || droite) && !(gauche && droite))
             {
+                deplace = true;
+
                 if (gauche)
                 {
                     // Joueur va à gauche
@@ -763,11 +767,6 @@ namespace SAE_dev_1
                         Canvas.GetLeft(joueur) - vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurGauche[apparenceJoueur];
-                    apparenceJoueur++;
-                    if (apparenceJoueur > 2)
-                    {
-                        apparenceJoueur = 0;
-                    }
                 }
                 else
                 {
@@ -777,11 +776,6 @@ namespace SAE_dev_1
                         Canvas.GetLeft(joueur) + vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurDroite[apparenceJoueur];
-                    apparenceJoueur++;
-                    if (apparenceJoueur > 2)
-                    {
-                        apparenceJoueur = 0;
-                    }
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
 
@@ -820,6 +814,8 @@ namespace SAE_dev_1
             // Ne rien faire si les touches haut et bas sont appuyées simultanément
             if ((bas || haut) && !(bas && haut))
             {
+                deplace = true;
+
                 if (bas)
                 {
                     // Joueur va en bas
@@ -837,11 +833,6 @@ namespace SAE_dev_1
                         Canvas.GetTop(joueur) - vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurDos[apparenceJoueur];
-                    apparenceJoueur++;
-                    if (apparenceJoueur > 2)
-                    {
-                        apparenceJoueur = 0;
-                    }
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
@@ -875,6 +866,20 @@ namespace SAE_dev_1
                         break;
                     }
                 }
+            }
+
+            if (deplace)
+            {
+                if (prochainChangementApparence == 0)
+                {
+                    prochainChangementApparence = TEMPS_CHANGEMENT_APPARENCE;
+                    apparenceJoueur++;
+                    if (apparenceJoueur >= NOMBRE_APPARENCES)
+                    {
+                        apparenceJoueur = 0;
+                    }
+                }
+                else prochainChangementApparence--;
             }
 
             if (nbPieceTerrain > 0)
