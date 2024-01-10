@@ -21,11 +21,13 @@ namespace SAE_dev_1
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
+        //personnage
         private int vitesseJ = 8;
         private int vieJ = 5;
         private int degat = 1;
         private int vitesseE = 5;
         private bool droite, gauche, bas, haut;
+        private int imageapparence = 1;
 
         //piece
         private int nombrePiece = 0;
@@ -103,6 +105,18 @@ namespace SAE_dev_1
 
         private BitmapImage texturePiece;
 
+        //Personnage
+        ImageBrush joueurAppFace = new ImageBrush();
+        ImageBrush joueurAppCoteD = new ImageBrush();
+        ImageBrush joueurAppCoteDAvance = new ImageBrush();
+        ImageBrush joueurAppCoteDAvance2 = new ImageBrush();
+        ImageBrush joueurAppCoteG = new ImageBrush();
+        ImageBrush joueurAppCoteGAvance = new ImageBrush();
+        ImageBrush joueurAppCoteGAvance2 = new ImageBrush();
+        ImageBrush joueurAppDos = new ImageBrush();
+        ImageBrush joueurAppDosAvance = new ImageBrush();
+        ImageBrush joueurAppDosAvance2 = new ImageBrush();
+
         #endregion Textures
 
         #region HUB
@@ -152,6 +166,12 @@ namespace SAE_dev_1
             texturePiece = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\piece.png"));
 
             fenetreInitialisation.Chargement(62, "Chargement du HUD...");
+
+            joueurAppFace.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-face1.png"));
+
+
+
+            joueur.Fill = joueurAppFace;
 
             ImageBrush imagePiece = new ImageBrush();
             imagePiece.ImageSource = texturePiece;
@@ -468,18 +488,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = true;
+                imageapparence = 1;
             }
             if (e.Key == touches[combinaisonTouches, 1])
             {
                 droite = true;
+                imageapparence = 1;
             }
             if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = true;
+                imageapparence = 1;
             }
             if (e.Key == touches[combinaisonTouches, 3])
             {
                 bas = true;
+                imageapparence = 1;
             }
 
             if (e.Key == Key.L)
@@ -637,6 +661,15 @@ namespace SAE_dev_1
                         0,
                         Canvas.GetLeft(joueur) - vitesseJ
                     ));
+                    joueur.Width = 60;
+                    joueurAppCoteG.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-coteG"+imageapparence+".png"));
+                    imageapparence++;
+                    joueur.Fill = joueurAppCoteG;
+                    if (imageapparence > 3)
+                    {
+                        imageapparence = 1;
+                    }
+
                 }
                 else
                 {
@@ -644,6 +677,14 @@ namespace SAE_dev_1
                         CanvasJeux.Width - joueur.Width,
                         Canvas.GetLeft(joueur) + vitesseJ
                     ));
+                    joueur.Width = 60;
+                    joueurAppCoteD.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-coteD"+imageapparence+".png"));
+                    imageapparence++;
+                    joueur.Fill = joueurAppCoteD;
+                    if (imageapparence > 3)
+                    {
+                        imageapparence = 1;
+                    }
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
 
@@ -686,6 +727,8 @@ namespace SAE_dev_1
                         Canvas.GetTop(joueur) + vitesseJ
                     ));
                     hitboxJoueur.Y = Canvas.GetLeft(joueur);
+                    joueur.Fill = joueurAppFace;
+                    joueur.Width = 80;
                 }
                 else
                 {
@@ -693,6 +736,14 @@ namespace SAE_dev_1
                         0,
                         Canvas.GetTop(joueur) - vitesseJ
                     ));
+                    joueur.Width = 80;
+                    joueurAppDos.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\sprite-Dos"+imageapparence+".png"));
+                    imageapparence++;
+                    joueur.Fill = joueurAppDos;
+                    if (imageapparence > 3)
+                    {
+                        imageapparence = 1;
+                    }
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
