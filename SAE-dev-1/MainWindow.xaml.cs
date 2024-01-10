@@ -19,15 +19,15 @@ namespace SAE_dev_1
     {
         // Constantes
 
-        private static readonly long TAILLE_TUILE = 60;
-        private static readonly long TAILLE_PIECE = 20;
-        private static readonly long TAILLE_ENNEMI = 80;
+        private static readonly int TAILLE_TUILE = 60;
+        private static readonly int TAILLE_PIECE = 20;
+        private static readonly int TAILLE_ENNEMI = 80;
 
         private static readonly int ZINDEX_PAUSE = 1000;
         private static readonly int ZINDEX_HUD = 500;
         private static readonly int ZINDEX_JOUEUR = 100;
-        private static readonly int ZINDEX_ENTITES = 75;
-        private static readonly int ZINDEX_ITEMS = 50;
+        private static readonly int ZINDEX_ITEMS = 75;
+        private static readonly int ZINDEX_ENTITES = 50;
         private static readonly int ZINDEX_OBJETS = 25;
         private static readonly int ZINDEX_TERRAIN = 1;
 
@@ -45,7 +45,10 @@ namespace SAE_dev_1
         private int vieJoueur = 5;
         private int degat = 1;
         private int vitesseEnnemis = 5;
+
         private bool droite, gauche, bas, haut;
+        // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
+        private int directionJoueur;
 
         private int prochainChangementApparence = 0;
         private int apparenceJoueur = 0;
@@ -89,7 +92,7 @@ namespace SAE_dev_1
                 Key.Q
             }
         };
-        public int combinaisonTouches = 0;
+        public int combinaisonTouches = 1;
 
         // Hitbox
 
@@ -267,9 +270,8 @@ namespace SAE_dev_1
 
             pieceNombre = new Label()
             {
-                Width = TAILLE_ICONES,
                 Height = TAILLE_ICONES,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
+                HorizontalContentAlignment = HorizontalAlignment.Right,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 FontSize = 24,
                 FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
@@ -281,18 +283,18 @@ namespace SAE_dev_1
                     Bottom = 0,
                     Left = 0
                 },
-                Content = nombrePiece.ToString()
+                Content = $"{nombrePiece:N0}"
             };
 
             RenderOptions.SetBitmapScalingMode(pieceIcone, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetEdgeMode(pieceIcone, EdgeMode.Aliased);
             Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
-            Canvas.SetLeft(pieceIcone, CanvasJeux.Width - TAILLE_ICONES - 5);
+            Canvas.SetRight(pieceIcone, 5);
             Canvas.SetTop(pieceIcone, -5 - TAILLE_ICONES);
             CanvasJeux.Children.Add(pieceIcone);
 
             Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
-            Canvas.SetLeft(pieceNombre, CanvasJeux.Width - TAILLE_ICONES - 5 - TAILLE_ICONES);
+            Canvas.SetRight(pieceNombre, TAILLE_ICONES + 10);
             Canvas.SetTop(pieceNombre, -5 - TAILLE_ICONES);
             CanvasJeux.Children.Add(pieceNombre);
 
@@ -650,6 +652,7 @@ namespace SAE_dev_1
             {
                 this.Close();
             }
+            else this.FocusCanvas();
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
@@ -670,9 +673,10 @@ namespace SAE_dev_1
             {
                 bas = false;
             }
-            if (e.Key == Key.Up)
+
+            if (e.Key == touches[combinaisonTouches, 4])
             {
-                haut = false;
+                Interagir();
             }
 
             if (e.Key == Key.Escape)
@@ -743,6 +747,58 @@ namespace SAE_dev_1
 
         }
 
+        private (string, int, int, int?, Action<MainWindow>?)? ObjetSurTuile(int xTuile, int yTuile)
+        {
+            foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
+            {
+                if (objet.Item2 == xTuile && objet.Item3 == yTuile)
+                    return objet;
+            }
+
+            return null;
+        }
+
+        public bool Interagir()
+        {
+            bool interaction = false;
+
+            int xCentre = (int)(hitboxJoueur.X + (hitboxJoueur.Width / 2));
+            int yCentre = (int)(hitboxJoueur.Y + (hitboxJoueur.Height / 2));
+
+            int xTuile = xCentre / TAILLE_TUILE;
+            int yTuile = yCentre / TAILLE_TUILE;
+
+            switch (directionJoueur)
+            {
+                case 0:
+                    yTuile--;
+                    break;
+                case 1:
+                    xTuile++;
+                    break;
+                case 2:
+                    yTuile++;
+                    break;
+                case 3:
+                    xTuile--;
+                    break;
+            }
+
+            (string, int, int, int?, Action<MainWindow>?)? objet = ObjetSurTuile(xTuile, yTuile);
+
+            if (objet != null)
+            {
+                Action<MainWindow>? actionObjet = (((string, int, int, int?, Action<MainWindow>?))objet)!.Item5;
+                if (actionObjet != null)
+                {
+                    interaction = true;
+                    actionObjet(this);
+                }
+            }
+
+            return interaction;
+        }
+
         #region Moteur du jeu
 
         private void MoteurDeJeu(object? sender, EventArgs e)
@@ -767,6 +823,7 @@ namespace SAE_dev_1
                         Canvas.GetLeft(joueur) - vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurGauche[apparenceJoueur];
+                    directionJoueur = 3;
                 }
                 else
                 {
@@ -776,6 +833,7 @@ namespace SAE_dev_1
                         Canvas.GetLeft(joueur) + vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurDroite[apparenceJoueur];
+                    directionJoueur = 1;
                 }
                 hitboxJoueur.X = Canvas.GetLeft(joueur);
 
@@ -804,8 +862,6 @@ namespace SAE_dev_1
                                 : objet.Item1.X - joueur.Width - 1
                         );
                         hitboxJoueur.X = Canvas.GetLeft(joueur);
-                        if (objet.Item2 != null)
-                            objet.Item2(this);
                         break;
                     }
                 }
@@ -824,6 +880,7 @@ namespace SAE_dev_1
                         Canvas.GetTop(joueur) + vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurFace[0];
+                    directionJoueur = 2;
                 }
                 else
                 {
@@ -833,6 +890,7 @@ namespace SAE_dev_1
                         Canvas.GetTop(joueur) - vitesseJoueur
                     ));
                     joueur.Fill = textureJoueurDos[apparenceJoueur];
+                    directionJoueur = 0;
                 }
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
@@ -847,8 +905,6 @@ namespace SAE_dev_1
                                 : objet.Item1.Y + objet.Item1.Height + 1
                         );
                         hitboxJoueur.Y = Canvas.GetTop(joueur);
-                        if (objet.Item2 != null)
-                            objet.Item2(this);
                         break;
                     }
                 }
@@ -890,7 +946,7 @@ namespace SAE_dev_1
                     {
                         nombrePiece++;
                         nbPieceTerrain--;
-                        pieceNombre.Content = nombrePiece;
+                        pieceNombre.Content = $"{nombrePiece:N0}";
                         CanvasJeux.Children.Remove(pieces[i]);
                         pieces.Remove(pieces[i]);
                         rPiece.Remove(rPiece[i]);
