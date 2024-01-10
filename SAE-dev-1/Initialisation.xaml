@@ -14,6 +14,9 @@
     WindowStyle="None"
     WindowState="Maximized"
     mc:Ignorable="d">
+    <Window.Resources>
+        <FontFamily x:Key="Monocraft" >/Fonts/#Monocraft</FontFamily>
+    </Window.Resources>
     <Grid Background="#FF2F2F2F">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -23,28 +26,30 @@
             x:Name="titreDuJeu"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            FontSize="110"
+            FontSize="100"
             Foreground="White"
             Margin="0,-150,0,0"
-            Padding="70,0,70,0"
+            Padding="20,0,20,0"
             Grid.ColumnSpan="2"
-            TextWrapping="WrapWithOverflow">
+            TextWrapping="WrapWithOverflow"
+            FontFamily="{StaticResource Monocraft}">
             La Légende de Zeldo
         </TextBlock>
         <ProgressBar
             x:Name="chargement"
             Width="800"
             Height="30"
-            Margin="200,0,0,100"
-            HorizontalAlignment="Left"
+            Margin="0,0,0,100"
+            HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Background="#FF545454"
             BorderBrush="#FF545454"
-            Foreground="White" Grid.ColumnSpan="2" />
+            Foreground="White"
+            Grid.ColumnSpan="2" />
         <Label
             x:Name="nomChargement"
-            Margin="522,0,0,50"
-            HorizontalAlignment="Left"
+            Margin="0,0,0,50"
+            HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             FontSize="24"
             Foreground="White" Grid.ColumnSpan="2" Height="42" Width="156">

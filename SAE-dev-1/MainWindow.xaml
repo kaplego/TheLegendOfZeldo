@@ -16,6 +16,9 @@
     WindowState="Maximized"
     mc:Ignorable="d" Background="#FF090300"
     Cursor="None">
+    <Window.Resources>
+        <FontFamily x:Key="Monocraft" >/Fonts/#Monocraft</FontFamily>
+    </Window.Resources>
     <Grid>
         <Rectangle
             x:Name="chargement"
@@ -40,7 +43,9 @@
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             RenderOptions.EdgeMode="Aliased"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center" MinHeight="600" MinWidth="600">
+            VerticalAlignment="Center"
+            MinWidth="1200"
+            MinHeight="600">
 
             <Rectangle
                 x:Name="joueur"
@@ -49,11 +54,15 @@
                 Width="80"
                 Height="80"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Stroke="White" Panel.ZIndex="100" />
-            <Label Content="0" Canvas.Left="1164" Canvas.Top="10" Height="38" Width="36" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Label x:Name="NBPiece" Content="0" Canvas.Left="1084" Canvas.Top="48" Height="38" Width="57" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="1"/>
-            <Canvas x:Name="ZoneApparition" Width="651" Height="114" Canvas.Left="130" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top"></Canvas>
+                VerticalAlignment="Top" />
+            <Canvas
+                x:Name="ZoneApparition"
+                Width="651"
+                Height="114"
+                Canvas.Left="83"
+                Canvas.Top="67"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" />
         </Canvas>
         <!--///////////////////////////////////Menu//////////////////////////////////////////-->
         <Grid x:Name="grilleMenuPause" Panel.ZIndex="1000" Visibility="Hidden">
@@ -64,11 +73,13 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="labelPause"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            FontSize="36"
-            Foreground="White" Margin="0,20,0,0" Grid.ColumnSpan="2">
+            <Label
+                x:Name="labelPause"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                FontSize="36"
+                Foreground="White" Margin="0,20,0,0"
+                Grid.ColumnSpan="2">
                 PAUSE
             </Label>
             <TextBlock
@@ -80,7 +91,8 @@
                 Margin="0,-150,0,0"
                 Padding="80,0,80,0"
                 Grid.Column="1"
-                TextWrapping="WrapWithOverflow">
+                TextWrapping="WrapWithOverflow"
+                FontFamily="{StaticResource Monocraft}">
                 La Légende de Zeldo
             </TextBlock>
             <Button
@@ -90,7 +102,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Background="DimGray"
-                Content="Jouer"
+                Content="Reprendre"
                 FontSize="36"
                 Foreground="White"
                 Click="btnReprendre_Click" Margin="0,0,0,250"
