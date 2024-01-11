@@ -486,7 +486,7 @@ namespace SAE_dev_1
 
         //                           nom     x    y    rotation
         // Si rotation = null, rotation est aléatoire
-        public static readonly List<(string, int, int, int?, Action<MainWindow>?)>?[] OBJECTS_CARTES = new List<(string, int, int, int?, Action<MainWindow>?)>?[]
+        public static readonly List<(string, int, int, int?, Action<MainWindow>?)>?[] OBJETS_CARTES = new List<(string, int, int, int?, Action<MainWindow>?)>?[]
         {
             new List<(string, int, int, int?, Action<MainWindow>?)>
             {
@@ -498,8 +498,11 @@ namespace SAE_dev_1
             },
             new List<(string, int, int, int?, Action<MainWindow>?)>
             {
-                ("buisson", 3, 0, null, null)
+                ("buisson", 3, 0, null, null),
+                ("caillou", 12, 0, 0, null),
+
             }
         };
+
     }
 }

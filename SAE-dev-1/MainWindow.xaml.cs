@@ -59,7 +59,9 @@ namespace SAE_dev_1
         List<Rectangle> pieces = new List<Rectangle>();
         List<System.Windows.Rect> rPiece = new List<System.Windows.Rect>();
 
-        private int carteActuelle = 0;
+        public bool bombe = false;
+
+        public int carteActuelle = 0;
 
         private bool jeuEnPause = false;
 
@@ -487,8 +489,8 @@ namespace SAE_dev_1
 
                     int largeurObjet = 0,
                         hauteurObjet = 0;
-                    ImageBrush texture = new ImageBrush();
-                    texture.Stretch = Stretch.Uniform;
+                    ImageBrush? texture = null; 
+                    Brush? textureUnie = null;
 
                     switch (nomObjet)
                     {
@@ -497,12 +499,20 @@ namespace SAE_dev_1
                             hauteurObjet = 1;
 
                             texture = texturePorte;
+                            texture.Stretch = Stretch.Uniform;
                             break;
                         case "buisson":
                             largeurObjet = 1;
                             hauteurObjet = 1;
 
                             texture = textureBuisson;
+                            texture.Stretch = Stretch.Uniform;
+                            break;
+                        case "caillou":
+                            largeurObjet = 2;
+                            hauteurObjet = 1;
+
+                            textureUnie = Brushes.Gray;
                             break;
                     }
 
@@ -527,7 +537,7 @@ namespace SAE_dev_1
                         };
                     }
 
-                    rectangleObjet.Fill = texture;
+                    rectangleObjet.Fill = texture == null ? textureUnie : texture;
                     Panel.SetZIndex(rectangleObjet, ZINDEX_OBJETS);
                     Canvas.SetLeft(rectangleObjet, positionX * MainWindow.TAILLE_TUILE);
                     Canvas.SetTop(rectangleObjet, positionY * MainWindow.TAILLE_TUILE);
