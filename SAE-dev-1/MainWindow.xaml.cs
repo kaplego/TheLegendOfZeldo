@@ -689,12 +689,14 @@ namespace SAE_dev_1
                 if (jeuEnPause)
                 {
                     grilleMenuPause.Visibility = Visibility.Visible;
+                    grilleMenuPause.Focus();
                     this.Cursor = null;
                     minuteurJeu.Stop();
                 }
                 else
                 {
                     grilleMenuPause.Visibility = Visibility.Hidden;
+                    this.FocusCanvas();
                     this.Cursor = Cursors.None;
                     minuteurJeu.Start();
                 }
