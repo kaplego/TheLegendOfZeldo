@@ -19,10 +19,10 @@ namespace SAE_dev_1
     {
         // Constantes
 
-        private static readonly int TAILLE_TUILE = 60;
-        private static readonly int TAILLE_PIECE = 20;
-        private static readonly int TAILLE_ENNEMI = 80;
-        private static readonly int TAILLE_EPEE = 80;
+        public static readonly int TAILLE_TUILE = 60;
+        public static readonly int TAILLE_PIECE = 20;
+        public static readonly int TAILLE_ENNEMI = 80;
+        public static readonly int TAILLE_EPEE = 80;
 
         public static readonly int ZINDEX_PAUSE = 1000;
         public static readonly int ZINDEX_HUD = 500;
@@ -276,10 +276,8 @@ namespace SAE_dev_1
                 }
             };
 
-            textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\item\\epee1.png"));
-            textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\item\\epee2.png"));
-
-
+            textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
+            textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
             joueur.Fill = textureJoueurFace[0];
             Canvas.SetZIndex(joueur, ZINDEX_JOUEUR);
