@@ -492,6 +492,7 @@ namespace SAE_dev_1
             {
                 ("porte", 10, 9, 180, (mainWindow) =>
                     {
+                        mainWindow.derniereApparition = 0;
                         mainWindow.ChangerCarte(1);
                     }
                 )

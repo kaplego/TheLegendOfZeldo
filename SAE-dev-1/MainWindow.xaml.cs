@@ -34,6 +34,8 @@ namespace SAE_dev_1
         private static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
         private static readonly int NOMBRE_APPARENCES = 3;
 
+        private static readonly int DUREE_IMMUNITE = 62;
+
         private static readonly int TAILLE_ICONES = 30;
 
         // Moteur du jeu
@@ -44,11 +46,13 @@ namespace SAE_dev_1
         private int vitesseJoueur = 8;
         private int vieJoueur = 5;
         private int degat = 1;
+        private int immunite = 0;
         private int vitesseEnnemis = 5;
 
         private bool droite, gauche, bas, haut;
         // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
         private int directionJoueur;
+        public int derniereApparition;
 
         private int prochainChangementApparence = 0;
         private int apparenceJoueur = 0;
@@ -60,9 +64,12 @@ namespace SAE_dev_1
         List<System.Windows.Rect> rPiece = new List<System.Windows.Rect>();
 
         public bool bombe = false;
+        // Ennemis
+        private List<Entite> ennemis = new List<Entite>();
 
         public int carteActuelle = 0;
 
+        private bool joueurMort = false;
         private bool jeuEnPause = false;
 
         // Réglages
@@ -307,7 +314,7 @@ namespace SAE_dev_1
                 {
                     Width = TAILLE_ICONES,
                     Height = TAILLE_ICONES,
-                    Fill = i > 2 ? textureCoeurVide : textureCoeur
+                    Fill = textureCoeur
                 };
 
                 RenderOptions.SetBitmapScalingMode(coeurs[i], BitmapScalingMode.NearestNeighbor);
@@ -478,8 +485,8 @@ namespace SAE_dev_1
             }
 
             // Ajouter les objets de la carte
-            if (Cartes.OBJECTS_CARTES[carteActuelle] != null)
-                foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
+            if (Cartes.OBJETS_CARTES[carteActuelle] != null)
+                foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJETS_CARTES[carteActuelle]!)
                 {
                     string nomObjet = objet.Item1;
                     int positionX = objet.Item2;
@@ -489,7 +496,7 @@ namespace SAE_dev_1
 
                     int largeurObjet = 0,
                         hauteurObjet = 0;
-                    ImageBrush? texture = null; 
+                    ImageBrush? texture = null;
                     Brush? textureUnie = null;
 
                     switch (nomObjet)
@@ -555,7 +562,7 @@ namespace SAE_dev_1
                 }
         }
 
-        public async void ChangerCarte(int nouvelleCarte, int apparitionX = 0, int apparitionY = 0)
+        public async void ChangerCarte(int nouvelleCarte, int apparition = 0)
         {
             minuteurJeu.Stop();
 
@@ -574,9 +581,35 @@ namespace SAE_dev_1
 
             GenererCarte();
 
+            Canvas.SetTop(joueur, apparition == 0
+                ? 0
+                : apparition == 2
+                    ? CanvasJeux.Height - joueur.Height
+                    : (CanvasJeux.Height - joueur.Height) / 2);
+            Canvas.SetLeft(joueur, apparition == 1
+                ? CanvasJeux.Width - joueur.Width
+                : apparition == 3
+                    ? 0
+                    : (CanvasJeux.Width - joueur.Width) / 2);
+
             CanvasJeux.Children.Add(joueur);
-            Canvas.SetTop(joueur, apparitionY);
-            Canvas.SetLeft(joueur, apparitionX);
+
+            switch (apparition)
+            {
+                case 1:
+                    joueur.Fill = textureJoueurGauche[0];
+                    break;
+                case 2:
+                    joueur.Fill = textureJoueurDos[0];
+                    break;
+                case 3:
+                    joueur.Fill = textureJoueurDroite[0];
+                    break;
+                default:
+                    joueur.Fill = textureJoueurFace[0];
+                    break;
+            }
+
             hitboxJoueur.X = Canvas.GetLeft(joueur);
             hitboxJoueur.Y = Canvas.GetTop(joueur);
 
@@ -595,6 +628,7 @@ namespace SAE_dev_1
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
 
+            this.FocusCanvas();
             minuteurJeu.Start();
         }
 
@@ -620,7 +654,7 @@ namespace SAE_dev_1
                 bas = true;
                 apparenceJoueur = 1;
             }
-            
+
             if (e.Key == Key.L)
             {
                 CreeEnemisCC(2, "slime");
@@ -648,7 +682,7 @@ namespace SAE_dev_1
             this.Hide();
         }
 
-        private void btnQuitter_Click(object sender, RoutedEventArgs e)
+        private void Quitter(object sender, RoutedEventArgs e)
         {
             if (
                 MessageBox.Show(
@@ -663,6 +697,21 @@ namespace SAE_dev_1
                 this.Close();
             }
             else this.FocusCanvas();
+        }
+
+        private void btnReapparaitre_Click(object sender, RoutedEventArgs e)
+        {
+            grilleEcranMort.Visibility = Visibility.Hidden;
+            this.Cursor = Cursors.None;
+            vieJoueur = 5;
+            foreach (Rectangle coeur in coeurs)
+            {
+                coeur.Fill = textureCoeur;
+            }
+            immunite = DUREE_IMMUNITE;
+            ChangerCarte(carteActuelle, carteActuelle == 0 ? 4 : derniereApparition);
+            joueurMort = false;
+            minuteurJeu.Start();
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
@@ -698,7 +747,7 @@ namespace SAE_dev_1
                 Attaque();
             }
 
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape && !joueurMort)
             {
                 jeuEnPause = !jeuEnPause;
                 if (jeuEnPause)
@@ -733,9 +782,14 @@ namespace SAE_dev_1
                     Fill = Brushes.Red
                 };
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
-                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + aleatoire.Next(200));
-                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500));
+                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500);
+                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+                Canvas.SetLeft(nouveauxEnnemy, x);
+                Canvas.SetTop(nouveauxEnnemy, y);
                 CanvasJeux.Children.Add(nouveauxEnnemy);
+
+                ennemis.Add(new Entite(nouveauxEnnemy, x, y));
+
                 //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
         }
@@ -770,7 +824,7 @@ namespace SAE_dev_1
 
         private (string, int, int, int?, Action<MainWindow>?)? ObjetSurTuile(int xTuile, int yTuile)
         {
-            foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJECTS_CARTES[carteActuelle]!)
+            foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJETS_CARTES[carteActuelle]!)
             {
                 if (objet.Item2 == xTuile && objet.Item3 == yTuile)
                     return objet;
@@ -822,7 +876,7 @@ namespace SAE_dev_1
 
         public void Attaque()
         {
-            switch(directionJoueur)
+            switch (directionJoueur)
             {
                 case 0:
                     break;
@@ -840,16 +894,18 @@ namespace SAE_dev_1
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
             Deplacement();
+
+            EstAttaque();
         }
 
-        private void Deplacement()
+        private bool Deplacement()
         {
-            bool deplace = false;
+            bool seDeplace = false;
 
             // Ne rien faire si les touches gauche et droite sont appuyées simultanément
             if ((gauche || droite) && !(gauche && droite))
             {
-                deplace = true;
+                seDeplace = true;
 
                 if (gauche)
                 {
@@ -906,7 +962,7 @@ namespace SAE_dev_1
             // Ne rien faire si les touches haut et bas sont appuyées simultanément
             if ((bas || haut) && !(bas && haut))
             {
-                deplace = true;
+                seDeplace = true;
 
                 if (bas)
                 {
@@ -960,7 +1016,7 @@ namespace SAE_dev_1
                 }
             }
 
-            if (deplace)
+            if (seDeplace)
             {
                 if (prochainChangementApparence == 0)
                 {
@@ -989,6 +1045,57 @@ namespace SAE_dev_1
                     }
                 }
             }
+
+            return seDeplace;
+        }
+
+        private bool EstAttaque()
+        {
+            bool estAttaque = false,
+                estMort = false;
+
+            if (immunite > 0)
+            {
+                immunite--;
+                if (immunite % 2 == 0)
+                    joueur.Opacity = 100;
+                else
+                    joueur.Opacity = 0;
+
+                return false;
+            }
+
+            foreach (Entite ennemi in ennemis)
+            {
+                if (ennemi.Hitbox.IntersectsWith(hitboxJoueur))
+                {
+                    estAttaque = true;
+                    vieJoueur--;
+
+                    if (vieJoueur == 0)
+                    {
+                        estMort = true;
+                        break;
+                    }
+                    else
+                    {
+                        coeurs[vieJoueur].Fill = textureCoeurVide;
+                        immunite = DUREE_IMMUNITE;
+                    }
+                }
+            }
+
+            if (estMort)
+            {
+                grilleEcranMort.Visibility = Visibility.Visible;
+                this.Cursor = null;
+                CanvasJeux.Children.Clear();
+                ennemis.Clear();
+                joueurMort = true;
+                minuteurJeu.Stop();
+            }
+
+            return estAttaque;
         }
 
         #endregion
