@@ -610,7 +610,7 @@ namespace SAE_dev_1
                 bas = true;
                 apparenceJoueur = 1;
             }
-
+            
             if (e.Key == Key.L)
             {
                 CreeEnemisCC(2, "slime");
@@ -681,6 +681,11 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 4])
             {
                 Interagir();
+            }
+
+            if (e.Key == touches[combinaisonTouches, 5])
+            {
+                Attaque();
             }
 
             if (e.Key == Key.Escape)
@@ -803,6 +808,21 @@ namespace SAE_dev_1
             }
 
             return interaction;
+        }
+
+        public void Attaque()
+        {
+            switch(directionJoueur)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
 
         #region Moteur du jeu
