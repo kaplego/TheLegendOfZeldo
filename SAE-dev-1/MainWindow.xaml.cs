@@ -22,6 +22,7 @@ namespace SAE_dev_1
         private static readonly int TAILLE_TUILE = 60;
         private static readonly int TAILLE_PIECE = 20;
         private static readonly int TAILLE_ENNEMI = 80;
+        private static readonly int TAILLE_EPEE = 80;
 
         private static readonly int ZINDEX_PAUSE = 1000;
         private static readonly int ZINDEX_HUD = 500;
@@ -35,6 +36,7 @@ namespace SAE_dev_1
         private static readonly int NOMBRE_APPARENCES = 3;
 
         private static readonly int DUREE_IMMUNITE = 62;
+        private static readonly int DUREE_COUP = 32;
 
         private static readonly int TAILLE_ICONES = 30;
 
@@ -47,6 +49,7 @@ namespace SAE_dev_1
         private int vieJoueur = 5;
         private int degat = 1;
         private int immunite = 0;
+        private int tempsCoup = 0;
         private int vitesseEnnemis = 5;
 
         private bool droite, gauche, bas, haut;
@@ -57,13 +60,13 @@ namespace SAE_dev_1
         private int prochainChangementApparence = 0;
         private int apparenceJoueur = 0;
 
+        public bool bombe = false;
+
         //piece
         private int nombrePiece = 0;
-        private int nbPieceTerrain = 0;
-        List<Rectangle> pieces = new List<Rectangle>();
-        List<System.Windows.Rect> rPiece = new List<System.Windows.Rect>();
+        private List<Entite> pieces = new List<Entite>();
 
-        public bool bombe = false;
+
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
 
@@ -145,6 +148,11 @@ namespace SAE_dev_1
         private ImageBrush[] textureJoueurDroite;
         private ImageBrush[] textureJoueurGauche;
 
+        //epee
+
+        private ImageBrush textureEpee1 = new ImageBrush();
+        private ImageBrush textureEpee2 = new ImageBrush();
+
         #endregion Textures
 
         #region HUD
@@ -198,6 +206,7 @@ namespace SAE_dev_1
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
             fenetreInitialisation.Chargement(4 / 7, "Chargement des textures des personnages...");
+
 
             textureJoueurFace = new ImageBrush[1]
             {
@@ -264,6 +273,11 @@ namespace SAE_dev_1
                     Stretch = Stretch.Uniform
                 }
             };
+
+            textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\item\\epee1.png"));
+            textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\item\\epee2.png"));
+
+
 
             joueur.Fill = textureJoueurFace[0];
             Canvas.SetZIndex(joueur, ZINDEX_JOUEUR);
@@ -575,6 +589,7 @@ namespace SAE_dev_1
             }
 
             CanvasJeux.Children.Clear();
+            ennemis.Clear();
             hitboxTerrain.Clear();
             hitboxObjets.Clear();
             carteActuelle = nouvelleCarte;
@@ -745,6 +760,7 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 5])
             {
                 Attaque();
+                tempsCoup = DUREE_COUP;
             }
 
             if (e.Key == Key.Escape && !joueurMort)
@@ -805,20 +821,13 @@ namespace SAE_dev_1
                 Fill = texturePiece
             };
             Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
-            Canvas.SetTop(Piece, Canvas.GetTop(ZoneApparition) + aleatoire.Next(200));
-            Canvas.SetLeft(Piece, Canvas.GetLeft(ZoneApparition) + aleatoire.Next(200));
+            int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(200);
+            int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+            Canvas.SetLeft(Piece, x);
+            Canvas.SetTop(Piece, y);
             CanvasJeux.Children.Add(Piece);
-            pieces.Add(Piece);
 
-            nbPieceTerrain++;
-            Rect piece = new Rect
-            {
-                X = Canvas.GetLeft(Piece),
-                Y = Canvas.GetTop(Piece),
-                Width = Piece.Width,
-                Height = Piece.Height
-            };
-            rPiece.Add(piece);
+            pieces.Add(new Entite(Piece, x, y));
 
         }
 
@@ -876,17 +885,56 @@ namespace SAE_dev_1
 
         public void Attaque()
         {
+            Rectangle epee = new Rectangle
+            {
+                Tag = "epee",
+                Height = TAILLE_EPEE,
+                Width = TAILLE_EPEE,
+                Fill = textureEpee1,
+            };
+            int x;
+            int y;
             switch (directionJoueur)
             {
                 case 0:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = (int)Canvas.GetLeft(joueur) ;
+                    y = (int)Canvas.GetTop(joueur) - TAILLE_EPEE;
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
                     break;
                 case 1:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = (int)Canvas.GetLeft(joueur) + TAILLE_EPEE;
+                    y = (int)Canvas.GetTop(joueur);
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
                     break;
                 case 2:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = (int)Canvas.GetLeft(joueur);
+                    y = (int)Canvas.GetTop(joueur) + TAILLE_EPEE;
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
                     break;
                 case 3:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = (int)Canvas.GetLeft(joueur) - TAILLE_EPEE;
+                    y = (int)Canvas.GetTop(joueur);
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
                     break;
             }
+
+
         }
 
         #region Moteur du jeu
@@ -1030,20 +1078,22 @@ namespace SAE_dev_1
                 else prochainChangementApparence--;
             }
 
-            if (nbPieceTerrain > 0)
+            List<Entite> piecesASupprimer = new List<Entite>();
+
+            foreach(Entite piece in pieces)
             {
-                for (int i = 0; i < nbPieceTerrain; i++)
+                if(piece.Hitbox.IntersectsWith(hitboxJoueur))
                 {
-                    if (hitboxJoueur.IntersectsWith(rPiece[i]))
-                    {
-                        nombrePiece++;
-                        nbPieceTerrain--;
-                        pieceNombre.Content = $"{nombrePiece:N0}";
-                        CanvasJeux.Children.Remove(pieces[i]);
-                        pieces.Remove(pieces[i]);
-                        rPiece.Remove(rPiece[i]);
-                    }
+                    nombrePiece++;
+                    pieceNombre.Content = $"{nombrePiece:N0}";
+                    CanvasJeux.Children.Remove(piece.RectanglePhysique);
+                    piecesASupprimer.Add(piece);
                 }
+            }
+
+            foreach (Entite piece in piecesASupprimer)
+            {
+                pieces.Remove(piece);
             }
 
             return seDeplace;
@@ -1097,6 +1147,7 @@ namespace SAE_dev_1
 
             return estAttaque;
         }
+
 
         #endregion
     }
