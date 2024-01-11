@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SAE_dev_1
 {
@@ -486,21 +485,29 @@ namespace SAE_dev_1
 
         //                           nom     x    y    rotation
         // Si rotation = null, rotation est aléatoire
-        public static readonly List<(string, int, int, int?, Action<MainWindow>?)>?[] OBJETS_CARTES = new List<(string, int, int, int?, Action<MainWindow>?)>?[]
+        public static readonly List<Objet>?[] OBJETS_CARTES = new List<Objet>?[]
         {
-            new List<(string, int, int, int?, Action<MainWindow>?)>
+            new List<Objet>
             {
-                ("porte", 10, 9, 180, (mainWindow) =>
+                new Objet("porte", 10, 9, 180, false, (mainWindow, objet) =>
                     {
                         mainWindow.derniereApparition = 0;
                         mainWindow.ChangerCarte(1);
                     }
                 )
             },
-            new List<(string, int, int, int?, Action<MainWindow>?)>
+            new List<Objet>
             {
-                ("buisson", 3, 0, null, null),
-                ("caillou", 12, 0, 0, null),
+                new Objet("buisson", 3, 0, null, false, null),
+                new Objet("caillou", 12, 0, 0, false, (mainWindow, objet) =>
+                {
+                    if (mainWindow.bombe)
+                    {
+                        mainWindow.bombe = false;
+                        objet.NeReapparaitPlus = true;
+                        mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
+                    }
+                }),
 
             }
         };

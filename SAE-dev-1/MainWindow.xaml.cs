@@ -24,21 +24,21 @@ namespace SAE_dev_1
         private static readonly int TAILLE_ENNEMI = 80;
         private static readonly int TAILLE_EPEE = 80;
 
-        private static readonly int ZINDEX_PAUSE = 1000;
-        private static readonly int ZINDEX_HUD = 500;
-        private static readonly int ZINDEX_JOUEUR = 100;
-        private static readonly int ZINDEX_ITEMS = 75;
-        private static readonly int ZINDEX_ENTITES = 50;
-        private static readonly int ZINDEX_OBJETS = 25;
-        private static readonly int ZINDEX_TERRAIN = 1;
+        public static readonly int ZINDEX_PAUSE = 1000;
+        public static readonly int ZINDEX_HUD = 500;
+        public static readonly int ZINDEX_JOUEUR = 100;
+        public static readonly int ZINDEX_ITEMS = 75;
+        public static readonly int ZINDEX_ENTITES = 50;
+        public static readonly int ZINDEX_OBJETS = 25;
+        public static readonly int ZINDEX_TERRAIN = 1;
 
-        private static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
-        private static readonly int NOMBRE_APPARENCES = 3;
+        public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
+        public static readonly int NOMBRE_APPARENCES = 3;
 
         private static readonly int DUREE_IMMUNITE = 62;
         private static readonly int DUREE_COUP = 32;
 
-        private static readonly int TAILLE_ICONES = 30;
+        public static readonly int TAILLE_ICONES = 30;
 
         // Moteur du jeu
 
@@ -60,12 +60,11 @@ namespace SAE_dev_1
         private int prochainChangementApparence = 0;
         private int apparenceJoueur = 0;
 
-        public bool bombe = false;
+        public bool bombe = true;
 
         //piece
         private int nombrePiece = 0;
         private List<Entite> pieces = new List<Entite>();
-
 
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
@@ -74,6 +73,7 @@ namespace SAE_dev_1
 
         private bool joueurMort = false;
         private bool jeuEnPause = false;
+        private bool enChargement = false;
 
         // Réglages
 
@@ -110,12 +110,13 @@ namespace SAE_dev_1
 
         private Rect hitboxJoueur;
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
-        private List<(System.Windows.Rect, Action<MainWindow>?)> hitboxObjets = new List<(System.Windows.Rect, Action<MainWindow>?)>();
 
         // RegExps Textures
 
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
         private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
+
+        private List<Objet> objets = new List<Objet>();
 
         #region Textures
 
@@ -132,8 +133,8 @@ namespace SAE_dev_1
 
         // Objets
 
-        private ImageBrush texturePorte = new ImageBrush();
-        private ImageBrush textureBuisson = new ImageBrush();
+        public ImageBrush texturePorte = new ImageBrush();
+        public ImageBrush textureBuisson = new ImageBrush();
 
         // HUD
 
@@ -167,6 +168,7 @@ namespace SAE_dev_1
         public MainWindow()
         {
             InitializeComponent();
+            Objet.mainWindow = this;
 
             this.Hide();
 
@@ -500,84 +502,19 @@ namespace SAE_dev_1
 
             // Ajouter les objets de la carte
             if (Cartes.OBJETS_CARTES[carteActuelle] != null)
-                foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+                foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
                 {
-                    string nomObjet = objet.Item1;
-                    int positionX = objet.Item2;
-                    int positionY = objet.Item3;
-                    int? rotationObjet = objet.Item4;
-                    Action<MainWindow>? action = objet.Item5;
-
-                    int largeurObjet = 0,
-                        hauteurObjet = 0;
-                    ImageBrush? texture = null;
-                    Brush? textureUnie = null;
-
-                    switch (nomObjet)
+                    if (!objet.NeReapparaitPlus)
                     {
-                        case "porte":
-                            largeurObjet = 1;
-                            hauteurObjet = 1;
-
-                            texture = texturePorte;
-                            texture.Stretch = Stretch.Uniform;
-                            break;
-                        case "buisson":
-                            largeurObjet = 1;
-                            hauteurObjet = 1;
-
-                            texture = textureBuisson;
-                            texture.Stretch = Stretch.Uniform;
-                            break;
-                        case "caillou":
-                            largeurObjet = 2;
-                            hauteurObjet = 1;
-
-                            textureUnie = Brushes.Gray;
-                            break;
+                        objets.Add(objet);
+                        CanvasJeux.Children.Add(objet.RectanglePhysique);
                     }
-
-                    Rectangle rectangleObjet = new Rectangle()
-                    {
-                        Width = largeurObjet * MainWindow.TAILLE_TUILE,
-                        Height = hauteurObjet * MainWindow.TAILLE_TUILE,
-                    };
-
-                    // Rotation aléatoire de l'objet
-                    if (rotationObjet == null)
-                    {
-                        Random aleatoire = new Random();
-                        rotationObjet = aleatoire.Next(4) * 90;
-                    }
-
-                    if (rotationObjet != 0)
-                    {
-                        rectangleObjet.LayoutTransform = new RotateTransform()
-                        {
-                            Angle = (int)rotationObjet
-                        };
-                    }
-
-                    rectangleObjet.Fill = texture == null ? textureUnie : texture;
-                    Panel.SetZIndex(rectangleObjet, ZINDEX_OBJETS);
-                    Canvas.SetLeft(rectangleObjet, positionX * MainWindow.TAILLE_TUILE);
-                    Canvas.SetTop(rectangleObjet, positionY * MainWindow.TAILLE_TUILE);
-                    CanvasJeux.Children.Add(rectangleObjet);
-
-                    Rect hitboxObjet = new Rect()
-                    {
-                        Width = largeurObjet * MainWindow.TAILLE_TUILE,
-                        Height = hauteurObjet * MainWindow.TAILLE_TUILE,
-                        X = positionX * MainWindow.TAILLE_TUILE,
-                        Y = positionY * MainWindow.TAILLE_TUILE,
-                    };
-
-                    hitboxObjets.Add((hitboxObjet, action));
                 }
         }
 
         public async void ChangerCarte(int nouvelleCarte, int apparition = 0)
         {
+            enChargement = true;
             minuteurJeu.Stop();
 
             chargement.Opacity = 0;
@@ -591,7 +528,7 @@ namespace SAE_dev_1
             CanvasJeux.Children.Clear();
             ennemis.Clear();
             hitboxTerrain.Clear();
-            hitboxObjets.Clear();
+            objets.Clear();
             carteActuelle = nouvelleCarte;
 
             GenererCarte();
@@ -645,6 +582,7 @@ namespace SAE_dev_1
 
             this.FocusCanvas();
             minuteurJeu.Start();
+            enChargement = false;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -752,12 +690,12 @@ namespace SAE_dev_1
                 joueur.Fill = textureJoueurFace[0];
             }
 
-            if (e.Key == touches[combinaisonTouches, 4])
+            if (e.Key == touches[combinaisonTouches, 4] && !enChargement)
             {
                 Interagir();
             }
 
-            if (e.Key == touches[combinaisonTouches, 5])
+            if (e.Key == touches[combinaisonTouches, 5] && !enChargement)
             {
                 Attaque();
                 tempsCoup = DUREE_COUP;
@@ -831,11 +769,14 @@ namespace SAE_dev_1
 
         }
 
-        private (string, int, int, int?, Action<MainWindow>?)? ObjetSurTuile(int xTuile, int yTuile)
+        private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
-            foreach ((string, int, int, int?, Action<MainWindow>?) objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+            foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
             {
-                if (objet.Item2 == xTuile && objet.Item3 == yTuile)
+                if ((objet.X >= xTuile ||
+                    objet.X <= xTuile + objet.Largeur) &&
+                    (objet.Y == yTuile ||
+                    objet.Y == yTuile + objet.Hauteur))
                     return objet;
             }
 
@@ -868,15 +809,15 @@ namespace SAE_dev_1
                     break;
             }
 
-            (string, int, int, int?, Action<MainWindow>?)? objet = ObjetSurTuile(xTuile, yTuile);
+            Objet? objet = ObjetSurTuile(xTuile, yTuile);
 
             if (objet != null)
             {
-                Action<MainWindow>? actionObjet = (((string, int, int, int?, Action<MainWindow>?))objet)!.Item5;
+                Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
                 if (actionObjet != null)
                 {
                     interaction = true;
-                    actionObjet(this);
+                    actionObjet(this, objet);
                 }
             }
 
@@ -898,7 +839,7 @@ namespace SAE_dev_1
             {
                 case 0:
                     Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = (int)Canvas.GetLeft(joueur) ;
+                    x = (int)Canvas.GetLeft(joueur);
                     y = (int)Canvas.GetTop(joueur) - TAILLE_EPEE;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
@@ -992,14 +933,14 @@ namespace SAE_dev_1
                     }
                 }
                 // Vérifier la collision avec le terrain
-                foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
+                foreach (Objet objet in objets)
                 {
-                    if (objet.Item1.IntersectsWith(hitboxJoueur))
+                    if (objet.Hitbox.IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetLeft(
                             joueur,
-                            gauche ? objet.Item1.X + objet.Item1.Width + 1
-                                : objet.Item1.X - joueur.Width - 1
+                            gauche ? objet.Hitbox.X + objet.Hitbox.Width + 1
+                                : objet.Hitbox.X - joueur.Width - 1
                         );
                         hitboxJoueur.X = Canvas.GetLeft(joueur);
                         break;
@@ -1035,14 +976,14 @@ namespace SAE_dev_1
                 hitboxJoueur.Y = Canvas.GetTop(joueur);
 
                 // Vérifier la collision avec les objets
-                foreach ((Rect, Action<MainWindow>?) objet in hitboxObjets)
+                foreach (Objet objet in objets)
                 {
-                    if (objet.Item1.IntersectsWith(hitboxJoueur))
+                    if (objet.Hitbox.IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetTop(
                             joueur,
-                            bas ? objet.Item1.Y - joueur.Height - 1
-                                : objet.Item1.Y + objet.Item1.Height + 1
+                            bas ? objet.Hitbox.Y - joueur.Height - 1
+                                : objet.Hitbox.Y + objet.Hitbox.Height + 1
                         );
                         hitboxJoueur.Y = Canvas.GetTop(joueur);
                         break;
@@ -1080,9 +1021,9 @@ namespace SAE_dev_1
 
             List<Entite> piecesASupprimer = new List<Entite>();
 
-            foreach(Entite piece in pieces)
+            foreach (Entite piece in pieces)
             {
-                if(piece.Hitbox.IntersectsWith(hitboxJoueur))
+                if (piece.Hitbox.IntersectsWith(hitboxJoueur))
                 {
                     nombrePiece++;
                     pieceNombre.Content = $"{nombrePiece:N0}";
