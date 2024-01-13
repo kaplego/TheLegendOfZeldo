@@ -774,10 +774,10 @@ namespace SAE_dev_1
         {
             foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
             {
-                if ((objet.X >= xTuile ||
-                    objet.X <= xTuile + objet.Largeur) &&
-                    (objet.Y == yTuile ||
-                    objet.Y == yTuile + objet.Hauteur))
+                if (xTuile >= objet.X &&
+                    xTuile <= objet.X + objet.Largeur &&
+                    yTuile >= objet.Y &&
+                    yTuile <= objet.Y + objet.Hauteur)
                     return objet;
             }
 
@@ -937,12 +937,12 @@ namespace SAE_dev_1
                 // Vérifier la collision avec le terrain
                 foreach (Objet objet in objets)
                 {
-                    if (objet.Hitbox.IntersectsWith(hitboxJoueur))
+                    if (objet.Hitbox != null && ((Rect)objet.Hitbox!).IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetLeft(
                             joueur,
-                            gauche ? objet.Hitbox.X + objet.Hitbox.Width + 1
-                                : objet.Hitbox.X - joueur.Width - 1
+                            gauche ? ((Rect)objet.Hitbox!).X + ((Rect)objet.Hitbox!).Width + 1
+                                : ((Rect)objet.Hitbox!).X - joueur.Width - 1
                         );
                         hitboxJoueur.X = Canvas.GetLeft(joueur);
                         break;
@@ -981,12 +981,12 @@ namespace SAE_dev_1
                 // Vérifier la collision avec les objets
                 foreach (Objet objet in objets)
                 {
-                    if (objet.Hitbox.IntersectsWith(hitboxJoueur))
+                    if (objet.Hitbox != null && ((Rect)objet.Hitbox!).IntersectsWith(hitboxJoueur))
                     {
                         Canvas.SetTop(
                             joueur,
-                            bas ? objet.Hitbox.Y - joueur.Height - 1
-                                : objet.Hitbox.Y + objet.Hitbox.Height + 1
+                            bas ? ((Rect)objet.Hitbox!).Y - joueur.Height - 1
+                                : ((Rect)objet.Hitbox!).Y + ((Rect)objet.Hitbox!).Height + 1
                         );
                         hitboxJoueur.Y = Canvas.GetTop(joueur);
                         break;

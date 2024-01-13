@@ -506,6 +506,7 @@ namespace SAE_dev_1
                         mainWindow.bombe = false;
                         objet.NeReapparaitPlus = true;
                         mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
+                        objet.Hitbox = null;
                     }
                 }),
 

@@ -85,7 +85,7 @@ namespace SAE_dev_1
         }
 
         private string type;
-        private Rect hitbox;
+        private Rect? hitbox;
         private Rectangle rectanglePhysique;
         private int x;
         private int y;
@@ -100,7 +100,7 @@ namespace SAE_dev_1
             get { return type; }
         }
 
-        public Rect Hitbox
+        public Rect? Hitbox
         {
             get { return hitbox; }
             set { hitbox = value; }
