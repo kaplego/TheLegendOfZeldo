@@ -115,6 +115,11 @@ namespace SAE_dev_1
 
         private List<Objet> objets = new List<Objet>();
 
+        // Dialogue
+
+        private Dialogue? dialogueActuel = null;
+        private bool changerLettreDialogue = false;
+
         #region Textures
 
         // Terrain
@@ -474,40 +479,6 @@ namespace SAE_dev_1
             enChargement = false;
         }
 
-        private void CanvasKeyIsDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == touches[combinaisonTouches, 0])
-            {
-                gauche = true;
-                joueur.Apparence = 0;
-            }
-            if (e.Key == touches[combinaisonTouches, 1])
-            {
-                droite = true;
-                joueur.Apparence = 0;
-            }
-            if (e.Key == touches[combinaisonTouches, 2])
-            {
-                haut = true;
-                joueur.Apparence = 0;
-            }
-            if (e.Key == touches[combinaisonTouches, 3])
-            {
-                bas = true;
-                joueur.Apparence = 0;
-            }
-
-            if (e.Key == Key.L)
-            {
-                CreeEnemisCC(2, "slime");
-            }
-
-            if (e.Key == Key.M)
-            {
-                CreePiece();
-            }
-        }
-
         private void btnReprendre_Click(object sender, RoutedEventArgs e)
         {
             jeuEnPause = false;
@@ -522,6 +493,21 @@ namespace SAE_dev_1
             Options options = new Options(this);
             options.Show();
             this.Hide();
+        }
+
+        private void btnReapparaitre_Click(object sender, RoutedEventArgs e)
+        {
+            grilleEcranMort.Visibility = Visibility.Hidden;
+            this.Cursor = Cursors.None;
+            joueur.Vie = 5;
+            foreach (Rectangle coeur in coeurs)
+            {
+                coeur.Fill = textureCoeur;
+            }
+            immunite = DUREE_IMMUNITE;
+            ChangerCarte(carteActuelle, carteActuelle == 0 ? 4 : derniereApparition);
+            joueurMort = false;
+            minuteurJeu.Start();
         }
 
         private void Quitter(object sender, RoutedEventArgs e)
@@ -541,53 +527,118 @@ namespace SAE_dev_1
             else this.FocusCanvas();
         }
 
-        private void btnReapparaitre_Click(object sender, RoutedEventArgs e)
+        private bool EmpecherAppuiTouche(string? sauf = null)
         {
-            grilleEcranMort.Visibility = Visibility.Hidden;
-            this.Cursor = Cursors.None;
-            joueur.Vie = 5;
-            foreach (Rectangle coeur in coeurs)
+            switch (sauf)
             {
-                coeur.Fill = textureCoeur;
+                case "pause":
+                    return enChargement || dialogueActuel != null;
+                case "chargement":
+                    return jeuEnPause || dialogueActuel != null;
+                case "dialogue":
+                    return jeuEnPause || enChargement;
             }
-            immunite = DUREE_IMMUNITE;
-            ChangerCarte(carteActuelle, carteActuelle == 0 ? 4 : derniereApparition);
-            joueurMort = false;
-            minuteurJeu.Start();
+            return jeuEnPause || enChargement || dialogueActuel != null;
+        }
+
+        private void CanvasKeyIsDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
+            {
+                gauche = true;
+                joueur.Apparence = 0;
+            }
+            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
+            {
+                droite = true;
+                joueur.Apparence = 0;
+            }
+            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
+            {
+                haut = true;
+                joueur.Apparence = 0;
+            }
+            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
+            {
+                bas = true;
+                joueur.Apparence = 0;
+            }
+
+            if (e.Key == Key.F1 && !EmpecherAppuiTouche())
+            {
+                CreeEnemisCC(2, "slime");
+            }
+
+            if (e.Key == Key.F2 && !EmpecherAppuiTouche())
+            {
+                CreePiece();
+            }
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == touches[combinaisonTouches, 0])
+            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = false;
                 joueur.Direction = 3;
             }
-            if (e.Key == touches[combinaisonTouches, 1])
+            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
             {
                 droite = false;
                 joueur.Direction = 1;
             }
-            if (e.Key == touches[combinaisonTouches, 2])
+            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
             {
                 haut = false;
                 joueur.Direction = 0;
             }
-            if (e.Key == touches[combinaisonTouches, 3])
+            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
             {
                 bas = false;
                 joueur.Direction = 2;
             }
 
-            if (e.Key == touches[combinaisonTouches, 4] && !enChargement)
+            if (e.Key == touches[combinaisonTouches, 4] && !EmpecherAppuiTouche())
             {
                 Interagir();
             }
 
-            if (e.Key == touches[combinaisonTouches, 5] && !enChargement)
+            if (e.Key == touches[combinaisonTouches, 5] && !EmpecherAppuiTouche())
             {
                 Attaque();
                 tempsCoup = DUREE_COUP;
+            }
+
+            if (e.Key == Key.F3 && !EmpecherAppuiTouche("dialogue"))
+            {
+                if (dialogueActuel == null)
+                {
+                    haut = droite = bas = gauche = false;
+
+                    dialogueActuel = new Dialogue(new string[]
+                    {
+                        "Bonjour !",
+                        "Comment ça va ?"
+                    }, CanvasJeux);
+
+                    if (dialogueActuel.TexteSuivant())
+                        dialogueActuel = null;
+                    else changerLettreDialogue = true;
+                }
+                else
+                {
+                    if (changerLettreDialogue)
+                    {
+                        changerLettreDialogue = false;
+                        dialogueActuel.Accelerer();
+                    }
+                    else
+                    {
+                        changerLettreDialogue = true;
+                        if (dialogueActuel.TexteSuivant())
+                            dialogueActuel = null;
+                    }
+                }
             }
 
             if (e.Key == Key.Escape && !joueurMort)
@@ -771,9 +822,14 @@ namespace SAE_dev_1
 
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
-            Deplacement();
+            if (dialogueActuel != null)
+                Dialogue();
+            else
+            {
+                Deplacement();
 
-            EstAttaque();
+                EstAttaque();
+            }
         }
 
         private bool Deplacement()
@@ -937,6 +993,13 @@ namespace SAE_dev_1
             }
 
             return estAttaque;
+        }
+
+        private void Dialogue()
+        {
+            if (changerLettreDialogue)
+                if (dialogueActuel!.LettreSuivante())
+                    changerLettreDialogue = false;
         }
 
         #endregion

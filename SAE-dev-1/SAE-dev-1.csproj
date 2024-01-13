@@ -25,6 +25,9 @@
     <None Update="ressources\hud\coeur.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\hud\dialogue.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\items\bombe.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
