@@ -46,6 +46,7 @@ namespace SAE_dev_1
 
         // Joueur
         private int vitesseJoueur = 8;
+        private int vitesseJoueurDiagonale;
         private int vieJoueur = 5;
         private int degat = 1;
         private int immunite = 0;
@@ -281,6 +282,8 @@ namespace SAE_dev_1
 
             joueur.Fill = textureJoueurFace[0];
             Canvas.SetZIndex(joueur, ZINDEX_JOUEUR);
+
+            vitesseJoueurDiagonale = vitesseJoueur / 2;
 
             fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
 
@@ -893,13 +896,14 @@ namespace SAE_dev_1
             if ((gauche || droite) && !(gauche && droite))
             {
                 seDeplace = true;
+                bool diagonale = haut || bas;
 
                 if (gauche)
                 {
                     // Joueur va à gauche
                     Canvas.SetLeft(joueur, Math.Max(
                         0,
-                        Canvas.GetLeft(joueur) - vitesseJoueur
+                        Canvas.GetLeft(joueur) - (diagonale ? vitesseJoueur / 2 : vitesseJoueur)
                     ));
                     joueur.Fill = textureJoueurGauche[apparenceJoueur];
                     directionJoueur = 3;
@@ -909,7 +913,7 @@ namespace SAE_dev_1
                     // Joueur va à droite
                     Canvas.SetLeft(joueur, Math.Min(
                         CanvasJeux.Width - joueur.Width,
-                        Canvas.GetLeft(joueur) + vitesseJoueur
+                        Canvas.GetLeft(joueur) + (diagonale ? vitesseJoueur / 2 : vitesseJoueur)
                     ));
                     joueur.Fill = textureJoueurDroite[apparenceJoueur];
                     directionJoueur = 1;
@@ -950,13 +954,14 @@ namespace SAE_dev_1
             if ((bas || haut) && !(bas && haut))
             {
                 seDeplace = true;
+                bool diagonale = droite || gauche;
 
                 if (bas)
                 {
                     // Joueur va en bas
                     Canvas.SetTop(joueur, Math.Min(
                         CanvasJeux.Height - joueur.Height,
-                        Canvas.GetTop(joueur) + vitesseJoueur
+                        Canvas.GetTop(joueur) + (diagonale ? vitesseJoueurDiagonale : vitesseJoueur)
                     ));
                     joueur.Fill = textureJoueurFace[0];
                     directionJoueur = 2;
@@ -966,7 +971,7 @@ namespace SAE_dev_1
                     // Joueur va en haut
                     Canvas.SetTop(joueur, Math.Max(
                         0,
-                        Canvas.GetTop(joueur) - vitesseJoueur
+                        Canvas.GetTop(joueur) - (diagonale ? vitesseJoueurDiagonale : vitesseJoueur)
                     ));
                     joueur.Fill = textureJoueurDos[apparenceJoueur];
                     directionJoueur = 0;
