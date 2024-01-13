@@ -1,18 +1,12 @@
-﻿using Discord;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -23,141 +17,928 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly long DISCORD_CLIENT_ID = 1194049899059224636;
+        // Constantes
+
+        public static readonly int TAILLE_TUILE = 60;
+        public static readonly int TAILLE_PIECE = 20;
+        public static readonly int TAILLE_ENNEMI = 80;
+        public static readonly int TAILLE_EPEE = 80;
+        public static readonly int TAILLE_ICONES = 30;
+
+        public static readonly int LARGEUR_CANVAS = 1200;
+        public static readonly int HAUTEUR_CANVAS = 600;
+
+        public static readonly int ZINDEX_PAUSE = 1000;
+        public static readonly int ZINDEX_HUD = 500;
+        public static readonly int ZINDEX_JOUEUR = 100;
+        public static readonly int ZINDEX_ITEMS = 75;
+        public static readonly int ZINDEX_ENTITES = 50;
+        public static readonly int ZINDEX_OBJETS = 25;
+        public static readonly int ZINDEX_TERRAIN = 1;
+
+        public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
+
+        public static readonly int DUREE_IMMUNITE = 62;
+        public static readonly int DUREE_COUP = 32;
+
+        // Moteur du jeu
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
-        private int vitesseJ = 8;
-        private int vieJ = 5;
-        private int degat = 1;
-        private int vitesseE = 5;
-        private bool droite , gauche, bas, haut;
+        // Joueur
+        private Joueur joueur;
 
-        private int carteActuelle = 0;
+        private int immunite = 0;
+        private int tempsCoup = 0;
+        private int vitesseEnnemis = 5;
 
-        private Discord.Discord? discord;
-        public Activity discordActivity = new Activity()
+        private bool droite, gauche, bas, haut;
+        // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
+        public int derniereApparition;
+
+        private int prochainChangementApparence = 0;
+
+        public bool bombe = true;
+
+        //piece
+        private int nombrePiece = 0;
+        private List<Entite> pieces = new List<Entite>();
+
+        // Ennemis
+        private List<Entite> ennemis = new List<Entite>();
+
+        public int carteActuelle = 0;
+
+        private bool joueurMort = false;
+        private bool jeuEnPause = false;
+        private bool enChargement = false;
+
+        // Réglages
+
+        private Key[,] touches = new Key[3, 6]
         {
-            State = "Dans le menu"
+            {
+                Key.Left,
+                Key.Right,
+                Key.Up,
+                Key.Down,
+                Key.E,
+                Key.A
+            },
+            {
+                Key.Q,
+                Key.D,
+                Key.Z,
+                Key.S,
+                Key.E,
+                Key.A
+            },
+            {
+                Key.A,
+                Key.D,
+                Key.W,
+                Key.S,
+                Key.E,
+                Key.Q
+            }
         };
+        public int combinaisonTouches = 1;
+
+        // Hitbox
+
+        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
+
+        // RegExps Textures
+
+        private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
+        private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
+
+        private List<Objet> objets = new List<Objet>();
+
+        #region Textures
+
+        // Terrain
+
+        private ImageBrush textureMurDroit = new ImageBrush();
+        private ImageBrush textureMurAngle = new ImageBrush();
+        private ImageBrush texturePlanches = new ImageBrush();
+        private ImageBrush textureHerbe = new ImageBrush();
+        private ImageBrush textureChemin = new ImageBrush();
+        private ImageBrush textureCheminI = new ImageBrush();
+        private ImageBrush textureCheminL = new ImageBrush();
+        private ImageBrush textureCheminU = new ImageBrush();
+
+        // Objets
+
+        public ImageBrush texturePorte = new ImageBrush();
+        public ImageBrush textureBuisson = new ImageBrush();
+
+        // HUD
+
+        private ImageBrush texturePiece = new ImageBrush();
+        private ImageBrush textureCoeur = new ImageBrush();
+        private ImageBrush textureCoeurVide = new ImageBrush();
+
+        //epee
+
+        private ImageBrush textureEpee1 = new ImageBrush();
+        private ImageBrush textureEpee2 = new ImageBrush();
+
+        #endregion Textures
+
+        #region HUD
+
+        private Rectangle pieceIcone;
+        private Label pieceNombre;
+
+        private Rectangle[] coeurs;
+
+        #endregion HUD
 
         public MainWindow()
         {
             InitializeComponent();
-            InitialiserDiscord();
+            Objet.mainWindow = this;
 
             this.Hide();
 
-            Initialisation fenetreInitialisation = new Initialisation();
+            Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0, "Chargement des textures...");
+            fenetreInitialisation.Chargement(0 / 7, "Chargement des textures de terrain...");
 
-            // TODO: Charger les textures
+            textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
+            textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
+            texturePlanches.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\planches.png"));
+            textureHerbe.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\herbe.png"));
+            textureChemin.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin.png"));
+            textureCheminI.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-I.png"));
+            textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
+            textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(100);
-            fenetreInitialisation.Termine(this);
+            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures d'objets...");
+
+            texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
+            textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
+
+            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures du HUD...");
+
+            texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
+            textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
+            textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
+
+            fenetreInitialisation.Chargement(3 / 7, "Chargement des textures des personnages...");
+
+            textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
+            textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
+
+            fenetreInitialisation.Chargement(4 / 7, "Chargement du joueur...");
+
+            joueur = new Joueur();
+            CanvasJeux.Children.Add(joueur.Rectangle);
+
+            fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
+
+            pieceIcone = new Rectangle()
+            {
+                Width = TAILLE_ICONES,
+                Height = TAILLE_ICONES,
+                Fill = texturePiece
+            };
+
+            pieceNombre = new Label()
+            {
+                Height = TAILLE_ICONES,
+                HorizontalContentAlignment = HorizontalAlignment.Right,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                FontSize = 24,
+                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
+                Foreground = Brushes.White,
+                Padding = new Thickness()
+                {
+                    Top = 0,
+                    Right = 0,
+                    Bottom = 0,
+                    Left = 0
+                },
+                Content = $"{nombrePiece:N0}"
+            };
+
+            RenderOptions.SetBitmapScalingMode(pieceIcone, BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetEdgeMode(pieceIcone, EdgeMode.Aliased);
+            Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
+            Canvas.SetRight(pieceIcone, 5);
+            Canvas.SetTop(pieceIcone, -5 - TAILLE_ICONES);
+            CanvasJeux.Children.Add(pieceIcone);
+
+            Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
+            Canvas.SetRight(pieceNombre, TAILLE_ICONES + 10);
+            Canvas.SetTop(pieceNombre, -5 - TAILLE_ICONES);
+            CanvasJeux.Children.Add(pieceNombre);
+
+            coeurs = new Rectangle[5];
+            for (int i = 0; i < coeurs.Length; i++)
+            {
+                coeurs[i] = new Rectangle()
+                {
+                    Width = TAILLE_ICONES,
+                    Height = TAILLE_ICONES,
+                    Fill = textureCoeur
+                };
+
+                RenderOptions.SetBitmapScalingMode(coeurs[i], BitmapScalingMode.NearestNeighbor);
+                RenderOptions.SetEdgeMode(coeurs[i], EdgeMode.Aliased);
+                Canvas.SetZIndex(coeurs[i], ZINDEX_HUD);
+                Canvas.SetLeft(coeurs[i], i * (TAILLE_ICONES + 5) + 5);
+                Canvas.SetTop(coeurs[i], -5 - TAILLE_ICONES);
+                CanvasJeux.Children.Add(coeurs[i]);
+            }
+
+            fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
+
+            GenererCarte();
+
+            fenetreInitialisation.Termine();
+        }
+
+        public void Demarrer()
+        {
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
         }
 
-        public void InitialiserDiscord()
+        public void FocusCanvas()
         {
-            this.discord = new Discord.Discord(DISCORD_CLIENT_ID, (UInt64)Discord.CreateFlags.Default);
+            CanvasJeux.Focus();
+        }
 
-            discord.GetActivityManager().UpdateActivity(discordActivity, (result) => {});
+        private void GenererCarte()
+        {
+            string[,] carte = Cartes.CARTES[carteActuelle];
+
+            // Parcourir toutes les tuiles de la carte
+            for (int y = 0; y < carte.GetLength(0); y++)
+            {
+                for (int x = 0; x < carte.GetLength(1); x++)
+                {
+                    System.Windows.Rect? tuileHitbox;
+
+                    Rectangle tuile = new Rectangle()
+                    {
+                        Width = MainWindow.TAILLE_TUILE,
+                        Height = TAILLE_TUILE,
+                    };
+                    ImageBrush? fondTuile = new ImageBrush();
+                    fondTuile.Stretch = Stretch.Uniform;
+
+                    string textureTuile = carte[y, x];
+
+                    if (regexTextureMur.IsMatch(textureTuile))
+                    {
+                        // La tuile est un mur
+                        tuileHitbox = new Rect()
+                        {
+                            X = x * TAILLE_TUILE,
+                            Y = y * TAILLE_TUILE,
+                            Width = TAILLE_TUILE,
+                            Height = TAILLE_TUILE
+                        };
+                        hitboxTerrain.Add((Rect)tuileHitbox);
+
+                        Match correspondance = regexTextureMur.Match(textureTuile);
+                        string orientation = correspondance.Groups[1].Value;
+
+                        if (orientation == "n" || orientation == "s")
+                        {
+                            // Nord / Sud
+                            fondTuile = textureMurDroit;
+                            tuile.LayoutTransform = new RotateTransform()
+                            {
+                                Angle = orientation == "n" ? 90 : -90
+                            };
+                        }
+                        else if (orientation == "e" || orientation == "o")
+                        {
+                            // Est / Ouest
+                            fondTuile = textureMurDroit;
+
+                            if (orientation == "e")
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    Angle = 180
+                                };
+                        }
+                        else
+                        {
+                            // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
+                            fondTuile = textureMurAngle;
+
+                            if (orientation != "no")
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    Angle = orientation == "ne"
+                                        ? 90
+                                        : orientation == "se"
+                                            ? 180
+                                            : -90
+                                };
+                        }
+                    }
+                    else if (regexTextureChemin.IsMatch(textureTuile))
+                    {
+                        // La tuile est un chemin
+                        Match correspondance = regexTextureChemin.Match(textureTuile);
+                        string type = correspondance.Groups[1].Value;
+                        string orientation = correspondance.Groups[2].Value;
+
+                        switch (type)
+                        {
+                            case "I":
+                                fondTuile = textureCheminI;
+                                break;
+                            case "L":
+                                fondTuile = textureCheminL;
+                                break;
+                            case "U":
+                                fondTuile = textureCheminU;
+                                break;
+                        }
+
+                        tuile.LayoutTransform = new RotateTransform()
+                        {
+                            Angle = int.Parse(orientation)
+                        };
+                    }
+                    else
+                    {
+                        Random aleatoire = new Random();
+
+                        switch (textureTuile)
+                        {
+                            case "planches":
+                                fondTuile = texturePlanches;
+                                break;
+                            case "herbe":
+                                fondTuile = textureHerbe;
+
+                                // Rotation aléatoire de la tuile
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    Angle = aleatoire.Next(4) * 90
+                                };
+                                break;
+                            case "chemin":
+                                fondTuile = textureChemin;
+
+                                // Rotation aléatoire de la tuile
+                                tuile.LayoutTransform = new RotateTransform()
+                                {
+                                    Angle = aleatoire.Next(4) * 90
+                                };
+                                break;
+                        }
+                    }
+
+                    RenderOptions.SetBitmapScalingMode(tuile, BitmapScalingMode.NearestNeighbor);
+                    RenderOptions.SetEdgeMode(tuile, EdgeMode.Aliased);
+
+                    tuile.Fill = fondTuile;
+
+                    Panel.SetZIndex(tuile, ZINDEX_TERRAIN);
+                    Canvas.SetTop(tuile, y * TAILLE_TUILE);
+                    Canvas.SetLeft(tuile, x * TAILLE_TUILE);
+                    CanvasJeux.Children.Add(tuile);
+                }
+            }
+
+            // Ajouter les objets de la carte
+            if (Cartes.OBJETS_CARTES[carteActuelle] != null)
+                foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+                {
+                    if (!objet.NeReapparaitPlus)
+                    {
+                        objets.Add(objet);
+                        CanvasJeux.Children.Add(objet.RectanglePhysique);
+                    }
+                }
+        }
+
+        public async void ChangerCarte(int nouvelleCarte, int apparition = 0)
+        {
+            if (apparition < 0 || apparition > 4)
+                throw new ArgumentOutOfRangeException(nameof(apparition), "Le point d'apparition doit être entre 0 et 4 inclus.");
+
+            enChargement = true;
+            minuteurJeu.Stop();
+
+            chargement.Opacity = 0;
+            chargement.Visibility = Visibility.Visible;
+            while (chargement.Opacity < 1)
+            {
+                chargement.Opacity += 0.05;
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
+            }
+
+            CanvasJeux.Children.Clear();
+            ennemis.Clear();
+            hitboxTerrain.Clear();
+            objets.Clear();
+            carteActuelle = nouvelleCarte;
+
+            GenererCarte();
+
+            derniereApparition = apparition;
+            joueur.Apparaite(apparition);
+
+            CanvasJeux.Children.Add(joueur.Rectangle);
+
+            CanvasJeux.Children.Add(pieceIcone);
+            CanvasJeux.Children.Add(pieceNombre);
+
+            foreach (Rectangle coeur in coeurs)
+            {
+                CanvasJeux.Children.Add(coeur);
+            }
+
+            chargement.Opacity = 1;
+            while (chargement.Opacity > 0)
+            {
+                chargement.Opacity -= 0.05;
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
+            }
+
+            this.FocusCanvas();
+            minuteurJeu.Start();
+            enChargement = false;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Right) 
-            {
-                droite = true;
-            }
-            if (e.Key == Key.Left)
+            if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = true;
+                joueur.Apparence = 0;
             }
-            if (e.Key == Key.Down)
+            if (e.Key == touches[combinaisonTouches, 1])
             {
-                bas = true;
+                droite = true;
+                joueur.Apparence = 0;
             }
-            if (e.Key == Key.Up)
+            if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = true;
+                joueur.Apparence = 0;
+            }
+            if (e.Key == touches[combinaisonTouches, 3])
+            {
+                bas = true;
+                joueur.Apparence = 0;
             }
 
-            if (e.Key == Key.S)
+            if (e.Key == Key.L)
             {
-                CreeEnemisCC(2,"slime");
+                CreeEnemisCC(2, "slime");
             }
+
+            if (e.Key == Key.M)
+            {
+                CreePiece();
+            }
+        }
+
+        private void btnReprendre_Click(object sender, RoutedEventArgs e)
+        {
+            jeuEnPause = false;
+            grilleMenuPause.Visibility = Visibility.Hidden;
+            this.Cursor = Cursors.None;
+            minuteurJeu.Start();
+            CanvasJeux.Focus();
+        }
+
+        private void btnOptions_Click(object sender, RoutedEventArgs e)
+        {
+            Options options = new Options(this);
+            options.Show();
+            this.Hide();
+        }
+
+        private void Quitter(object sender, RoutedEventArgs e)
+        {
+            if (
+                MessageBox.Show(
+                    "Êtes-vous sûr(e) de vouloir quitter le jeu ?",
+                    "Quitter le jeu ?",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning,
+                    MessageBoxResult.No
+                ) == MessageBoxResult.Yes
+            )
+            {
+                this.Close();
+            }
+            else this.FocusCanvas();
+        }
+
+        private void btnReapparaitre_Click(object sender, RoutedEventArgs e)
+        {
+            grilleEcranMort.Visibility = Visibility.Hidden;
+            this.Cursor = Cursors.None;
+            joueur.Vie = 5;
+            foreach (Rectangle coeur in coeurs)
+            {
+                coeur.Fill = textureCoeur;
+            }
+            immunite = DUREE_IMMUNITE;
+            ChangerCarte(carteActuelle, carteActuelle == 0 ? 4 : derniereApparition);
+            joueurMort = false;
+            minuteurJeu.Start();
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Right)
-            {
-                droite = false;
-            }
-            if (e.Key == Key.Left)
+            if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = false;
+                joueur.Direction = 3;
             }
-            if (e.Key == Key.Down)
+            if (e.Key == touches[combinaisonTouches, 1])
             {
-                bas = false;
+                droite = false;
+                joueur.Direction = 1;
             }
-            if (e.Key == Key.Up)
+            if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = false;
+                joueur.Direction = 0;
+            }
+            if (e.Key == touches[combinaisonTouches, 3])
+            {
+                bas = false;
+                joueur.Direction = 2;
+            }
+
+            if (e.Key == touches[combinaisonTouches, 4] && !enChargement)
+            {
+                Interagir();
+            }
+
+            if (e.Key == touches[combinaisonTouches, 5] && !enChargement)
+            {
+                Attaque();
+                tempsCoup = DUREE_COUP;
+            }
+
+            if (e.Key == Key.Escape && !joueurMort)
+            {
+                jeuEnPause = !jeuEnPause;
+                if (jeuEnPause)
+                {
+                    grilleMenuPause.Visibility = Visibility.Visible;
+                    grilleMenuPause.Focus();
+                    this.Cursor = null;
+                    minuteurJeu.Stop();
+                }
+                else
+                {
+                    grilleMenuPause.Visibility = Visibility.Hidden;
+                    this.FocusCanvas();
+                    this.Cursor = Cursors.None;
+                    minuteurJeu.Start();
+                }
             }
         }
 
-        private void CreeEnemisCC (int nombre, string type)
+        public void CreeEnemisCC(int nombre, string type)
         {
-            int total = nombre;
-            Random endroit = new Random();
-            for (int i = 0; i < total; i++)
+            Random aleatoire = new Random();
+            for (int i = 0; i < nombre; i++)
             {
-                int hautEnemi = (int)(endroit.Next(200));
-                int gaucheEnemi = (int)(endroit.Next(1000));
                 //ImageBrush apparenceEnemi = new ImageBrush();
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
-                    Tag = "enemis,"+type,
-                    Height = 80,
-                    Width = 80,
+                    Tag = "enemis," + type,
+                    Height = TAILLE_ENNEMI,
+                    Width = TAILLE_ENNEMI,
+
                     Fill = Brushes.Red
                 };
-                Canvas.SetTop(nouveauxEnnemy, Canvas.GetTop(ZoneApparition) + hautEnemi);
-                Canvas.SetLeft(nouveauxEnnemy, Canvas.GetLeft(ZoneApparition) + gaucheEnemi);
+                Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
+                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500);
+                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+                Canvas.SetLeft(nouveauxEnnemy, x);
+                Canvas.SetTop(nouveauxEnnemy, y);
                 CanvasJeux.Children.Add(nouveauxEnnemy);
+
+                ennemis.Add(new Entite(nouveauxEnnemy, x, y));
+
                 //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
             }
         }
 
+        public void CreePiece()
+        {
+            Random aleatoire = new Random();
+            Rectangle Piece = new Rectangle
+            {
+                Tag = "objet",
+                Height = TAILLE_PIECE,
+                Width = TAILLE_PIECE,
+                Fill = texturePiece
+            };
+            Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
+            int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(200);
+            int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+            Canvas.SetLeft(Piece, x);
+            Canvas.SetTop(Piece, y);
+            CanvasJeux.Children.Add(Piece);
+
+            pieces.Add(new Entite(Piece, x, y));
+
+        }
+
+        private Objet? ObjetSurTuile(int xTuile, int yTuile)
+        {
+            foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+            {
+                if (xTuile >= objet.X &&
+                    xTuile <= objet.X + objet.Largeur &&
+                    yTuile >= objet.Y &&
+                    yTuile <= objet.Y + objet.Hauteur)
+                    return objet;
+            }
+
+            return null;
+        }
+
+        public bool Interagir()
+        {
+            bool interaction = false;
+
+            int xCentre = (int)(joueur.Hitbox.X + (joueur.Hitbox.Width / 2));
+            int yCentre = (int)(joueur.Hitbox.Y + (joueur.Hitbox.Height / 2));
+
+            int xTuile = xCentre / TAILLE_TUILE;
+            int yTuile = yCentre / TAILLE_TUILE;
+
+            switch (joueur.Direction)
+            {
+                case 0:
+                    yTuile--;
+                    break;
+                case 1:
+                    xTuile++;
+                    break;
+                case 2:
+                    yTuile++;
+                    break;
+                case 3:
+                    xTuile--;
+                    break;
+            }
+
+            Objet? objet = ObjetSurTuile(xTuile, yTuile);
+
+            if (objet != null)
+            {
+                Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
+                if (actionObjet != null)
+                {
+                    interaction = true;
+                    actionObjet(this, objet);
+                }
+            }
+
+            return interaction;
+        }
+
+        public void Attaque()
+        {
+            Rectangle epee = new Rectangle
+            {
+                Tag = "epee",
+                Height = TAILLE_EPEE,
+                Width = TAILLE_EPEE,
+                Fill = textureEpee1,
+            };
+            int x;
+            int y;
+            switch (joueur.Direction)
+            {
+                case 0:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = joueur.Gauche();
+                    y = joueur.Haut() - TAILLE_EPEE;
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
+                    break;
+                case 1:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = joueur.Gauche() + TAILLE_EPEE;
+                    y = joueur.Haut();
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
+                    break;
+                case 2:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = joueur.Gauche();
+                    y = joueur.Haut() + TAILLE_EPEE;
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
+                    break;
+                case 3:
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    x = joueur.Gauche() - TAILLE_EPEE;
+                    y = joueur.Haut();
+                    Canvas.SetLeft(epee, x);
+                    Canvas.SetTop(epee, y);
+                    CanvasJeux.Children.Add(epee);
+                    new Entite(epee, x, y);
+                    break;
+            }
+
+
+        }
+
+        #region Moteur du jeu
+
         private void MoteurDeJeu(object? sender, EventArgs e)
         {
-            discord.RunCallbacks();
+            Deplacement();
 
-            if (gauche && Canvas.GetLeft(Joueur) > 0)
-            {
-                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) - vitesseJ);
-            }
-            if (droite && Canvas.GetLeft(Joueur) < this.Width - Joueur.Width)
-            {
-                Canvas.SetLeft(Joueur, Canvas.GetLeft(Joueur) + vitesseJ);
-            }
-            if (bas && Canvas.GetTop(Joueur) < this.Height - Joueur.Height)
-            {
-                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) + vitesseJ);
-            }
-            if (haut && Canvas.GetTop(Joueur) > 0)
-            {
-                Canvas.SetTop(Joueur, Canvas.GetTop(Joueur) - vitesseJ);
-            }
+            EstAttaque();
         }
+
+        private bool Deplacement()
+        {
+            bool seDeplace = false;
+
+            // Ne rien faire si les touches gauche et droite sont appuyées simultanément
+            if ((gauche || droite) && !(gauche && droite))
+            {
+                seDeplace = true;
+                bool diagonale = haut || bas;
+
+                if (droite)
+                    joueur.Deplacement(1, diagonale);
+                else
+                    joueur.Deplacement(3, diagonale);
+
+                // Vérifier la collision avec les objets
+                foreach (Objet objet in objets)
+                {
+                    if (joueur.EnCollision(objet))
+                    {
+                        joueur.ModifierGauche(
+                            gauche ? ((Rect)objet.Hitbox!).X + ((Rect)objet.Hitbox!).Width + 1
+                                : ((Rect)objet.Hitbox!).X - Joueur.LARGEUR - 1
+                        );
+                        break;
+                    }
+                }
+
+                // Vérifier la collision avec le terrain
+                foreach (Rect terrain in hitboxTerrain)
+                {
+                    if (joueur.Hitbox.IntersectsWith(terrain))
+                    {
+                        joueur.ModifierGauche(
+                            gauche ? terrain.X + terrain.Width + 1
+                                : terrain.X - Joueur.LARGEUR - 1
+                        );
+                        break;
+                    }
+                }
+            }
+
+            // Ne rien faire si les touches haut et bas sont appuyées simultanément
+            if ((bas || haut) && !(bas && haut))
+            {
+                seDeplace = true;
+                bool diagonale = droite || gauche;
+
+                if (bas)
+                    joueur.Deplacement(2, diagonale);
+                else
+                    joueur.Deplacement(0, diagonale);
+
+                // Vérifier la collision avec les objets
+                foreach (Objet objet in objets)
+                {
+                    if (objet.EnCollision(joueur))
+                    {
+                        joueur.ModifierHaut(
+                            bas ? ((Rect)objet.Hitbox!).Y - Joueur.HAUTEUR - 1
+                                : ((Rect)objet.Hitbox!).Y + ((Rect)objet.Hitbox!).Height + 1
+                        );
+                        break;
+                    }
+                }
+                // Vérifier la collision avec le terrain
+                foreach (Rect terrain in hitboxTerrain)
+                {
+                    if (joueur.Hitbox.IntersectsWith(terrain))
+                    {
+                        joueur.ModifierHaut(
+                            bas ? terrain.Y - Joueur.HAUTEUR - 1
+                                : terrain.Y + terrain.Height + 1
+                        );
+                        break;
+                    }
+                }
+            }
+
+            if (seDeplace)
+            {
+                if (prochainChangementApparence == 0)
+                {
+                    prochainChangementApparence = TEMPS_CHANGEMENT_APPARENCE;
+                    joueur.ProchaineApparence();
+                }
+                else prochainChangementApparence--;
+            }
+
+            List<Entite> piecesASupprimer = new List<Entite>();
+
+            foreach (Entite piece in pieces)
+            {
+                if (piece.Hitbox.IntersectsWith(joueur.Hitbox))
+                {
+                    nombrePiece++;
+                    pieceNombre.Content = $"{nombrePiece:N0}";
+                    CanvasJeux.Children.Remove(piece.RectanglePhysique);
+                    piecesASupprimer.Add(piece);
+                }
+            }
+
+            foreach (Entite piece in piecesASupprimer)
+            {
+                pieces.Remove(piece);
+            }
+
+            return seDeplace;
+        }
+
+        private bool EstAttaque()
+        {
+            bool estAttaque = false,
+                estMort = false;
+
+            if (immunite > 0)
+            {
+                immunite--;
+                if (immunite % 2 == 0)
+                    joueur.Rectangle.Opacity = 100;
+                else
+                    joueur.Rectangle.Opacity = 0;
+
+                if (immunite == 0)
+                    joueur.Immunise = false;
+
+                return false;
+            }
+
+            foreach (Entite ennemi in ennemis)
+            {
+                if (ennemi.EnCollision(joueur) && joueur.Vie > 0)
+                {
+                    estAttaque = true;
+                    joueur.PrendDesDegats();
+
+                    if (joueur.Vie == 0)
+                    {
+                        estMort = true;
+                        break;
+                    }
+                    else
+                    {
+                        coeurs[joueur.Vie].Fill = textureCoeurVide;
+                        immunite = DUREE_IMMUNITE;
+                        joueur.Immunise = true;
+                    }
+                }
+            }
+
+            if (estMort)
+            {
+                grilleEcranMort.Visibility = Visibility.Visible;
+                this.Cursor = null;
+                CanvasJeux.Children.Clear();
+                ennemis.Clear();
+                joueurMort = true;
+                minuteurJeu.Stop();
+            }
+
+            return estAttaque;
+        }
+
+        #endregion
     }
 }

@@ -5,20 +5,36 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SAE_dev_1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="Initialisation"
-    Width="1600"
-    Height="900"
+    Title="La Légende de Zeldo"
+    Icon="ressources/icone.png"
+    Width="1200"
+    Height="675"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d">
+    WindowStyle="None"
+    WindowState="Maximized"
+    mc:Ignorable="d" Closed="Window_Closed">
+    <Window.Resources>
+        <FontFamily x:Key="Monocraft" >/Fonts/#Monocraft</FontFamily>
+    </Window.Resources>
     <Grid Background="#FF2F2F2F">
-        <Label
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock
+            x:Name="titreDuJeu"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            FontSize="150"
-            Foreground="White">
+            FontSize="100"
+            Foreground="White"
+            Margin="0,-150,0,0"
+            Padding="20,0,20,0"
+            Grid.ColumnSpan="2"
+            TextWrapping="WrapWithOverflow"
+            FontFamily="{StaticResource Monocraft}">
             La Légende de Zeldo
-        </Label>
+        </TextBlock>
         <ProgressBar
             x:Name="chargement"
             Width="800"
@@ -28,32 +44,95 @@
             VerticalAlignment="Bottom"
             Background="#FF545454"
             BorderBrush="#FF545454"
-            Foreground="White" />
+            Foreground="White"
+            Grid.ColumnSpan="2" />
         <Label
             x:Name="nomChargement"
             Margin="0,0,0,50"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             FontSize="24"
-            Foreground="White">
+            Foreground="White" Grid.ColumnSpan="2" Height="42" Width="156">
             Chargement...
         </Label>
         <Button
             x:Name="btnJouer"
-            Width="300"
-            Height="75"
-            Margin="0,0,0,100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
+            Width="400"
+            Height="70"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
             Background="DimGray"
-            Click="btnJouer_Click"
             Content="Jouer"
             FontSize="36"
             Foreground="White"
-            Visibility="Hidden">
+            Visibility="Hidden"
+            Click="btnJouer_Click" Margin="0,0,0,250"
+            HorizontalContentAlignment="Left"
+            Padding="30,5,30,5">
             <Button.Resources>
                 <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="8" />
+                    <Setter Property="CornerRadius" Value="0,8,8,0" />
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Button
+            x:Name="btnOptions"
+            Width="300"
+            Height="{Binding Height, ElementName=btnJouer}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="DimGray"
+            Content="Options"
+            FontSize="36"
+            Foreground="White"
+            Visibility="{Binding Visibility, ElementName=btnJouer}"
+            Click="btnOptions_Click"
+            HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnJouer}"
+            Padding="{Binding Padding, ElementName=btnJouer}">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="0,8,8,0" />
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Button
+            x:Name="btnQuitter"
+            Width="{Binding Width, ElementName=btnOptions}"
+            Height="{Binding Height, ElementName=btnJouer}"
+            Margin="0,250,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="DimGray"
+            Content="Quitter"
+            FontSize="36"
+            Foreground="White"
+            Visibility="{Binding Visibility, ElementName=btnJouer}"
+            Click="btnQuitter_Click"
+            HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnJouer}"
+            Padding="{Binding Padding, ElementName=btnJouer}">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="0,8,8,0" />
+                </Style>
+            </Button.Resources>
+        </Button>
+        <Button
+            x:Name="btnCredits"
+            Width="{Binding Width, ElementName=btnOptions}"
+            Height="{Binding Height, ElementName=btnJouer}"
+            Margin="0,500,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="DimGray"
+            Content="Credits"
+            FontSize="36"
+            Foreground="White"
+            Visibility="{Binding Visibility, ElementName=btnJouer}"
+            HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnJouer}"
+            Padding="{Binding Padding, ElementName=btnJouer}" Click="btnCredits_Click">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="0,8,8,0" />
                 </Style>
             </Button.Resources>
         </Button>

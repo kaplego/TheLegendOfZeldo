@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
@@ -19,11 +8,13 @@ namespace SAE_dev_1
     /// </summary>
     public partial class Initialisation : Window
     {
-        private MainWindow? mainWindow;
+        private MainWindow mainWindow;
+        private bool lancerLeJeu = false;
 
-        public Initialisation()
+        public Initialisation(MainWindow mainWindow)
         {
             InitializeComponent();
+            this.mainWindow = mainWindow;
         }
 
         public void Chargement(int valeur, string? nom = null)
@@ -35,21 +26,54 @@ namespace SAE_dev_1
             }
         }
 
-        public void Termine(MainWindow mainWindow)
+        public void Termine()
         {
+            Chargement(100, "Terminé");
+
             chargement.Visibility = Visibility.Hidden;
             nomChargement.Visibility = Visibility.Hidden;
 
-            btnJouer.Visibility = Visibility.Visible;
+            Grid.SetColumn(titreDuJeu, 1);
+            Grid.SetColumnSpan(titreDuJeu, 1);
+            titreDuJeu.FontSize = 130;
 
-            this.mainWindow = mainWindow;
+            btnJouer.Visibility = Visibility.Visible;
+            btnOptions.Visibility = Visibility.Visible;
+            btnQuitter.Visibility = Visibility.Visible;
         }
 
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow?.Show();
-            mainWindow.discordActivity.State = "En jeu";
+            lancerLeJeu = true;
             this.Close();
+        }
+
+        private void btnOptions_Click(object sender, RoutedEventArgs e)
+        {
+            Options options = new Options(mainWindow, this);
+            options.Show();
+            this.Hide();
+        }
+
+        private void btnQuitter_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnCredits_Click(object sender, RoutedEventArgs e)
+        {
+            new Credits(mainWindow, this).Show();
+            this.Hide();
+        }
+
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
+            if (lancerLeJeu)
+            {
+                mainWindow.Show();
+                mainWindow.Demarrer();
+            }
+            else mainWindow.Close();
         }
     }
 }
