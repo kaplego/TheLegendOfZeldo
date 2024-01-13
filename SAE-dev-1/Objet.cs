@@ -175,5 +175,27 @@ namespace SAE_dev_1
             get { return neReapparaitPlus; }
             set { neReapparaitPlus = value; }
         }
+
+        public bool EnCollision(Objet objet)
+        {
+            if (this.Hitbox == null || objet.Hitbox == null)
+                return false;
+            return ((Rect)this.Hitbox).IntersectsWith((Rect)objet.Hitbox);
+        }
+
+        public bool EnCollision(Entite entite)
+        {
+            if (this.Hitbox == null)
+                return false;
+            return ((Rect)this.Hitbox).IntersectsWith(entite.Hitbox);
+        }
+
+        public bool EnCollision(Joueur joueur)
+        {
+            if (this.Hitbox == null)
+                return false;
+
+            return ((Rect)this.Hitbox).IntersectsWith(joueur.Hitbox);
+        }
     }
 }

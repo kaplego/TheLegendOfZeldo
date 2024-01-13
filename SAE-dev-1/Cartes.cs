@@ -272,7 +272,7 @@ namespace SAE_dev_1
                 new Objet("porte", 10, 9, 180, false, (mainWindow, objet) =>
                     {
                         mainWindow.derniereApparition = 0;
-                        mainWindow.ChangerCarte(1);
+                        mainWindow.ChangerCarte(1, 0);
                     }
                 )
             },

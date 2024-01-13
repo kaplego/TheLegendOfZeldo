@@ -42,5 +42,18 @@ namespace SAE_dev_1
         {
             return this.Hitbox.IntersectsWith(entite.Hitbox);
         }
+
+        public bool EnCollision(Objet objet)
+        {
+            if (objet.Hitbox == null)
+                return false;
+
+            return this.Hitbox.IntersectsWith((Rect)objet.Hitbox);
+        }
+
+        public bool EnCollision(Joueur joueur)
+        {
+            return this.Hitbox.IntersectsWith(joueur.Hitbox);
+        }
     }
 }

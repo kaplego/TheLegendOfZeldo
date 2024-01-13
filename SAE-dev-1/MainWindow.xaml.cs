@@ -23,6 +23,10 @@ namespace SAE_dev_1
         public static readonly int TAILLE_PIECE = 20;
         public static readonly int TAILLE_ENNEMI = 80;
         public static readonly int TAILLE_EPEE = 80;
+        public static readonly int TAILLE_ICONES = 30;
+
+        public static readonly int LARGEUR_CANVAS = 1200;
+        public static readonly int HAUTEUR_CANVAS = 600;
 
         public static readonly int ZINDEX_PAUSE = 1000;
         public static readonly int ZINDEX_HUD = 500;
@@ -33,33 +37,26 @@ namespace SAE_dev_1
         public static readonly int ZINDEX_TERRAIN = 1;
 
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
-        public static readonly int NOMBRE_APPARENCES = 3;
 
-        private static readonly int DUREE_IMMUNITE = 62;
-        private static readonly int DUREE_COUP = 32;
-
-        public static readonly int TAILLE_ICONES = 30;
+        public static readonly int DUREE_IMMUNITE = 62;
+        public static readonly int DUREE_COUP = 32;
 
         // Moteur du jeu
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
         // Joueur
-        private int vitesseJoueur = 8;
-        private int vitesseJoueurDiagonale;
-        private int vieJoueur = 5;
-        private int degat = 1;
+        private Joueur joueur;
+
         private int immunite = 0;
         private int tempsCoup = 0;
         private int vitesseEnnemis = 5;
 
         private bool droite, gauche, bas, haut;
         // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
-        private int directionJoueur;
         public int derniereApparition;
 
         private int prochainChangementApparence = 0;
-        private int apparenceJoueur = 0;
 
         public bool bombe = true;
 
@@ -109,7 +106,6 @@ namespace SAE_dev_1
 
         // Hitbox
 
-        private Rect hitboxJoueur;
         private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
 
         // RegExps Textures
@@ -143,13 +139,6 @@ namespace SAE_dev_1
         private ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
 
-        //Personnages
-
-        private ImageBrush[] textureJoueurFace;
-        private ImageBrush[] textureJoueurDos;
-        private ImageBrush[] textureJoueurDroite;
-        private ImageBrush[] textureJoueurGauche;
-
         //epee
 
         private ImageBrush textureEpee1 = new ImageBrush();
@@ -176,17 +165,7 @@ namespace SAE_dev_1
             Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0, "Chargement des hitbox...");
-
-            hitboxJoueur = new Rect()
-            {
-                Height = joueur.Height,
-                Width = joueur.Width,
-                X = Canvas.GetLeft(joueur),
-                Y = Canvas.GetTop(joueur)
-            };
-
-            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures de terrain...");
+            fenetreInitialisation.Chargement(0 / 7, "Chargement des textures de terrain...");
 
             textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
             textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
@@ -197,93 +176,26 @@ namespace SAE_dev_1
             textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
             textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures d'objets...");
+            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures d'objets...");
 
             texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
             textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
 
-            fenetreInitialisation.Chargement(3 / 7, "Chargement des textures du HUD...");
+            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures du HUD...");
 
             texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
             textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(4 / 7, "Chargement des textures des personnages...");
-
-
-            textureJoueurFace = new ImageBrush[1]
-            {
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face1.png")),
-                    Stretch = Stretch.Uniform
-                }
-            };
-
-            textureJoueurDos = new ImageBrush[3]
-            {
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos1.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos2.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos3.png")),
-                    Stretch = Stretch.Uniform
-                }
-            };
-
-            textureJoueurGauche = new ImageBrush[3]
-            {
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG1.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG2.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG3.png")),
-                    Stretch = Stretch.Uniform
-                }
-            };
-
-            textureJoueurDroite = new ImageBrush[3]
-            {
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD1.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD2.png")),
-                    Stretch = Stretch.Uniform
-                },
-                new ImageBrush()
-                {
-                    ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD3.png")),
-                    Stretch = Stretch.Uniform
-                }
-            };
+            fenetreInitialisation.Chargement(3 / 7, "Chargement des textures des personnages...");
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
-            joueur.Fill = textureJoueurFace[0];
-            Canvas.SetZIndex(joueur, ZINDEX_JOUEUR);
+            fenetreInitialisation.Chargement(4 / 7, "Chargement du joueur...");
 
-            vitesseJoueurDiagonale = vitesseJoueur / 2;
+            joueur = new Joueur();
+            CanvasJeux.Children.Add(joueur.Rectangle);
 
             fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
 
@@ -515,6 +427,9 @@ namespace SAE_dev_1
 
         public async void ChangerCarte(int nouvelleCarte, int apparition = 0)
         {
+            if (apparition < 0 || apparition > 4)
+                throw new ArgumentOutOfRangeException(nameof(apparition), "Le point d'apparition doit être entre 0 et 4 inclus.");
+
             enChargement = true;
             minuteurJeu.Stop();
 
@@ -534,37 +449,10 @@ namespace SAE_dev_1
 
             GenererCarte();
 
-            Canvas.SetTop(joueur, apparition == 0
-                ? 0
-                : apparition == 2
-                    ? CanvasJeux.Height - joueur.Height
-                    : (CanvasJeux.Height - joueur.Height) / 2);
-            Canvas.SetLeft(joueur, apparition == 1
-                ? CanvasJeux.Width - joueur.Width
-                : apparition == 3
-                    ? 0
-                    : (CanvasJeux.Width - joueur.Width) / 2);
+            derniereApparition = apparition;
+            joueur.Apparaite(apparition);
 
-            CanvasJeux.Children.Add(joueur);
-
-            switch (apparition)
-            {
-                case 1:
-                    joueur.Fill = textureJoueurGauche[0];
-                    break;
-                case 2:
-                    joueur.Fill = textureJoueurDos[0];
-                    break;
-                case 3:
-                    joueur.Fill = textureJoueurDroite[0];
-                    break;
-                default:
-                    joueur.Fill = textureJoueurFace[0];
-                    break;
-            }
-
-            hitboxJoueur.X = Canvas.GetLeft(joueur);
-            hitboxJoueur.Y = Canvas.GetTop(joueur);
+            CanvasJeux.Children.Add(joueur.Rectangle);
 
             CanvasJeux.Children.Add(pieceIcone);
             CanvasJeux.Children.Add(pieceNombre);
@@ -591,22 +479,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = true;
-                apparenceJoueur = 1;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 1])
             {
                 droite = true;
-                apparenceJoueur = 1;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = true;
-                apparenceJoueur = 1;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 3])
             {
                 bas = true;
-                apparenceJoueur = 1;
+                joueur.Apparence = 0;
             }
 
             if (e.Key == Key.L)
@@ -657,7 +545,7 @@ namespace SAE_dev_1
         {
             grilleEcranMort.Visibility = Visibility.Hidden;
             this.Cursor = Cursors.None;
-            vieJoueur = 5;
+            joueur.Vie = 5;
             foreach (Rectangle coeur in coeurs)
             {
                 coeur.Fill = textureCoeur;
@@ -673,22 +561,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0])
             {
                 gauche = false;
-                joueur.Fill = textureJoueurGauche[0];
+                joueur.Direction = 3;
             }
             if (e.Key == touches[combinaisonTouches, 1])
             {
                 droite = false;
-                joueur.Fill = textureJoueurDroite[0];
+                joueur.Direction = 1;
             }
             if (e.Key == touches[combinaisonTouches, 2])
             {
                 haut = false;
-                joueur.Fill = textureJoueurDos[0];
+                joueur.Direction = 0;
             }
             if (e.Key == touches[combinaisonTouches, 3])
             {
                 bas = false;
-                joueur.Fill = textureJoueurFace[0];
+                joueur.Direction = 2;
             }
 
             if (e.Key == touches[combinaisonTouches, 4] && !enChargement)
@@ -788,13 +676,13 @@ namespace SAE_dev_1
         {
             bool interaction = false;
 
-            int xCentre = (int)(hitboxJoueur.X + (hitboxJoueur.Width / 2));
-            int yCentre = (int)(hitboxJoueur.Y + (hitboxJoueur.Height / 2));
+            int xCentre = (int)(joueur.Hitbox.X + (joueur.Hitbox.Width / 2));
+            int yCentre = (int)(joueur.Hitbox.Y + (joueur.Hitbox.Height / 2));
 
             int xTuile = xCentre / TAILLE_TUILE;
             int yTuile = yCentre / TAILLE_TUILE;
 
-            switch (directionJoueur)
+            switch (joueur.Direction)
             {
                 case 0:
                     yTuile--;
@@ -836,12 +724,12 @@ namespace SAE_dev_1
             };
             int x;
             int y;
-            switch (directionJoueur)
+            switch (joueur.Direction)
             {
                 case 0:
                     Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = (int)Canvas.GetLeft(joueur);
-                    y = (int)Canvas.GetTop(joueur) - TAILLE_EPEE;
+                    x = joueur.Gauche();
+                    y = joueur.Haut() - TAILLE_EPEE;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
@@ -849,8 +737,8 @@ namespace SAE_dev_1
                     break;
                 case 1:
                     Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = (int)Canvas.GetLeft(joueur) + TAILLE_EPEE;
-                    y = (int)Canvas.GetTop(joueur);
+                    x = joueur.Gauche() + TAILLE_EPEE;
+                    y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
@@ -858,8 +746,8 @@ namespace SAE_dev_1
                     break;
                 case 2:
                     Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = (int)Canvas.GetLeft(joueur);
-                    y = (int)Canvas.GetTop(joueur) + TAILLE_EPEE;
+                    x = joueur.Gauche();
+                    y = joueur.Haut() + TAILLE_EPEE;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
@@ -867,8 +755,8 @@ namespace SAE_dev_1
                     break;
                 case 3:
                     Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = (int)Canvas.GetLeft(joueur) - TAILLE_EPEE;
-                    y = (int)Canvas.GetTop(joueur);
+                    x = joueur.Gauche() - TAILLE_EPEE;
+                    y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
@@ -898,53 +786,33 @@ namespace SAE_dev_1
                 seDeplace = true;
                 bool diagonale = haut || bas;
 
-                if (gauche)
-                {
-                    // Joueur va à gauche
-                    Canvas.SetLeft(joueur, Math.Max(
-                        0,
-                        Canvas.GetLeft(joueur) - (diagonale ? vitesseJoueur / 2 : vitesseJoueur)
-                    ));
-                    joueur.Fill = textureJoueurGauche[apparenceJoueur];
-                    directionJoueur = 3;
-                }
+                if (droite)
+                    joueur.Deplacement(1, diagonale);
                 else
-                {
-                    // Joueur va à droite
-                    Canvas.SetLeft(joueur, Math.Min(
-                        CanvasJeux.Width - joueur.Width,
-                        Canvas.GetLeft(joueur) + (diagonale ? vitesseJoueur / 2 : vitesseJoueur)
-                    ));
-                    joueur.Fill = textureJoueurDroite[apparenceJoueur];
-                    directionJoueur = 1;
-                }
-                hitboxJoueur.X = Canvas.GetLeft(joueur);
+                    joueur.Deplacement(3, diagonale);
 
                 // Vérifier la collision avec les objets
-                foreach (Rect terrain in hitboxTerrain)
+                foreach (Objet objet in objets)
                 {
-                    if (terrain.IntersectsWith(hitboxJoueur))
+                    if (joueur.EnCollision(objet))
                     {
-                        Canvas.SetLeft(
-                            joueur,
-                            gauche ? terrain.X + terrain.Width + 1
-                                : terrain.X - joueur.Width - 1
+                        joueur.ModifierGauche(
+                            gauche ? ((Rect)objet.Hitbox!).X + ((Rect)objet.Hitbox!).Width + 1
+                                : ((Rect)objet.Hitbox!).X - Joueur.LARGEUR - 1
                         );
-                        hitboxJoueur.X = Canvas.GetLeft(joueur);
                         break;
                     }
                 }
+
                 // Vérifier la collision avec le terrain
-                foreach (Objet objet in objets)
+                foreach (Rect terrain in hitboxTerrain)
                 {
-                    if (objet.Hitbox != null && ((Rect)objet.Hitbox!).IntersectsWith(hitboxJoueur))
+                    if (joueur.Hitbox.IntersectsWith(terrain))
                     {
-                        Canvas.SetLeft(
-                            joueur,
-                            gauche ? ((Rect)objet.Hitbox!).X + ((Rect)objet.Hitbox!).Width + 1
-                                : ((Rect)objet.Hitbox!).X - joueur.Width - 1
+                        joueur.ModifierGauche(
+                            gauche ? terrain.X + terrain.Width + 1
+                                : terrain.X - Joueur.LARGEUR - 1
                         );
-                        hitboxJoueur.X = Canvas.GetLeft(joueur);
                         break;
                     }
                 }
@@ -957,52 +825,31 @@ namespace SAE_dev_1
                 bool diagonale = droite || gauche;
 
                 if (bas)
-                {
-                    // Joueur va en bas
-                    Canvas.SetTop(joueur, Math.Min(
-                        CanvasJeux.Height - joueur.Height,
-                        Canvas.GetTop(joueur) + (diagonale ? vitesseJoueurDiagonale : vitesseJoueur)
-                    ));
-                    joueur.Fill = textureJoueurFace[0];
-                    directionJoueur = 2;
-                }
+                    joueur.Deplacement(2, diagonale);
                 else
-                {
-                    // Joueur va en haut
-                    Canvas.SetTop(joueur, Math.Max(
-                        0,
-                        Canvas.GetTop(joueur) - (diagonale ? vitesseJoueurDiagonale : vitesseJoueur)
-                    ));
-                    joueur.Fill = textureJoueurDos[apparenceJoueur];
-                    directionJoueur = 0;
-                }
-                hitboxJoueur.Y = Canvas.GetTop(joueur);
+                    joueur.Deplacement(0, diagonale);
 
                 // Vérifier la collision avec les objets
                 foreach (Objet objet in objets)
                 {
-                    if (objet.Hitbox != null && ((Rect)objet.Hitbox!).IntersectsWith(hitboxJoueur))
+                    if (objet.EnCollision(joueur))
                     {
-                        Canvas.SetTop(
-                            joueur,
-                            bas ? ((Rect)objet.Hitbox!).Y - joueur.Height - 1
+                        joueur.ModifierHaut(
+                            bas ? ((Rect)objet.Hitbox!).Y - Joueur.HAUTEUR - 1
                                 : ((Rect)objet.Hitbox!).Y + ((Rect)objet.Hitbox!).Height + 1
                         );
-                        hitboxJoueur.Y = Canvas.GetTop(joueur);
                         break;
                     }
                 }
                 // Vérifier la collision avec le terrain
                 foreach (Rect terrain in hitboxTerrain)
                 {
-                    if (terrain.IntersectsWith(hitboxJoueur))
+                    if (joueur.Hitbox.IntersectsWith(terrain))
                     {
-                        Canvas.SetTop(
-                            joueur,
-                            bas ? terrain.Y - joueur.Height - 1
+                        joueur.ModifierHaut(
+                            bas ? terrain.Y - Joueur.HAUTEUR - 1
                                 : terrain.Y + terrain.Height + 1
                         );
-                        hitboxJoueur.Y = Canvas.GetTop(joueur);
                         break;
                     }
                 }
@@ -1013,11 +860,7 @@ namespace SAE_dev_1
                 if (prochainChangementApparence == 0)
                 {
                     prochainChangementApparence = TEMPS_CHANGEMENT_APPARENCE;
-                    apparenceJoueur++;
-                    if (apparenceJoueur >= NOMBRE_APPARENCES)
-                    {
-                        apparenceJoueur = 0;
-                    }
+                    joueur.ProchaineApparence();
                 }
                 else prochainChangementApparence--;
             }
@@ -1026,7 +869,7 @@ namespace SAE_dev_1
 
             foreach (Entite piece in pieces)
             {
-                if (piece.Hitbox.IntersectsWith(hitboxJoueur))
+                if (piece.Hitbox.IntersectsWith(joueur.Hitbox))
                 {
                     nombrePiece++;
                     pieceNombre.Content = $"{nombrePiece:N0}";
@@ -1052,29 +895,33 @@ namespace SAE_dev_1
             {
                 immunite--;
                 if (immunite % 2 == 0)
-                    joueur.Opacity = 100;
+                    joueur.Rectangle.Opacity = 100;
                 else
-                    joueur.Opacity = 0;
+                    joueur.Rectangle.Opacity = 0;
+
+                if (immunite == 0)
+                    joueur.Immunise = false;
 
                 return false;
             }
 
             foreach (Entite ennemi in ennemis)
             {
-                if (ennemi.Hitbox.IntersectsWith(hitboxJoueur))
+                if (ennemi.EnCollision(joueur) && joueur.Vie > 0)
                 {
                     estAttaque = true;
-                    vieJoueur--;
+                    joueur.PrendDesDegats();
 
-                    if (vieJoueur == 0)
+                    if (joueur.Vie == 0)
                     {
                         estMort = true;
                         break;
                     }
                     else
                     {
-                        coeurs[vieJoueur].Fill = textureCoeurVide;
+                        coeurs[joueur.Vie].Fill = textureCoeurVide;
                         immunite = DUREE_IMMUNITE;
+                        joueur.Immunise = true;
                     }
                 }
             }
@@ -1091,7 +938,6 @@ namespace SAE_dev_1
 
             return estAttaque;
         }
-
 
         #endregion
     }

@@ -47,14 +47,6 @@
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             RenderOptions.EdgeMode="Aliased">
 
-            <Rectangle
-                x:Name="joueur"
-                Canvas.Left="560"
-                Canvas.Top="260"
-                Width="80"
-                Height="80"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top" />
             <Canvas
                 x:Name="ZoneApparition"
                 Canvas.Left="83"
