@@ -6,10 +6,15 @@
     <RootNamespace>SAE_dev_1</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>icone.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="ressources\icone.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icone.ico" />
   </ItemGroup>
 
   <ItemGroup>
