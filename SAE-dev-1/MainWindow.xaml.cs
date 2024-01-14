@@ -863,6 +863,8 @@ namespace SAE_dev_1
             {
                 Deplacement();
 
+                Collision();
+
                 EstAttaque();
 
                 Minuteur();
@@ -958,6 +960,13 @@ namespace SAE_dev_1
                 else prochainChangementApparence--;
             }
 
+            
+
+            return seDeplace;
+        }
+
+        private void Collision()
+        {
             List<Entite> piecesASupprimer = new List<Entite>();
 
             foreach (Entite piece in pieces)
@@ -976,7 +985,25 @@ namespace SAE_dev_1
                 pieces.Remove(piece);
             }
 
-            return seDeplace;
+            List<Entite> ennemiASupprimer = new List<Entite>();
+
+            if (epeeTerain[0] != null)
+            {
+                foreach (Entite ennemi in ennemis)
+                {
+                    if (ennemi.EnCollision(epeeTerain[0]))
+                    {
+                        CanvasJeux.Children.Remove(ennemi.RectanglePhysique);
+                        ennemiASupprimer.Add(ennemi);
+                    }
+                }
+            }
+            
+            foreach(Entite ennemi in ennemiASupprimer)
+            {
+                ennemis.Remove(ennemi);
+            }
+
         }
 
         private bool EstAttaque()
