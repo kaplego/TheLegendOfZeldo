@@ -68,6 +68,7 @@ namespace SAE_dev_1
             TitreSection("Textures");
             ElementSection("Adeline BERGEON");
             ElementSection("Lou MAGNENAT");
+            ElementSection("Safia EZZAMARI");
         }
 
         private void btnRetour_Click(object sender, RoutedEventArgs e)

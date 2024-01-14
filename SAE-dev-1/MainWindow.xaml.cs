@@ -39,8 +39,12 @@ namespace SAE_dev_1
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
 
         public static readonly int DUREE_IMMUNITE = 62;
-        public static readonly int DUREE_COUP = 32;
 
+        //epee
+
+        public static readonly int DUREE_COUP = 16;
+        private bool ActionAttaque = false;
+        private Entite[] epeeTerain = new Entite[1];
         // Moteur du jeu
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
@@ -778,44 +782,75 @@ namespace SAE_dev_1
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR -1);
                     x = joueur.Gauche();
-                    y = joueur.Haut() - TAILLE_EPEE;
+                    y = joueur.Haut() - TAILLE_EPEE +10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
-                    new Entite(epee, x, y);
+                    if (epeeTerain[0] == null)
+                    {
+                        epeeTerain[0] = new Entite(epee, x, y); 
+                    }
+                    else
+                    {
+                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
                     break;
                 case 1:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = joueur.Gauche() + TAILLE_EPEE;
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    x = joueur.Gauche() + TAILLE_EPEE - 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
-                    new Entite(epee, x, y);
+                    if (epeeTerain[0] == null)
+                    {
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
+                    else
+                    {
+                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
                     break;
                 case 2:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
-                    y = joueur.Haut() + TAILLE_EPEE;
+                    y = joueur.Haut() + TAILLE_EPEE - 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
-                    new Entite(epee, x, y);
+                    if (epeeTerain[0] == null)
+                    {
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
+                    else
+                    {
+                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
                     break;
                 case 3:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR);
-                    x = joueur.Gauche() - TAILLE_EPEE;
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    x = joueur.Gauche() - TAILLE_EPEE + 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
-                    new Entite(epee, x, y);
+                    if (epeeTerain[0] == null)
+                    {
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
+                    else
+                    {
+                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite(epee, x, y);
+                    }
                     break;
             }
-
-
+            ActionAttaque = true;
         }
 
         #region Moteur du jeu
@@ -829,6 +864,8 @@ namespace SAE_dev_1
                 Deplacement();
 
                 EstAttaque();
+
+                Minuteur();
             }
         }
 
@@ -1000,6 +1037,56 @@ namespace SAE_dev_1
             if (changerLettreDialogue)
                 if (dialogueActuel!.LettreSuivante())
                     changerLettreDialogue = false;
+        }
+
+        private void Minuteur()
+        {
+            if(ActionAttaque)
+            {
+                int x, y;
+                switch (joueur.Direction)
+                {
+
+                    case 0:
+                        x = joueur.Gauche();
+                        y = joueur.Haut() - TAILLE_EPEE + 20;
+                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
+                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        break;
+                    case 1:
+                        x = joueur.Gauche() + TAILLE_EPEE - 20;
+                        y = joueur.Haut();
+                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
+                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        break;
+                    case 2:
+                        x = joueur.Gauche();
+                        y = joueur.Haut() + TAILLE_EPEE - 20;
+                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
+                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        break;
+                    case 3:
+
+                        x = joueur.Gauche() - TAILLE_EPEE + 20;
+                        y = joueur.Haut();
+                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
+                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+
+                        break;
+                }
+
+                tempsCoup--;
+                if (tempsCoup < 10)
+                {
+                    epeeTerain[0].RectanglePhysique.Fill = textureEpee2;
+                }
+                if(tempsCoup < 0)
+                {
+                    CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                    epeeTerain[0] = null;
+                    ActionAttaque = false;
+                }
+            }
         }
 
         #endregion
