@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
@@ -37,6 +38,8 @@ namespace SAE_dev_1
             get { return this.rectanglePhysique; }
             set { this.rectanglePhysique = value; }
         }
+
+        public RotateTransform LayoutTransform { get; internal set; }
 
         public bool EnCollision(Entite entite)
         {

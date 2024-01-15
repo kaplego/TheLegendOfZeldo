@@ -550,22 +550,24 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = true;
-                joueur.Apparence = 0;
+                joueur.Direction = 3;
             }
             if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
             {
                 droite = true;
-                joueur.Apparence = 0;
+                joueur.Direction = 1;
+                
             }
             if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
             {
                 haut = true;
-                joueur.Apparence = 0;
+                joueur.Direction = 0;
             }
             if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
             {
                 bas = true;
-                joueur.Apparence = 0;
+                joueur.Direction = 2;
+
             }
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
@@ -584,22 +586,22 @@ namespace SAE_dev_1
             if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = false;
-                joueur.Direction = 3;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
             {
                 droite = false;
-                joueur.Direction = 1;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
             {
                 haut = false;
-                joueur.Direction = 0;
+                joueur.Apparence = 0;
             }
             if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
             {
                 bas = false;
-                joueur.Direction = 2;
+                joueur.Apparence = 0;
             }
 
             if (e.Key == touches[combinaisonTouches, 4] && !EmpecherAppuiTouche())
@@ -609,8 +611,11 @@ namespace SAE_dev_1
 
             if (e.Key == touches[combinaisonTouches, 5] && !EmpecherAppuiTouche())
             {
-                Attaque();
-                tempsCoup = DUREE_COUP;
+                if (!ActionAttaque)
+                {
+                    Attaque();
+                    tempsCoup = DUREE_COUP;
+                }
             }
 
             if (e.Key == Key.F3 && !EmpecherAppuiTouche("dialogue"))
@@ -1079,18 +1084,30 @@ namespace SAE_dev_1
                         y = joueur.Haut() - TAILLE_EPEE + 20;
                         Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
                         Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
+                        {
+                            Angle = 0,
+                        };
                         break;
                     case 1:
                         x = joueur.Gauche() + TAILLE_EPEE - 20;
                         y = joueur.Haut();
                         Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
                         Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
+                        {
+                            Angle = 90,
+                        };
                         break;
                     case 2:
                         x = joueur.Gauche();
                         y = joueur.Haut() + TAILLE_EPEE - 20;
                         Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
                         Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
+                        {
+                            Angle = 180,
+                        };
                         break;
                     case 3:
 
@@ -1098,6 +1115,10 @@ namespace SAE_dev_1
                         y = joueur.Haut();
                         Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
                         Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
+                        {
+                            Angle = -90,
+                        };
 
                         break;
                 }
