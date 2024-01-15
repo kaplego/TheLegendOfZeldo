@@ -873,6 +873,8 @@ namespace SAE_dev_1
                 EstAttaque();
 
                 Minuteur();
+
+                RechercheDeChemain();
             }
         }
 
@@ -1133,6 +1135,70 @@ namespace SAE_dev_1
                     CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
                     ActionAttaque = false;
+                }
+            }
+        }
+
+        private void RechercheDeChemain()
+        {
+            foreach(Entite ennemi in ennemis)
+            {
+                int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
+                int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
+
+                int xTuile = xCentre / TAILLE_TUILE;
+                int yTuile = yCentre / TAILLE_TUILE;
+
+                switch (joueur.Direction)
+                {
+                    case 0:
+                        yTuile--;
+                        break;
+                    case 1:
+                        xTuile++;
+                        break;
+                    case 2:
+                        yTuile++;
+                        break;
+                    case 3:
+                        xTuile--;
+                        break;
+                }
+
+                
+
+                Objet? objet = ObjetSurTuile(xTuile, yTuile);
+
+                if (objet != null)
+                {
+                    if(Canvas.GetLeft(ennemi.RectanglePhysique) - Canvas.GetLeft(joueur.Rectangle) < 0)
+                    {
+                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                    }
+                    else
+                    {
+                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                    }
+                }
+                else
+                {
+
+                    if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
+                    {
+                        Canvas.SetTop(ennemi.RectanglePhysique, Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+                    }
+                    else
+                    {
+                        Canvas.SetTop(ennemi.RectanglePhysique, Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
+                    }
+                    if(Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
+                    {
+                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                    }
+                    else
+                    {
+                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                    }
                 }
             }
         }
