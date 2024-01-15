@@ -152,6 +152,10 @@ namespace SAE_dev_1
         private ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
 
+        // Items
+
+        public ImageBrush textureBombe = new ImageBrush();
+
         //epee
 
         private ImageBrush textureEpee1 = new ImageBrush();
@@ -193,6 +197,8 @@ namespace SAE_dev_1
 
             texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
             textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
+
+            textureBombe.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"));
 
             fenetreInitialisation.Chargement(2 / 7, "Chargement des textures du HUD...");
 
@@ -660,13 +666,15 @@ namespace SAE_dev_1
             {
                 if (boutique == null)
                 {
-                    boutique = new Boutique();
+                    boutique = new Boutique(this);
                     CanvasJeux.Children.Add(boutique.Grille);
+                    this.Cursor = null;
                 }
                 else
                 {
                     CanvasJeux.Children.Remove(boutique.Grille);
                     boutique = null;
+                    this.Cursor = Cursors.None;
                 }
             }
 
