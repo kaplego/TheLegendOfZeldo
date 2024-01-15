@@ -124,6 +124,10 @@ namespace SAE_dev_1
         private Dialogue? dialogueActuel = null;
         private bool changerLettreDialogue = false;
 
+        // Boutique
+
+        private Boutique? boutique = null;
+
         #region Textures
 
         // Terrain
@@ -536,13 +540,15 @@ namespace SAE_dev_1
             switch (sauf)
             {
                 case "pause":
-                    return enChargement || dialogueActuel != null;
+                    return enChargement || dialogueActuel != null || boutique != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null;
+                    return jeuEnPause || dialogueActuel != null || boutique != null;
                 case "dialogue":
-                    return jeuEnPause || enChargement;
+                    return jeuEnPause || enChargement || boutique != null;
+                case "boutique":
+                    return jeuEnPause || enChargement || dialogueActuel != null;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null;
+            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -647,6 +653,20 @@ namespace SAE_dev_1
                         if (dialogueActuel.TexteSuivant())
                             dialogueActuel = null;
                     }
+                }
+            }
+
+            if (e.Key == Key.F4 && !EmpecherAppuiTouche("boutique"))
+            {
+                if (boutique == null)
+                {
+                    boutique = new Boutique();
+                    CanvasJeux.Children.Add(boutique.Grille);
+                }
+                else
+                {
+                    CanvasJeux.Children.Remove(boutique.Grille);
+                    boutique = null;
                 }
             }
 

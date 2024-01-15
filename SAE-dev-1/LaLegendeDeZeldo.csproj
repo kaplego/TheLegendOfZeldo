@@ -27,6 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ressources\hud\boutique.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\hud\coeur.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
