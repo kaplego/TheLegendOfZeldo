@@ -1,0 +1,32 @@
+﻿<Window x:Class="SAE_dev_1.Boutique"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SAE_dev_1"
+        mc:Ignorable="d"
+        Title="Boutique"
+        Height="600"
+        Width="1200"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        KeyUp="Window_KeyUp">
+    <Grid x:Name="grilleBoutique"
+        RenderOptions.BitmapScalingMode="NearestNeighbor"
+        RenderOptions.EdgeMode="Aliased">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Background>
+            <ImageBrush x:Name="grilleBoutiqueImage" Stretch="Uniform"/>
+        </Grid.Background>
+        <ScrollViewer x:Name="itemsBoutique">
+            
+        </ScrollViewer>
+        <Grid x:Name="itemSelectionne" Grid.Column="1">
+            
+        </Grid>
+    </Grid>
+</Window>

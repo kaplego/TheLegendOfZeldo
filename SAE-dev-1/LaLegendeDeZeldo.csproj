@@ -45,6 +45,9 @@
     <None Update="ressources\items\epee2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\items\inconnu.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\items\potion_bleue.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

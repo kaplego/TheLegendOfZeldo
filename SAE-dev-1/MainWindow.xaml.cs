@@ -126,8 +126,6 @@ namespace SAE_dev_1
 
         // Boutique
 
-        private Boutique? boutique = null;
-
         #region Textures
 
         // Terrain
@@ -151,10 +149,6 @@ namespace SAE_dev_1
         private ImageBrush texturePiece = new ImageBrush();
         private ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
-
-        // Items
-
-        public ImageBrush textureBombe = new ImageBrush();
 
         //epee
 
@@ -197,8 +191,6 @@ namespace SAE_dev_1
 
             texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
             textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
-
-            textureBombe.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"));
 
             fenetreInitialisation.Chargement(2 / 7, "Chargement des textures du HUD...");
 
@@ -546,15 +538,13 @@ namespace SAE_dev_1
             switch (sauf)
             {
                 case "pause":
-                    return enChargement || dialogueActuel != null || boutique != null;
+                    return enChargement || dialogueActuel != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null || boutique != null;
+                    return jeuEnPause || dialogueActuel != null;
                 case "dialogue":
-                    return jeuEnPause || enChargement || boutique != null;
-                case "boutique":
-                    return jeuEnPause || enChargement || dialogueActuel != null;
+                    return jeuEnPause || enChargement;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
+            return jeuEnPause || enChargement || dialogueActuel != null;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -568,7 +558,7 @@ namespace SAE_dev_1
             {
                 droite = true;
                 joueur.Direction = 1;
-                
+
             }
             if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
             {
@@ -664,18 +654,7 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F4 && !EmpecherAppuiTouche("boutique"))
             {
-                if (boutique == null)
-                {
-                    boutique = new Boutique(this);
-                    CanvasJeux.Children.Add(boutique.Grille);
-                    this.Cursor = null;
-                }
-                else
-                {
-                    CanvasJeux.Children.Remove(boutique.Grille);
-                    boutique = null;
-                    this.Cursor = Cursors.None;
-                }
+                new Boutique().ShowDialog();
             }
 
             if (e.Key == Key.Escape && !joueurMort)
@@ -815,15 +794,15 @@ namespace SAE_dev_1
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR -1);
+                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
-                    y = joueur.Haut() - TAILLE_EPEE +10;
+                    y = joueur.Haut() - TAILLE_EPEE + 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
                     CanvasJeux.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y); 
+                        epeeTerain[0] = new Entite(epee, x, y);
                     }
                     else
                     {
@@ -995,7 +974,7 @@ namespace SAE_dev_1
                 else prochainChangementApparence--;
             }
 
-            
+
 
             return seDeplace;
         }
@@ -1033,8 +1012,8 @@ namespace SAE_dev_1
                     }
                 }
             }
-            
-            foreach(Entite ennemi in ennemiASupprimer)
+
+            foreach (Entite ennemi in ennemiASupprimer)
             {
                 ennemis.Remove(ennemi);
             }
@@ -1103,7 +1082,7 @@ namespace SAE_dev_1
 
         private void Minuteur()
         {
-            if(ActionAttaque)
+            if (ActionAttaque)
             {
                 int x, y;
                 switch (joueur.Direction)
@@ -1158,7 +1137,7 @@ namespace SAE_dev_1
                 {
                     epeeTerain[0].RectanglePhysique.Fill = textureEpee2;
                 }
-                if(tempsCoup < 0)
+                if (tempsCoup < 0)
                 {
                     CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
@@ -1169,7 +1148,7 @@ namespace SAE_dev_1
 
         private void RechercheDeChemain()
         {
-            foreach(Entite ennemi in ennemis)
+            foreach (Entite ennemi in ennemis)
             {
                 int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
                 int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
@@ -1193,13 +1172,13 @@ namespace SAE_dev_1
                         break;
                 }
 
-                
+
 
                 Objet? objet = ObjetSurTuile(xTuile, yTuile);
 
                 if (objet != null)
                 {
-                    if(Canvas.GetLeft(ennemi.RectanglePhysique) - Canvas.GetLeft(joueur.Rectangle) < 0)
+                    if (Canvas.GetLeft(ennemi.RectanglePhysique) - Canvas.GetLeft(joueur.Rectangle) < 0)
                     {
                         Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
                     }
@@ -1219,7 +1198,7 @@ namespace SAE_dev_1
                     {
                         Canvas.SetTop(ennemi.RectanglePhysique, Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
                     }
-                    if(Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
+                    if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
                     {
                         Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
                     }
