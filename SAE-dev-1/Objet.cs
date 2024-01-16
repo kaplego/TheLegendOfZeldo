@@ -6,7 +6,7 @@ using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
-    internal class Objet
+    internal class Objet : ICloneable
     {
         public static MainWindow mainWindow;
 
@@ -196,6 +196,11 @@ namespace SAE_dev_1
                 return false;
 
             return ((Rect)this.Hitbox).IntersectsWith(joueur.Hitbox);
+        }
+
+        public Objet? Clone()
+        {
+            return this.MemberwiseClone() as Objet;
         }
     }
 }

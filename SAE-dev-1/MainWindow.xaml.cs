@@ -438,7 +438,7 @@ namespace SAE_dev_1
                 {
                     if (!objet.NeReapparaitPlus)
                     {
-                        objets.Add(objet);
+                        objets.Add(objet.Clone()!);
                         CanvasJeux.Children.Add(objet.RectanglePhysique);
                     }
                 }
