@@ -54,7 +54,7 @@ namespace SAE_dev_1
 
         private int immunite = 0;
         private int tempsCoup = 0;
-        private int vitesseEnnemis = 5;
+        private int vitesseEnnemis = 3;
 
         private bool droite, gauche, bas, haut;
         // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
@@ -87,7 +87,7 @@ namespace SAE_dev_1
                 Key.Up,
                 Key.Down,
                 Key.E,
-                Key.A
+                Key.Space
             },
             {
                 Key.Q,
@@ -95,7 +95,7 @@ namespace SAE_dev_1
                 Key.Z,
                 Key.S,
                 Key.E,
-                Key.A
+                Key.Space
             },
             {
                 Key.A,
@@ -103,7 +103,7 @@ namespace SAE_dev_1
                 Key.W,
                 Key.S,
                 Key.E,
-                Key.Q
+                Key.Space
             }
         };
         public int combinaisonTouches = 1;
@@ -1091,8 +1091,8 @@ namespace SAE_dev_1
                     case 0:
                         x = joueur.Gauche();
                         y = joueur.Haut() - TAILLE_EPEE + 20;
-                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
-                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].ModifierGaucheEntite(x);
+                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 0,
@@ -1101,8 +1101,8 @@ namespace SAE_dev_1
                     case 1:
                         x = joueur.Gauche() + TAILLE_EPEE - 20;
                         y = joueur.Haut();
-                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
-                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].ModifierGaucheEntite(x);
+                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 90,
@@ -1111,8 +1111,8 @@ namespace SAE_dev_1
                     case 2:
                         x = joueur.Gauche();
                         y = joueur.Haut() + TAILLE_EPEE - 20;
-                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
-                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].ModifierGaucheEntite(x);
+                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 180,
@@ -1122,8 +1122,8 @@ namespace SAE_dev_1
 
                         x = joueur.Gauche() - TAILLE_EPEE + 20;
                         y = joueur.Haut();
-                        Canvas.SetLeft(epeeTerain[0].RectanglePhysique, x);
-                        Canvas.SetTop(epeeTerain[0].RectanglePhysique, y);
+                        epeeTerain[0].ModifierGaucheEntite(x);
+                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = -90,
@@ -1156,23 +1156,6 @@ namespace SAE_dev_1
                 int xTuile = xCentre / TAILLE_TUILE;
                 int yTuile = yCentre / TAILLE_TUILE;
 
-                switch (joueur.Direction)
-                {
-                    case 0:
-                        yTuile--;
-                        break;
-                    case 1:
-                        xTuile++;
-                        break;
-                    case 2:
-                        yTuile++;
-                        break;
-                    case 3:
-                        xTuile--;
-                        break;
-                }
-
-
 
                 Objet? objet = ObjetSurTuile(xTuile, yTuile);
 
@@ -1180,11 +1163,14 @@ namespace SAE_dev_1
                 {
                     if (Canvas.GetLeft(ennemi.RectanglePhysique) - Canvas.GetLeft(joueur.Rectangle) < 0)
                     {
-                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        xTuile--;
+                        
                     }
                     else
                     {
-                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        xTuile++;
                     }
                 }
                 else
@@ -1192,19 +1178,23 @@ namespace SAE_dev_1
 
                     if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
                     {
-                        Canvas.SetTop(ennemi.RectanglePhysique, Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        yTuile++;
                     }
                     else
                     {
-                        Canvas.SetTop(ennemi.RectanglePhysique, Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        yTuile--;
                     }
                     if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
                     {
-                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                        xTuile++;
                     }
                     else
                     {
-                        Canvas.SetLeft(ennemi.RectanglePhysique, Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                        xTuile--;
                     }
                 }
             }

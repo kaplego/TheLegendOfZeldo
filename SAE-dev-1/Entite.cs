@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -57,6 +58,27 @@ namespace SAE_dev_1
         public bool EnCollision(Joueur joueur)
         {
             return this.Hitbox.IntersectsWith(joueur.Hitbox);
+        }
+
+        public int GaucheEntite()
+        {
+            return (int)Canvas.GetLeft(this.RectanglePhysique);
+        }
+        public int HautEntite()
+        {
+            return (int)Canvas.GetTop(this.RectanglePhysique);
+        }
+
+        public void ModifierGaucheEntite(double x)
+        {
+            Canvas.SetLeft(this.RectanglePhysique, x);
+            this.hitbox.X = this.GaucheEntite();
+        }
+
+        public void ModifierHautEntite(double y)
+        {
+            Canvas.SetTop(this.RectanglePhysique, y);
+            this.hitbox.Y = this.HautEntite();
         }
     }
 }
