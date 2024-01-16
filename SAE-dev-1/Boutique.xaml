@@ -12,9 +12,12 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         KeyUp="Window_KeyUp">
+    <Window.Resources>
+        <FontFamily x:Key="Monocraft">/Fonts/#Monocraft</FontFamily>
+    </Window.Resources>
     <Grid x:Name="grilleBoutique"
         RenderOptions.BitmapScalingMode="NearestNeighbor"
-        RenderOptions.EdgeMode="Aliased">
+        RenderOptions.EdgeMode="Aliased" HorizontalAlignment="Center" VerticalAlignment="Center" Width="1200" Height="600">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*"/>
@@ -22,11 +25,62 @@
         <Grid.Background>
             <ImageBrush x:Name="grilleBoutiqueImage" Stretch="Uniform"/>
         </Grid.Background>
-        <ScrollViewer x:Name="itemsBoutique">
-            
+        <ScrollViewer
+            x:Name="scrollviewerItemsBoutique"
+            VerticalScrollBarVisibility="Auto"
+            Grid.Column="0">
+            <Grid
+                x:Name="grilleItemsBoutique">
+                
+            </Grid>
         </ScrollViewer>
-        <Grid x:Name="itemSelectionne" Grid.Column="1">
-            
+        <Grid x:Name="grilleItemSelectionne" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Image
+                x:Name="imageItemSelectionne" HorizontalAlignment="Left"
+                />
+            <TextBlock
+                x:Name="nomItemSelectionne"
+                Grid.Column="1"
+                VerticalAlignment="Top"
+                FontSize="48"
+                FontWeight="Bold"
+                FontFamily="{StaticResource Monocraft}"
+                Foreground="Black"
+                />
+            <Image
+                x:Name="imagePiecesItemSelectionne"
+                Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                />
+            <TextBlock
+                x:Name="prixItemSelectionne"
+                Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                FontSize="28"
+                FontFamily="{StaticResource Monocraft}"
+                />
+            <TextBlock
+                x:Name="descriptionItemSelectionne"
+                Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                FontSize="24"
+                FontFamily="{StaticResource Monocraft}"
+                TextWrapping="Wrap"
+                />
+            <Button
+                x:Name="boutonAcheterItemSelectionne"
+                Grid.Column="1"
+                Content="Acheter"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Left"
+                />
         </Grid>
     </Grid>
 </Window>

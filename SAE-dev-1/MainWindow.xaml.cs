@@ -126,6 +126,8 @@ namespace SAE_dev_1
 
         // Boutique
 
+        Boutique? boutique = null;
+
         #region Textures
 
         // Terrain
@@ -146,7 +148,7 @@ namespace SAE_dev_1
 
         // HUD
 
-        private ImageBrush texturePiece = new ImageBrush();
+        public ImageBrush texturePiece = new ImageBrush();
         private ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
 
@@ -538,13 +540,15 @@ namespace SAE_dev_1
             switch (sauf)
             {
                 case "pause":
-                    return enChargement || dialogueActuel != null;
+                    return enChargement || dialogueActuel != null || boutique != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null;
+                    return jeuEnPause || dialogueActuel != null || boutique != null;
                 case "dialogue":
-                    return jeuEnPause || enChargement;
+                    return jeuEnPause || enChargement || boutique != null;
+                case "boutique":
+                    return jeuEnPause || enChargement || dialogueActuel != null;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null;
+            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -654,7 +658,11 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F4 && !EmpecherAppuiTouche("boutique"))
             {
-                new Boutique().ShowDialog();
+                if (boutique != null)
+                    boutique.Close();
+
+                boutique = new Boutique(this);
+                boutique.ShowDialog();
             }
 
             if (e.Key == Key.Escape && !joueurMort)
