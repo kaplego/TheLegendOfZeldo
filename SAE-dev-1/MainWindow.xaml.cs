@@ -769,6 +769,23 @@ namespace SAE_dev_1
             pieces.Add(new Entite(Piece, x, y));
 
         }
+        public void CreePiece(int x,int y)
+        {
+            Rectangle Piece = new Rectangle
+            {
+                Tag = "objet",
+                Height = TAILLE_PIECE,
+                Width = TAILLE_PIECE,
+                Fill = texturePiece
+            };
+            Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
+            Canvas.SetLeft(Piece, x);
+            Canvas.SetTop(Piece, y);
+            CanvasJeux.Children.Add(Piece);
+
+            pieces.Add(new Entite(Piece, x, y));
+
+        }
 
         private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
@@ -1070,9 +1087,9 @@ namespace SAE_dev_1
                     {
                         if (buisson.EnCollision(epeeTerain[0]))
                         {
-                            CreePiece();
+                            CreePiece(buisson.X * TAILLE_TUILE, buisson.Y * TAILLE_TUILE);
                             CanvasJeux.Children.Remove(buisson.RectanglePhysique);
-
+                            buisson.Hitbox = null;
                         }
                     }
                 }
