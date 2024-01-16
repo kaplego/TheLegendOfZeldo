@@ -158,6 +158,7 @@ namespace SAE_dev_1
         private ImageBrush textureEpee1 = new ImageBrush();
         private ImageBrush textureEpee2 = new ImageBrush();
 
+
         #endregion Textures
 
         #region HUD
@@ -726,9 +727,7 @@ namespace SAE_dev_1
                 {
                     Tag = "enemis," + type,
                     Height = TAILLE_ENNEMI,
-                    Width = TAILLE_ENNEMI,
-
-                    Fill = Brushes.Red
+                    Width = TAILLE_ENNEMI
                 };
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
                 int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500);
@@ -1038,10 +1037,11 @@ namespace SAE_dev_1
                 pieces.Remove(piece);
             }
 
-            List<Entite> ennemiASupprimer = new List<Entite>();
+            
 
             if (epeeTerain[0] != null)
             {
+                List<Entite> ennemiASupprimer = new List<Entite>();
                 foreach (Entite ennemi in ennemis)
                 {
                     if (ennemi.EnCollision(epeeTerain[0]))
@@ -1050,13 +1050,33 @@ namespace SAE_dev_1
                         ennemiASupprimer.Add(ennemi);
                     }
                 }
+
+                foreach (Entite ennemi in ennemiASupprimer)
+                {
+                    ennemis.Remove(ennemi);
+                }
+
+                List<Objet> buissonsASupprimer = new List<Objet>();
+                foreach (Objet buisson in objets)
+                {
+                    if (buisson.Type == "buisson")
+                    {
+                        if (buisson.EnCollision(epeeTerain[0]))
+                        {
+                            CreePiece();
+                            CanvasJeux.Children.Remove(buisson.RectanglePhysique);
+
+                        }
+                    }
+                }
+
+                foreach (Objet buisson in buissonsASupprimer)
+                {
+                    objets.Remove(buisson);
+                }
             }
 
-            foreach (Entite ennemi in ennemiASupprimer)
-            {
-                ennemis.Remove(ennemi);
-            }
-
+            
         }
 
         private bool EstAttaque()
@@ -1200,7 +1220,7 @@ namespace SAE_dev_1
 
                 if (objet != null)
                 {
-                    if (Canvas.GetLeft(ennemi.RectanglePhysique) - Canvas.GetLeft(joueur.Rectangle) < 0)
+                    if (Canvas.GetLeft(ennemi.RectanglePhysique) > Canvas.GetLeft(joueur.Rectangle))
                     {
                         ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
                         xTuile--;
@@ -1236,6 +1256,7 @@ namespace SAE_dev_1
                         xTuile--;
                     }
                 }
+                ennemi.ProchaineApparence();
             }
         }
 
