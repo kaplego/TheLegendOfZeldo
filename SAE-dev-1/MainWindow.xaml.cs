@@ -62,7 +62,7 @@ namespace SAE_dev_1
 
         private int prochainChangementApparence = 0;
 
-        public bool bombe = true;
+        public bool bombe = false;
 
         //piece
         private int nombrePiece = 0;
@@ -127,6 +127,7 @@ namespace SAE_dev_1
         // Boutique
 
         Boutique? boutique = null;
+        
 
         #region Textures
 
@@ -178,7 +179,7 @@ namespace SAE_dev_1
             Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0 / 7, "Chargement des textures de terrain...");
+            fenetreInitialisation.Chargement(0 / 8, "Chargement des textures de terrain...");
 
             textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
             textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
@@ -189,28 +190,28 @@ namespace SAE_dev_1
             textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
             textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures d'objets...");
+            fenetreInitialisation.Chargement(1 / 8, "Chargement des textures d'objets...");
 
             texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
             textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
 
-            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures du HUD...");
+            fenetreInitialisation.Chargement(2 / 8, "Chargement des textures du HUD...");
 
             texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
             textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(3 / 7, "Chargement des textures des personnages...");
+            fenetreInitialisation.Chargement(3 / 8, "Chargement des textures des personnages...");
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
-            fenetreInitialisation.Chargement(4 / 7, "Chargement du joueur...");
+            fenetreInitialisation.Chargement(4 / 8, "Chargement du joueur...");
 
             joueur = new Joueur();
             CanvasJeux.Children.Add(joueur.Rectangle);
 
-            fenetreInitialisation.Chargement(5 / 7, "Chargement du HUD...");
+            fenetreInitialisation.Chargement(5 / 8, "Chargement du HUD...");
 
             pieceIcone = new Rectangle()
             {
@@ -267,7 +268,11 @@ namespace SAE_dev_1
                 CanvasJeux.Children.Add(coeurs[i]);
             }
 
-            fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
+            fenetreInitialisation.Chargement(6 / 8, "Chargement de la boutique");
+
+            Boutique.Initialiser(this);
+
+            fenetreInitialisation.Chargement(7 / 8, "Génération de la carte");
 
             GenererCarte();
 
@@ -540,7 +545,7 @@ namespace SAE_dev_1
             switch (sauf)
             {
                 case "pause":
-                    return enChargement || dialogueActuel != null || boutique != null;
+                    return enChargement || dialogueActuel != null;
                 case "chargement":
                     return jeuEnPause || dialogueActuel != null || boutique != null;
                 case "dialogue":
@@ -659,28 +664,54 @@ namespace SAE_dev_1
             if (e.Key == Key.F4 && !EmpecherAppuiTouche("boutique"))
             {
                 if (boutique != null)
-                    boutique.Close();
-
-                boutique = new Boutique(this);
-                boutique.ShowDialog();
-            }
-
-            if (e.Key == Key.Escape && !joueurMort)
-            {
-                jeuEnPause = !jeuEnPause;
-                if (jeuEnPause)
                 {
-                    grilleMenuPause.Visibility = Visibility.Visible;
-                    grilleMenuPause.Focus();
-                    this.Cursor = null;
-                    minuteurJeu.Stop();
+                    boutique.Fermer();
+                    boutique = null;
+                    minuteurJeu.Start();
                 }
                 else
                 {
-                    grilleMenuPause.Visibility = Visibility.Hidden;
-                    this.FocusCanvas();
-                    this.Cursor = Cursors.None;
+                    boutique = new Boutique(this, new List<Item>()
+                    {
+                        new Item(
+                            "bombe",
+                            100,
+                            "Une bombe très utile pour détruire de gros obstacles.",
+                            new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"))
+                        ),
+                        new Item("test", 500, "Un item de test.")
+                    });
+                    minuteurJeu.Stop();
+                    haut = droite = bas = gauche = false;
+                }
+            }
+
+            if (e.Key == Key.Escape && !EmpecherAppuiTouche("pause"))
+            {
+                if (boutique != null)
+                {
+                    boutique.Fermer();
+                    boutique = null;
                     minuteurJeu.Start();
+                }
+                else
+                {
+                    jeuEnPause = !jeuEnPause;
+                    if (jeuEnPause)
+                    {
+                        grilleMenuPause.Visibility = Visibility.Visible;
+                        grilleMenuPause.Focus();
+                        this.Cursor = null;
+                        minuteurJeu.Stop();
+                        haut = droite = bas = gauche = false;
+                    }
+                    else
+                    {
+                        grilleMenuPause.Visibility = Visibility.Hidden;
+                        this.FocusCanvas();
+                        this.Cursor = Cursors.None;
+                        minuteurJeu.Start();
+                    }
                 }
             }
         }
