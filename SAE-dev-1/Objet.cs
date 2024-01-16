@@ -198,9 +198,9 @@ namespace SAE_dev_1
             return ((Rect)this.Hitbox).IntersectsWith(joueur.Hitbox);
         }
 
-        public Objet? Clone()
+        public object Clone()
         {
-            return this.MemberwiseClone() as Objet;
+            return this.MemberwiseClone();
         }
     }
 }
