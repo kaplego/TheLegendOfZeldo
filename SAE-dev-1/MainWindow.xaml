@@ -20,7 +20,7 @@
     <Window.Resources>
         <FontFamily x:Key="Monocraft">/Fonts/#Monocraft</FontFamily>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="grillePrincipale">
         <Rectangle
             x:Name="chargement"
             Canvas.Left="0"

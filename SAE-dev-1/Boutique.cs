@@ -189,7 +189,7 @@ namespace SAE_dev_1
         private void CliqueItem(object sender, MouseButtonEventArgs e)
         {
             Grid? grille = sender as Grid;
-
+            
             if (grille != null)
             {
                 try
@@ -255,12 +255,28 @@ namespace SAE_dev_1
 
         private void Acheter(object sender, RoutedEventArgs e)
         {
+            if (mainWindow.nombrePiece < itemSelectionne!.Prix)
+            {
+                Message message = new Message(mainWindow, "Vous n'avez pas assez de pièces.", Brushes.Red);
+                message.Afficher();
+                mainWindow.CanvasJeux.Focus();
+                return;
+            }
+
+            mainWindow.nombrePiece -= itemSelectionne!.Prix;
+            mainWindow.pieceNombre.Content = $"{mainWindow.nombrePiece:N0}";
+
             switch (itemSelectionne!.Nom)
             {
                 case "bombe":
                     mainWindow.bombe = true;
+                    boutonAcheterItemSelectionne!.Visibility = Visibility.Hidden;
+                    items.Remove(itemSelectionne!);
                     break;
             }
+
+            ChargerItems();
+            mainWindow.CanvasJeux.Focus();
         }
     }
 }

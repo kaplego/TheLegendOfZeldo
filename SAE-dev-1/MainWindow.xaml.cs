@@ -65,7 +65,7 @@ namespace SAE_dev_1
         public bool bombe = false;
 
         //piece
-        private int nombrePiece = 0;
+        public int nombrePiece = 10_000;
         private List<Entite> pieces = new List<Entite>();
 
         // Ennemis
@@ -164,7 +164,7 @@ namespace SAE_dev_1
         #region HUD
 
         private Rectangle pieceIcone;
-        private Label pieceNombre;
+        public Label pieceNombre;
 
         private Rectangle[] coeurs;
 
@@ -464,7 +464,10 @@ namespace SAE_dev_1
             ennemis.Clear();
             hitboxTerrain.Clear();
             objets.Clear();
+            boutique?.Fermer();
+            boutique = null;
             carteActuelle = nouvelleCarte;
+            haut = droite = bas = gauche = false;
 
             GenererCarte();
 
@@ -487,6 +490,7 @@ namespace SAE_dev_1
                 chargement.Opacity -= 0.05;
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
+            chargement.Visibility = Visibility.Hidden;
 
             this.FocusCanvas();
             minuteurJeu.Start();
@@ -672,16 +676,19 @@ namespace SAE_dev_1
                 }
                 else
                 {
-                    boutique = new Boutique(this, new List<Item>()
+                    List<Item> itemsBoutique = new List<Item>()
                     {
-                        new Item(
+                        new Item("test", 500, "Un item de test.")
+                    };
+                    if (!bombe)
+                        itemsBoutique.Add(new Item(
                             "bombe",
                             100,
                             "Une bombe très utile pour détruire de gros obstacles.",
                             new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"))
-                        ),
-                        new Item("test", 500, "Un item de test.")
-                    });
+                        ));
+
+                    boutique = new Boutique(this, itemsBoutique);
                     minuteurJeu.Stop();
                     haut = droite = bas = gauche = false;
                 }
