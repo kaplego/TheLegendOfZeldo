@@ -78,8 +78,12 @@ namespace SAE_dev_1
             this.type = type;
             this.Hitbox = new Rect()
             {
-                Width = largeurObjet * MainWindow.TAILLE_TUILE,
-                Height = hauteurObjet * MainWindow.TAILLE_TUILE,
+                Width = rotation % 180 == 0 ?
+                    largeurObjet * MainWindow.TAILLE_TUILE :
+                    hauteurObjet * MainWindow.TAILLE_TUILE,
+                Height = rotation % 180 == 0 ?
+                    hauteurObjet * MainWindow.TAILLE_TUILE :
+                    largeurObjet * MainWindow.TAILLE_TUILE,
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };
@@ -207,8 +211,12 @@ namespace SAE_dev_1
 
             this.Hitbox = new Rect()
             {
-                Width = largeurObjet * MainWindow.TAILLE_TUILE,
-                Height = hauteurObjet * MainWindow.TAILLE_TUILE,
+                Width = rotation % 180 == 0 ?
+                    largeurObjet * MainWindow.TAILLE_TUILE :
+                    hauteurObjet * MainWindow.TAILLE_TUILE,
+                Height = rotation % 180 == 0 ?
+                    hauteurObjet * MainWindow.TAILLE_TUILE :
+                    largeurObjet * MainWindow.TAILLE_TUILE,
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };

@@ -104,6 +104,35 @@ namespace SAE_dev_1
             }
         };
 
+        //                      min, max
+        public static readonly (int, int)?[,] COORDS_CHANGEMENT_MAP = new (int, int)?[,]
+        {
+            {
+                null,
+                null,
+                null,
+                null
+            },
+            {
+                (9, 10),
+                (0, 1),
+                (6, 8),
+                null
+            },
+            {
+                null,
+                null,
+                null,
+                null
+            },
+            {
+                null,
+                null,
+                null,
+                null
+            }
+        };
+
         //                           nom     x    y    rotation
         // Si rotation = null, rotation est aléatoire
         public static readonly List<Objet>?[] OBJETS_CARTES = new List<Objet>?[]
@@ -120,7 +149,14 @@ namespace SAE_dev_1
             new List<Objet>
             {
                 new Objet("buisson", 3, 0, null, false, null),
-                new Objet("caillou", 12, 0, 0, false, (mainWindow, objet) =>
+                new Objet("buisson", 0, 5, null, false, null),
+                new Objet("buisson", 5, 3, null, false, null),
+                new Objet("buisson", 6, 4, null, false, null),
+                new Objet("buisson", 4, 8, null, false, null),
+                new Objet("buisson", 14, 6, null, false, null),
+                new Objet("buisson", 18, 5, null, false, null),
+                new Objet("buisson", 15, 9, null, false, null),
+                new Objet("caillou", 19, 0, 90, false, (mainWindow, objet) =>
                 {
                     if (mainWindow.bombe)
                     {

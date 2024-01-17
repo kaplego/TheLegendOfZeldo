@@ -1100,6 +1100,17 @@ namespace SAE_dev_1
             return seDeplace;
         }
 
+        private bool VerifierPosition(int position)
+        {
+            if (Cartes.COORDS_CHANGEMENT_MAP[carteActuelle, joueur.Direction] == null)
+                return true;
+
+            (int, int) positionMax = ((int, int))Cartes.COORDS_CHANGEMENT_MAP[carteActuelle, joueur.Direction]!;
+
+            return position >= positionMax.Item1 &&
+                position <= positionMax.Item2;
+        }
+
         public void ChangementCarte()
         {
             (int, int)? carteAdjacente = null;
@@ -1107,28 +1118,32 @@ namespace SAE_dev_1
             // Joueur va en haut
             if (PositionJoueur(true, false).Item2 == joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 0 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 0] != null)
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 0] != null &&
+                     VerifierPosition(PositionJoueur().Item1))
             {
                 carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 0]!;
             }
             // Joueur va à droite
             else if (PositionJoueur(true, false).Item1 == CanvasJeux.Width - joueur.Hitbox.Width / 2 &&
                      joueur.Direction == 1 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 1] != null)
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 1] != null &&
+                     VerifierPosition(PositionJoueur().Item2))
             {
                 carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 1]!;
             }
             // Joueur va en bas
             else if (PositionJoueur(true, false).Item2 == CanvasJeux.Height - joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 2 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 2] != null)
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 2] != null &&
+                     VerifierPosition(PositionJoueur().Item1))
             {
                 carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 2]!;
             }
             // Joueur va à gauche
             else if (PositionJoueur(true, false).Item1 == joueur.Hitbox.Width / 2 &&
                 joueur.Direction == 3 &&
-                Cartes.CARTES_ADJACENTES[carteActuelle, 3] != null)
+                Cartes.CARTES_ADJACENTES[carteActuelle, 3] != null &&
+                VerifierPosition(PositionJoueur().Item2))
             {
                 carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 3]!;
             }
