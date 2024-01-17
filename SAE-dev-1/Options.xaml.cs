@@ -20,22 +20,21 @@ namespace SAE_dev_1
 
         private void btnAnnuler_Click(object sender, RoutedEventArgs e)
         {
-            (parent == null
-                ? mainWindow
-                : parent).Show();
-            mainWindow.FocusCanvas();
             Close();
         }
 
         private void btnSauvegarder_Click(object sender, RoutedEventArgs e)
         {
             mainWindow.combinaisonTouches = comboboxTouches.SelectedIndex;
+            Close();
+        }
 
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
             (parent == null
                 ? mainWindow
                 : parent).Show();
-            mainWindow.FocusCanvas();
-            Close();
+            mainWindow.CanvasJeux.Focus();
         }
     }
 }

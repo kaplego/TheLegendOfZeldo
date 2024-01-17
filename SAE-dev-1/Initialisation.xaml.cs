@@ -9,6 +9,7 @@ namespace SAE_dev_1
     public partial class Initialisation : Window
     {
         private MainWindow mainWindow;
+        private bool lancerLeJeu = false;
 
         public Initialisation(MainWindow mainWindow)
         {
@@ -43,8 +44,7 @@ namespace SAE_dev_1
 
         private void btnJouer_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.Show();
-            mainWindow.Demarrer();
+            lancerLeJeu = true;
             this.Close();
         }
 
@@ -57,8 +57,23 @@ namespace SAE_dev_1
 
         private void btnQuitter_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.Close();
             this.Close();
+        }
+
+        private void btnCredits_Click(object sender, RoutedEventArgs e)
+        {
+            new Credits(mainWindow, this).Show();
+            this.Hide();
+        }
+
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
+            if (lancerLeJeu)
+            {
+                mainWindow.Show();
+                mainWindow.Demarrer();
+            }
+            else mainWindow.Close();
         }
     }
 }

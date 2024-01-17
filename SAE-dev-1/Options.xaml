@@ -13,7 +13,7 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     WindowState="Maximized"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Closed="Window_Closed">
     <Grid Background="#FF2F2F2F">
         <Label x:Name="titreDuJeu"
             HorizontalAlignment="Center"

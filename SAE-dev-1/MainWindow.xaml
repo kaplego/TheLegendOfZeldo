@@ -6,20 +6,21 @@
     xmlns:local="clr-namespace:SAE_dev_1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="La Légende de Zeldo"
-    Icon="ressources/icone.png"
     Width="1200"
     Height="600"
+    Background="#FF090300"
+    Cursor="None"
     FocusManager.FocusedElement="{Binding ElementName=CanvasJeux}"
+    Icon="ressources/icone.png"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="None"
     WindowState="Maximized"
-    mc:Ignorable="d" Background="#FF090300"
-    Cursor="None">
+    WindowStyle="None"
+    mc:Ignorable="d">
     <Window.Resources>
-        <FontFamily x:Key="Monocraft" >/Fonts/#Monocraft</FontFamily>
+        <FontFamily x:Key="Monocraft">/Fonts/#Monocraft</FontFamily>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="grillePrincipale">
         <Rectangle
             x:Name="chargement"
             Canvas.Left="0"
@@ -29,85 +30,200 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Panel.ZIndex="1000"
-            Visibility="Hidden"
-            Fill="Black">
-        </Rectangle>
+            Fill="Black"
+            Visibility="Hidden" />
 
         <Canvas
             x:Name="CanvasJeux"
             Width="1200"
             Height="600"
+            MinWidth="1200"
+            MinHeight="600"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Focusable="True"
             KeyDown="CanvasKeyIsDown"
             KeyUp="CanvasKeyIsUp"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
-            RenderOptions.EdgeMode="Aliased"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            MinWidth="1200"
-            MinHeight="600">
+            RenderOptions.EdgeMode="Aliased">
 
-            <Rectangle
-                x:Name="joueur"
-                Canvas.Left="560"
-                Canvas.Top="260"
-                Width="80"
-                Height="80"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top" />
             <Canvas
                 x:Name="ZoneApparition"
-                Width="651"
-                Height="114"
                 Canvas.Left="83"
                 Canvas.Top="67"
+                Width="651"
+                Height="114"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" />
         </Canvas>
-        <!--///////////////////////////////////Menu//////////////////////////////////////////-->
-        <Grid x:Name="grilleMenuPause" Panel.ZIndex="1000" Visibility="Hidden">
+        <!--  ///////////////////////////////// Boutique /////////////////////////////////////////  -->
+        <Grid
+            x:Name="grilleBoutique"
+            Width="1200"
+            Height="600"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            RenderOptions.EdgeMode="Aliased"
+            Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
             <Grid.Background>
-                <SolidColorBrush Color="#FF2F2F2F" Opacity="0.8"/>
+                <ImageBrush x:Name="grilleBoutiqueImage" Stretch="Uniform" />
+            </Grid.Background>
+            <ScrollViewer
+                x:Name="scrollviewerItemsBoutique"
+                Grid.Column="0"
+                Focusable="False"
+                VerticalScrollBarVisibility="Auto">
+                <Grid x:Name="grilleItemsBoutique" />
+            </ScrollViewer>
+            <Grid x:Name="grilleItemSelectionne" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Image x:Name="imageItemSelectionne" HorizontalAlignment="Left" />
+                <TextBlock
+                    x:Name="nomItemSelectionne"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    FontFamily="{StaticResource Monocraft}"
+                    FontSize="48"
+                    FontWeight="Bold"
+                    Foreground="Black" />
+                <Image
+                    x:Name="imagePiecesItemSelectionne"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" />
+                <TextBlock
+                    x:Name="prixItemSelectionne"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    FontFamily="{StaticResource Monocraft}"
+                    FontSize="28" />
+                <TextBlock
+                    x:Name="descriptionItemSelectionne"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    FontFamily="{StaticResource Monocraft}"
+                    FontSize="24"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Grid>
+        <!--  /////////////////////////////////// Mort //////////////////////////////////////////  -->
+        <Grid
+            x:Name="grilleEcranMort"
+            Panel.ZIndex="1000"
+            Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.5" Color="#FFF96565" />
+            </Grid.Background>
+            <TextBlock
+                x:Name="titreMort"
+                Margin="0,-150,0,0"
+                Padding="80,0,80,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="110"
+                Foreground="White"
+                TextWrapping="WrapWithOverflow">
+                Vous êtes mort
+            </TextBlock>
+            <Button
+                x:Name="btnReapparaitre"
+                Width="400"
+                Height="70"
+                Margin="0,150,0,0"
+                Padding="30,5,30,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="DimGray"
+                Click="btnReapparaitre_Click"
+                Content="Réapparaître"
+                FontSize="36"
+                Foreground="White">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button
+                x:Name="btnQuitterMort"
+                Width="400"
+                Height="70"
+                Margin="0,350,0,0"
+                Padding="30,5,30,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="DimGray"
+                Click="Quitter"
+                Content="Quitter"
+                FontSize="36"
+                Foreground="White">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+        <!--  ///////////////////////////////////Menu//////////////////////////////////////////  -->
+        <Grid
+            x:Name="grilleMenuPause"
+            Panel.ZIndex="1000"
+            Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.8" Color="#FF2F2F2F" />
             </Grid.Background>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <Label
                 x:Name="labelPause"
+                Grid.ColumnSpan="2"
+                Margin="0,20,0,0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontSize="36"
-                Foreground="White" Margin="0,20,0,0"
-                Grid.ColumnSpan="2">
+                Foreground="White">
                 PAUSE
             </Label>
             <TextBlock
                 x:Name="titreDuJeu"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontSize="110"
-                Foreground="White"
+                Grid.Column="1"
                 Margin="0,-150,0,0"
                 Padding="80,0,80,0"
-                Grid.Column="1"
-                TextWrapping="WrapWithOverflow"
-                FontFamily="{StaticResource Monocraft}">
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="110"
+                Foreground="White"
+                TextWrapping="WrapWithOverflow">
                 La Légende de Zeldo
             </TextBlock>
             <Button
                 x:Name="btnReprendre"
                 Width="400"
                 Height="70"
+                Margin="0,0,0,250"
+                Padding="30,5,30,5"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
+                HorizontalContentAlignment="Left"
                 Background="DimGray"
+                Click="btnReprendre_Click"
                 Content="Reprendre"
                 FontSize="36"
-                Foreground="White"
-                Click="btnReprendre_Click" Margin="0,0,0,250"
-                HorizontalContentAlignment="Left"
-                Padding="30,5,30,5">
+                Foreground="White">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="0,8,8,0" />
@@ -118,15 +234,15 @@
                 x:Name="btnOptions"
                 Width="{Binding Width, ElementName=btnReprendre}"
                 Height="{Binding Height, ElementName=btnReprendre}"
+                Padding="{Binding Padding, ElementName=btnReprendre}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
+                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
                 Background="DimGray"
+                Click="btnOptions_Click"
                 Content="Options"
                 FontSize="36"
-                Foreground="White"
-                Click="btnOptions_Click"
-                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
-                Padding="{Binding Padding, ElementName=btnReprendre}">
+                Foreground="White">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="0,8,8,0" />
@@ -138,15 +254,15 @@
                 Width="{Binding Width, ElementName=btnReprendre}"
                 Height="{Binding Height, ElementName=btnReprendre}"
                 Margin="0,250,0,0"
+                Padding="{Binding Padding, ElementName=btnReprendre}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
+                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
                 Background="DimGray"
+                Click="Quitter"
                 Content="Quitter"
                 FontSize="36"
-                Foreground="White"
-                Click="btnQuitter_Click"
-                HorizontalContentAlignment="{Binding HorizontalContentAlignment, ElementName=btnReprendre}"
-                Padding="{Binding Padding, ElementName=btnReprendre}">
+                Foreground="White">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="0,8,8,0" />
@@ -154,5 +270,6 @@
                 </Button.Resources>
             </Button>
         </Grid>
+        <!--  ///////////////////////////////////Marchand//////////////////////////////////////////  -->
     </Grid>
 </Window>
