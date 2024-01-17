@@ -128,7 +128,6 @@ namespace SAE_dev_1
 
         Boutique? boutique = null;
 
-
         #region Textures
 
         // Terrain
@@ -288,10 +287,7 @@ namespace SAE_dev_1
             minuteurJeu.Start();
         }
 
-        public void FocusCanvas()
-        {
-            CanvasJeux.Focus();
-        }
+        #region Carte
 
         private void GenererCarte()
         {
@@ -302,7 +298,7 @@ namespace SAE_dev_1
             {
                 for (int x = 0; x < carte.GetLength(1); x++)
                 {
-                    System.Windows.Rect? tuileHitbox;
+                    Rect? tuileHitbox;
 
                     Rectangle tuile = new Rectangle()
                     {
@@ -493,10 +489,14 @@ namespace SAE_dev_1
             }
             chargement.Visibility = Visibility.Hidden;
 
-            this.FocusCanvas();
+            this.CanvasJeux.Focus();
             minuteurJeu.Start();
             enChargement = false;
         }
+
+        #endregion
+
+        #region Clic sur les boutons
 
         private void btnReprendre_Click(object sender, RoutedEventArgs e)
         {
@@ -543,8 +543,12 @@ namespace SAE_dev_1
             {
                 this.Close();
             }
-            else this.FocusCanvas();
+            else this.CanvasJeux.Focus();
         }
+
+        #endregion
+
+        #region Appui sur les touches
 
         private bool EmpecherAppuiTouche(string? sauf = null)
         {
@@ -717,13 +721,17 @@ namespace SAE_dev_1
                     else
                     {
                         grilleMenuPause.Visibility = Visibility.Hidden;
-                        this.FocusCanvas();
+                        this.CanvasJeux.Focus();
                         this.Cursor = Cursors.None;
                         minuteurJeu.Start();
                     }
                 }
             }
         }
+
+        #endregion
+
+        #region Creations d'entités
 
         public void CreeEnemisCC(int nombre, string type)
         {
@@ -787,6 +795,10 @@ namespace SAE_dev_1
             pieces.Add(new Entite(Piece, x, y));
 
         }
+
+        #endregion
+
+        #region Interraction & attaque
 
         private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
@@ -927,6 +939,8 @@ namespace SAE_dev_1
             }
             ActionAttaque = true;
         }
+
+        #endregion
 
         #region Moteur du jeu
 
