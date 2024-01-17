@@ -250,17 +250,47 @@ namespace SAE_dev_1
             {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
             {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
         };
+        public static readonly string[,] CARTE_COMBAT = new string[10, 20]
+        {
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
+            {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe"},
+            {"chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe"},
+            {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+        };
+        public static readonly string[,] CARTE_MARCHAND = new string[10, 20]
+        {
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+            {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+        };
 
         public static readonly string[][,] CARTES = new string[][,]
         {
             CARTE_MAISON,
-            CARTE_JARDIN
+            CARTE_JARDIN,
+            CARTE_COMBAT,
+            CARTE_MARCHAND
         };
 
         public static readonly string[] NOMS_CARTES = new string[]
         {
             "La maison",
-            "Le jardin"
+            "Le jardin",
+            "Le combat",
+            "Le marchand"
         };
 
         //                           nom     x    y    rotation
