@@ -94,6 +94,18 @@ namespace SAE_dev_1
             vieEntite = vie;
         }
 
+        public Entite(int angleVersJoueur, Rectangle rectangle, int x, int y)
+        {
+            this.RectanglePhysique = rectangle;
+            this.Hitbox = new Rect()
+            {
+                Height = rectangle.Height,
+                Width = rectangle.Width,
+                X = x,
+                Y = y
+            };
+        }
+
         public Entite(Rectangle rectangle, Rect rect, int x, int y)
         {
             this.RectanglePhysique = rectangle;
@@ -146,9 +158,7 @@ namespace SAE_dev_1
 
         public void ModifierGaucheEntite(double x)
         {
-            Canvas.SetLeft(this.RectanglePhysique, x);
-            this.hitbox.X = this.GaucheEntite();
-            if (x > 0)
+            if (x > Canvas.GetLeft(this.RectanglePhysique))
             {
                 DirectionEntite = 1;
             }
@@ -156,13 +166,13 @@ namespace SAE_dev_1
             {
                 DirectionEntite = 3;
             }
+            Canvas.SetLeft(this.RectanglePhysique, x);
+            this.hitbox.X = this.GaucheEntite();
         }
 
         public void ModifierHautEntite(double y)
         {
-            Canvas.SetTop(this.RectanglePhysique, y);
-            this.hitbox.Y = this.HautEntite();
-            if (y > 0)
+            if (y > Canvas.GetTop(this.RectanglePhysique))
             {
                 DirectionEntite = 0;
             }
@@ -170,6 +180,9 @@ namespace SAE_dev_1
             {
                 DirectionEntite = 2;
             }
+            Canvas.SetTop(this.RectanglePhysique, y);
+            this.hitbox.Y = this.HautEntite();
+            
         }
 
         public void ChangerImageRectangle()

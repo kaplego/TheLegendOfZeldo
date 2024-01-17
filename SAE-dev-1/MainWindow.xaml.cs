@@ -22,6 +22,8 @@ namespace SAE_dev_1
         public static readonly int TAILLE_TUILE = 60;
         public static readonly int TAILLE_PIECE = 20;
         public static readonly int TAILLE_ENNEMI = 80;
+        public static readonly int TAILLE_TIRE_LONGUER = 30;
+        public static readonly int TAILLE_TIRE_LARGEUR = 15;
         public static readonly int TAILLE_EPEE = 80;
         public static readonly int TAILLE_ICONES = 30;
 
@@ -71,6 +73,7 @@ namespace SAE_dev_1
 
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
+        private List<Entite> tires = new List<Entite>();
 
         public Carte carteActuelle;
 
@@ -794,12 +797,17 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
             {
-                CreeEnemisCC(2, "slime");
+                CreeEnemis(2, "slime", 1);
             }
 
             if (e.Key == Key.F2 && !EmpecherAppuiTouche())
             {
                 CreePiece();
+            }
+
+            if (e.Key == Key.F5 && !EmpecherAppuiTouche())
+            {
+                CreeEnemis(1, "boss", 50);
             }
         }
 
@@ -949,7 +957,7 @@ namespace SAE_dev_1
 
         #region Creations d'entités
 
-        public void CreeEnemisCC(int nombre, string type)
+        public void CreeEnemis(int nombre, string type, int vie)
         {
             Random aleatoire = new Random();
             for (int i = 0; i < nombre; i++)
@@ -967,8 +975,43 @@ namespace SAE_dev_1
                 Canvas.SetTop(nouveauxEnnemy, y);
                 CanvasJeux.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y, 4));
+                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
             }
+        }
+
+        public void CreeEnemis(int nombre, string type, int vie , int x, int y)
+        {
+            for (int i = 0; i < nombre; i++)
+            {
+                Rectangle nouveauxEnnemy = new Rectangle
+                {
+                    Tag = "enemis," + type,
+                    Height = TAILLE_ENNEMI,
+                    Width = TAILLE_ENNEMI
+                };
+                Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
+                Canvas.SetLeft(nouveauxEnnemy, x);
+                Canvas.SetTop(nouveauxEnnemy, y);
+                CanvasJeux.Children.Add(nouveauxEnnemy);
+
+                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
+            }
+        }
+
+        public void CreeTireEntiter(Rectangle ennemi, int angleVersJoueur)
+        {
+            Rectangle nouveauxTire = new Rectangle()
+            {
+                Tag = "tire",
+                Height = TAILLE_TIRE_LARGEUR,
+                Width = TAILLE_TIRE_LONGUER,
+                Fill = Brushes.White,
+            };
+            Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES);
+            Canvas.SetTop(nouveauxTire, Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2);
+            Canvas.SetLeft(nouveauxTire, Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2);
+            CanvasJeux.Children.Add(nouveauxTire);
+            tires.Add(new Entite(angleVersJoueur, nouveauxTire, (int)Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2, (int)Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2));
         }
 
         public void CreePiece()
@@ -1370,7 +1413,7 @@ namespace SAE_dev_1
                     {
                         if (buisson.EnCollision(epeeTerain[0]))
                         {
-                            CreePiece(buisson.X * TAILLE_TUILE, buisson.Y * TAILLE_TUILE);
+                            CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE/2);
                             CanvasJeux.Children.Remove(buisson.RectanglePhysique);
                             buisson.Hitbox = null;
                         }
@@ -1511,52 +1554,60 @@ namespace SAE_dev_1
         {
             foreach (Entite ennemi in ennemis)
             {
-                int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
-                int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
-
-                int xTuile = xCentre / TAILLE_TUILE;
-                int yTuile = yCentre / TAILLE_TUILE;
-
-                Objet? objet = ObjetSurTuile(xTuile, yTuile);
-
-                if (objet != null)
+                if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime")
                 {
-                    if (Canvas.GetLeft(ennemi.RectanglePhysique) > Canvas.GetLeft(joueur.Rectangle))
+                    int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
+                    int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
+
+                    int xTuile = xCentre / TAILLE_TUILE;
+                    int yTuile = yCentre / TAILLE_TUILE;
+
+                    Objet? objet = ObjetSurTuile(xTuile, yTuile);
+
+                    if (objet != null)
                     {
-                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                        xTuile--;
+                        if (Canvas.GetLeft(ennemi.RectanglePhysique) > Canvas.GetLeft(joueur.Rectangle))
+                        {
+                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                            xTuile--;
+                        }
+                        else
+                        {
+                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                            xTuile++;
+                        }
                     }
                     else
                     {
-                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                        xTuile++;
+
+                        if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
+                        {
+                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+                            yTuile++;
+                        }
+                        else
+                        {
+                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
+                            yTuile--;
+                        }
+                        if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
+                        {
+                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+                            xTuile++;
+                        }
+                        else
+                        {
+                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+                            xTuile--;
+                        }
+                        ennemi.ProchaineApparence();
                     }
                 }
-                else
+                else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
-
-                    if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
-                    {
-                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
-                        yTuile++;
-                    }
-                    else
-                    {
-                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
-                        yTuile--;
-                    }
-                    if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
-                    {
-                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                        xTuile++;
-                    }
-                    else
-                    {
-                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                        xTuile--;
-                    }
-                }
-                ennemi.ProchaineApparence();
+                    ennemi.RectanglePhysique.Fill = Brushes.Red;
+                    CreeTireEntiter(ennemi.RectanglePhysique,0);
+                } 
             }
         }
 
