@@ -127,7 +127,7 @@ namespace SAE_dev_1
         // Boutique
 
         Boutique? boutique = null;
-        
+
 
         #region Textures
 
@@ -438,6 +438,7 @@ namespace SAE_dev_1
                 {
                     if (!objet.NeReapparaitPlus)
                     {
+                        objet.RegenererHitbox();
                         objets.Add(objet);
                         CanvasJeux.Children.Add(objet.RectanglePhysique);
                     }
@@ -769,7 +770,7 @@ namespace SAE_dev_1
             pieces.Add(new Entite(Piece, x, y));
 
         }
-        public void CreePiece(int x,int y)
+        public void CreePiece(int x, int y)
         {
             Rectangle Piece = new Rectangle
             {
@@ -1061,7 +1062,7 @@ namespace SAE_dev_1
                 pieces.Remove(piece);
             }
 
-            
+
 
             if (epeeTerain[0] != null)
             {
@@ -1100,7 +1101,7 @@ namespace SAE_dev_1
                 }
             }
 
-            
+
         }
 
         private bool EstAttaque()
@@ -1248,7 +1249,7 @@ namespace SAE_dev_1
                     {
                         ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
                         xTuile--;
-                        
+
                     }
                     else
                     {

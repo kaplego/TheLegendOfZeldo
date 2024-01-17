@@ -289,7 +289,12 @@ namespace SAE_dev_1
                         objet.Hitbox = null;
                     }
                 }),
-
+                new Objet("porte", 8, 0, 0, false, (mainWindow, objet) =>
+                    {
+                        mainWindow.derniereApparition = 0;
+                        mainWindow.ChangerCarte(0, 4);
+                    }
+                )
             }
         };
 

@@ -13,7 +13,7 @@ namespace SAE_dev_1
         public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
         {
             int largeurObjet = 0,
-                        hauteurObjet = 0;
+                hauteurObjet = 0;
             ImageBrush? texture = null;
             Brush? textureUnie = null;
 
@@ -174,6 +174,36 @@ namespace SAE_dev_1
         {
             get { return neReapparaitPlus; }
             set { neReapparaitPlus = value; }
+        }
+
+        public void RegenererHitbox()
+        {
+            int largeurObjet = 0,
+                hauteurObjet = 0;
+
+            switch (type)
+            {
+                case "porte":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+                    break;
+                case "buisson":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+                    break;
+                case "caillou":
+                    largeurObjet = 2;
+                    hauteurObjet = 1;
+                    break;
+            }
+
+            this.Hitbox = new Rect()
+            {
+                Width = largeurObjet * MainWindow.TAILLE_TUILE,
+                Height = hauteurObjet * MainWindow.TAILLE_TUILE,
+                X = x * MainWindow.TAILLE_TUILE,
+                Y = y * MainWindow.TAILLE_TUILE,
+            };
         }
 
         public bool EnCollision(Objet objet)
