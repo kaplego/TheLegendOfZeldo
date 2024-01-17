@@ -41,6 +41,12 @@ namespace SAE_dev_1
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
 
         public static readonly int DUREE_IMMUNITE = 31;
+        public static readonly int DUREE_ATTAQUE_BOSS = 62;
+        public static readonly int DUREE_PATERNE = 496;
+        public static readonly int[,] TOUT_PATERNE = {{0,5,6,2},{3,2,1,4},{6,3,0,4},{5,2,0,1}};
+
+        public static readonly int NOMBRE_PATERNE = 3;
+
         public static readonly Random aleatoire = new Random();
         //epee
 
@@ -75,7 +81,10 @@ namespace SAE_dev_1
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
         private List<Entite> tires = new List<Entite>();
-        private int dureeEntreAttaqueBoss = 50;
+        private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
+        private int dureeEntrePaterneBoss = DUREE_PATERNE;
+        private int PaterneActuel = 0;
+        private int typeTireActuel = 0;
 
         public Carte carteActuelle;
 
@@ -1016,8 +1025,8 @@ namespace SAE_dev_1
                     Fill = Brushes.White,
                 };
                 Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES-1);
-                int x = (int) Canvas.GetLeft(ennemi) + aleatoire.Next((int)ennemi.Width);
-                int y = (int) Canvas.GetTop(ennemi) + aleatoire.Next((int)ennemi.Height);
+                int x = (int) (Canvas.GetLeft(ennemi) + ennemi.Width / 2);
+                int y = (int) (Canvas.GetTop(ennemi) + ennemi.Height / 2);
                 Canvas.SetLeft(nouveauxTire, x);
                 Canvas.SetTop(nouveauxTire, y);
                 CanvasJeux.Children.Add(nouveauxTire);
@@ -1201,6 +1210,76 @@ namespace SAE_dev_1
                     break;
             }
             ActionAttaque = true;
+        }
+
+        private void PaterneTire(Entite ennemi, int typeTireActuel)
+        {
+            switch (typeTireActuel)
+            {
+                case 0:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                    break;
+                case 1:
+                    if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    }
+                    else
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    }
+                    break;
+                case 2:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    break;
+                case 3:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+
+                    break;
+                case 4:
+                    if (Canvas.GetTop(joueur.Rectangle) < Canvas.GetTop(ennemi.RectanglePhysique))
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    }
+                    else
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    }
+                    break;
+                case 5:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    break;
+                case 6:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    break;
+            }
         }
 
         #endregion
@@ -1660,51 +1739,27 @@ namespace SAE_dev_1
                 }
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
-                    ennemi.RectanglePhysique.Fill = Brushes.Red;
+                    ennemi.RectanglePhysique.Fill = Brushes.Red;            
                     dureeEntreAttaqueBoss--;
+                    dureeEntrePaterneBoss--;
+                    if(dureeEntrePaterneBoss < 0)
+                    {
+                        PaterneActuel++;
+                        dureeEntrePaterneBoss = DUREE_PATERNE;
+                        if(PaterneActuel >= TOUT_PATERNE.GetLength(0))
+                        {
+                            PaterneActuel = 0;
+                        }
+                    }
                     if (dureeEntreAttaqueBoss < 0)
                     {
-                        switch (aleatoire.Next(0, 5))
+                        PaterneTire(ennemi, TOUT_PATERNE[PaterneActuel, typeTireActuel]);
+                        dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
+                        typeTireActuel++;
+                        if (typeTireActuel >= TOUT_PATERNE.GetLength(1))
                         {
-                            case 0:
-                                CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                                break;
-                            case 1:
-                                if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
-                                {
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 3);
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 3);
-                                }
-                                else
-                                {
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 3);
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 3);
-                                }
-                                break;
-                            case 2:
-                                CreeTireEntiter(ennemi.RectanglePhysique, 0, 3);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 4, 3);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                                break;
-                            case 3:
-                                CreeTireEntiter(ennemi.RectanglePhysique, 2, 4);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 6, 4);
-
-                                break;
-                            case 4:
-                                break;
-                            case 5:
-                                CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                                CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                                break;
+                            typeTireActuel = 0;
                         }
-                        dureeEntreAttaqueBoss = 50;
                     }
 
                     if(ennemi.vieEntite <= ennemi.maxVieEntite/2)
