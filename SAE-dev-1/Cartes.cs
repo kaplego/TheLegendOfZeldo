@@ -293,6 +293,35 @@ namespace SAE_dev_1
             "Le marchand"
         };
 
+        //                      Map  Pos
+        public static readonly (int, int)?[,] CARTES_ADJACENTES = new (int, int)?[,]
+        {
+            {
+                null,
+                null,
+                null,
+                null
+            },
+            {
+                (0, 4),
+                (2, 3),
+                (3, 0),
+                null
+            },
+            {
+                null,
+                null,
+                null,
+                (1, 1)
+            },
+            {
+                (1, 2),
+                null,
+                null,
+                null
+            }
+        };
+
         //                           nom     x    y    rotation
         // Si rotation = null, rotation est aléatoire
         public static readonly List<Objet>?[] OBJETS_CARTES = new List<Objet>?[]
@@ -318,14 +347,10 @@ namespace SAE_dev_1
                         mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
                         objet.Hitbox = null;
                     }
-                }),
-                new Objet("porte", 8, 0, 0, false, (mainWindow, objet) =>
-                    {
-                        mainWindow.derniereApparition = 0;
-                        mainWindow.ChangerCarte(0, 4);
-                    }
-                )
-            }
+                })
+            },
+            null,
+            null
         };
 
     }

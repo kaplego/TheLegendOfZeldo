@@ -287,6 +287,31 @@ namespace SAE_dev_1
             minuteurJeu.Start();
         }
 
+        public (int, int) PositionJoueur(bool centre = true, bool tuile = true)
+        {
+            int x;
+            int y;
+
+            if (centre)
+            {
+                x = (int)(joueur.Hitbox.X + (joueur.Hitbox.Width / 2));
+                y = (int)(joueur.Hitbox.Y + (joueur.Hitbox.Height / 2));
+            }
+            else
+            {
+                x = (int)joueur.Hitbox.X;
+                y = (int)joueur.Hitbox.Y;
+            }
+
+            if (!tuile)
+                return (x, y);
+
+            int xTuile = x / TAILLE_TUILE;
+            int yTuile = y / TAILLE_TUILE;
+
+            return (xTuile, yTuile);
+        }
+
         #region Carte
 
         private void GenererCarte()
@@ -818,11 +843,7 @@ namespace SAE_dev_1
         {
             bool interaction = false;
 
-            int xCentre = (int)(joueur.Hitbox.X + (joueur.Hitbox.Width / 2));
-            int yCentre = (int)(joueur.Hitbox.Y + (joueur.Hitbox.Height / 2));
-
-            int xTuile = xCentre / TAILLE_TUILE;
-            int yTuile = yCentre / TAILLE_TUILE;
+            var (xTuile, yTuile) = PositionJoueur();
 
             switch (joueur.Direction)
             {
@@ -952,6 +973,8 @@ namespace SAE_dev_1
             {
                 Deplacement();
 
+                ChangementCarte();
+
                 Collision();
 
                 EstAttaque();
@@ -1051,9 +1074,44 @@ namespace SAE_dev_1
                 else prochainChangementApparence--;
             }
 
-
-
             return seDeplace;
+        }
+
+        public void ChangementCarte()
+        {
+            (int, int)? carteAdjacente = null;
+
+            // Joueur va en haut
+            if (PositionJoueur(true, false).Item2 == joueur.Hitbox.Height / 2 &&
+                     joueur.Direction == 0 &&
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 0] != null)
+            {
+                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 0]!;
+            }
+            // Joueur va à droite
+            else if (PositionJoueur(true, false).Item1 == CanvasJeux.Width - joueur.Hitbox.Width / 2 &&
+                     joueur.Direction == 1 &&
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 1] != null)
+            {
+                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 1]!;
+            }
+            // Joueur va en bas
+            else if (PositionJoueur(true, false).Item2 == CanvasJeux.Height - joueur.Hitbox.Height / 2 &&
+                     joueur.Direction == 2 &&
+                     Cartes.CARTES_ADJACENTES[carteActuelle, 2] != null)
+            {
+                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 2]!;
+            }
+            // Joueur va à gauche
+            else if (PositionJoueur(true, false).Item1 == joueur.Hitbox.Width / 2 &&
+                joueur.Direction == 3 &&
+                Cartes.CARTES_ADJACENTES[carteActuelle, 3] != null)
+            {
+                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 3]!;
+            }
+
+            if (carteAdjacente != null)
+                ChangerCarte((((int, int))carteAdjacente).Item1, (((int, int))carteAdjacente).Item2);
         }
 
         private void Collision()
@@ -1075,8 +1133,6 @@ namespace SAE_dev_1
             {
                 pieces.Remove(piece);
             }
-
-
 
             if (epeeTerain[0] != null)
             {
@@ -1114,8 +1170,6 @@ namespace SAE_dev_1
                     objets.Remove(buisson);
                 }
             }
-
-
         }
 
         private bool EstAttaque()
@@ -1254,7 +1308,6 @@ namespace SAE_dev_1
                 int xTuile = xCentre / TAILLE_TUILE;
                 int yTuile = yCentre / TAILLE_TUILE;
 
-
                 Objet? objet = ObjetSurTuile(xTuile, yTuile);
 
                 if (objet != null)
@@ -1263,7 +1316,6 @@ namespace SAE_dev_1
                     {
                         ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
                         xTuile--;
-
                     }
                     else
                     {
