@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,8 +23,7 @@ namespace SAE_dev_1
         public static readonly int TAILLE_TUILE = 60;
         public static readonly int TAILLE_PIECE = 20;
         public static readonly int TAILLE_ENNEMI = 80;
-        public static readonly int TAILLE_TIRE_LONGUER = 30;
-        public static readonly int TAILLE_TIRE_LARGEUR = 15;
+        public static readonly int TAILLE_TIRE = 20;
         public static readonly int TAILLE_EPEE = 80;
         public static readonly int TAILLE_ICONES = 30;
 
@@ -41,7 +41,7 @@ namespace SAE_dev_1
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
 
         public static readonly int DUREE_IMMUNITE = 31;
-
+        public static readonly Random aleatoire = new Random();
         //epee
 
         public static readonly int DUREE_COUP = 16;
@@ -58,6 +58,7 @@ namespace SAE_dev_1
         private int immunite = 0;
         private int tempsCoup = 0;
         private int vitesseEnnemis = 3;
+        private int vitesseTire = 3;
 
         private bool droite, gauche, bas, haut;
         // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
@@ -74,6 +75,7 @@ namespace SAE_dev_1
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
         private List<Entite> tires = new List<Entite>();
+        private int dureeEntreAttaqueBoss = 50;
 
         public Carte carteActuelle;
 
@@ -584,7 +586,6 @@ namespace SAE_dev_1
                     }
                     else
                     {
-                        Random aleatoire = new Random();
 
                         switch (textureTuile)
                         {
@@ -807,7 +808,7 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F5 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(1, "boss", 50);
+                CreeEnemis(1, "boss", 50, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
             }
         }
 
@@ -959,7 +960,6 @@ namespace SAE_dev_1
 
         public void CreeEnemis(int nombre, string type, int vie)
         {
-            Random aleatoire = new Random();
             for (int i = 0; i < nombre; i++)
             {
                 Rectangle nouveauxEnnemy = new Rectangle
@@ -989,6 +989,11 @@ namespace SAE_dev_1
                     Height = TAILLE_ENNEMI,
                     Width = TAILLE_ENNEMI
                 };
+                if(type == "boss")
+                {
+                    nouveauxEnnemy.Height = TAILLE_ENNEMI*1.5;
+                    nouveauxEnnemy.Width = TAILLE_ENNEMI * 1.5;
+                }
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
@@ -998,20 +1003,26 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeTireEntiter(Rectangle ennemi, int angleVersJoueur)
+        public void CreeTireEntiter(Rectangle ennemi, int angleDirection, int nombre)
         {
-            Rectangle nouveauxTire = new Rectangle()
+
+            for (int i = 0; i < nombre; i++)
             {
-                Tag = "tire",
-                Height = TAILLE_TIRE_LARGEUR,
-                Width = TAILLE_TIRE_LONGUER,
-                Fill = Brushes.White,
-            };
-            Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES);
-            Canvas.SetTop(nouveauxTire, Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2);
-            Canvas.SetLeft(nouveauxTire, Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2);
-            CanvasJeux.Children.Add(nouveauxTire);
-            tires.Add(new Entite(angleVersJoueur, nouveauxTire, (int)Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2, (int)Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2));
+                Rectangle nouveauxTire = new Rectangle()
+                {
+                    Tag = "tire",
+                    Height = TAILLE_TIRE,
+                    Width = TAILLE_TIRE,
+                    Fill = Brushes.White,
+                };
+                Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES-1);
+                int x = (int) Canvas.GetLeft(ennemi) + aleatoire.Next((int)ennemi.Width);
+                int y = (int) Canvas.GetTop(ennemi) + aleatoire.Next((int)ennemi.Height);
+                Canvas.SetLeft(nouveauxTire, x);
+                Canvas.SetTop(nouveauxTire, y);
+                CanvasJeux.Children.Add(nouveauxTire);
+                tires.Add(new Entite(angleDirection, nouveauxTire, x, y));
+            }
         }
 
         public void CreePiece()
@@ -1413,7 +1424,7 @@ namespace SAE_dev_1
                     {
                         if (buisson.EnCollision(epeeTerain[0]))
                         {
-                            CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE/2);
+                            CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
                             CanvasJeux.Children.Remove(buisson.RectanglePhysique);
                             buisson.Hitbox = null;
                         }
@@ -1425,6 +1436,23 @@ namespace SAE_dev_1
                     objets.Remove(buisson);
                 }
             }
+
+            List<Entite> tireASupprimer = new List<Entite>();
+            foreach (Entite tire in tires)
+            {
+                if (Canvas.GetTop(tire.RectanglePhysique) + TAILLE_TIRE > 600 || Canvas.GetTop(tire.RectanglePhysique) < 0 ||
+                    Canvas.GetLeft(tire.RectanglePhysique) + TAILLE_TIRE > 1200 || Canvas.GetLeft(tire.RectanglePhysique) < 0)
+                {
+                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
+                    tireASupprimer.Add(tire);
+                }
+            }
+
+            foreach (Entite tire in tireASupprimer)
+            {
+                tires.Remove(tire);
+            }
+
         }
 
         private bool EstAttaque()
@@ -1465,6 +1493,33 @@ namespace SAE_dev_1
                         joueur.Immunise = true;
                     }
                 }
+            }
+            List<Entite> tireASupprimer = new List<Entite>();
+            foreach (Entite tire in tires)
+            {
+                if (tire.EnCollision(joueur) && joueur.Vie > 0)
+                {
+                    estAttaque = true;
+                    joueur.PrendDesDegats();
+
+                    if (joueur.Vie == 0)
+                    {
+                        estMort = true;
+                        break;
+                    }
+                    else
+                    {
+                        coeurs[joueur.Vie].Fill = textureCoeurVide;
+                        immunite = DUREE_IMMUNITE;
+                        joueur.Immunise = true;
+                    }
+                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
+                    tireASupprimer.Add(tire);
+                }
+            }
+            foreach (Entite tire in tireASupprimer)
+            {
+                tires.Remove(tire);
             }
 
             if (estMort)
@@ -1606,8 +1661,95 @@ namespace SAE_dev_1
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
                     ennemi.RectanglePhysique.Fill = Brushes.Red;
-                    CreeTireEntiter(ennemi.RectanglePhysique,0);
+                    dureeEntreAttaqueBoss--;
+                    if (dureeEntreAttaqueBoss < 0)
+                    {
+                        switch (aleatoire.Next(0, 5))
+                        {
+                            case 0:
+                                CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                                break;
+                            case 1:
+                                if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
+                                {
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 3);
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 3);
+                                }
+                                else
+                                {
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 3);
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 3);
+                                }
+                                break;
+                            case 2:
+                                CreeTireEntiter(ennemi.RectanglePhysique, 0, 3);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 4, 3);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                                break;
+                            case 3:
+                                CreeTireEntiter(ennemi.RectanglePhysique, 2, 4);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 6, 4);
+
+                                break;
+                            case 4:
+                                break;
+                            case 5:
+                                CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                                CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                                break;
+                        }
+                        dureeEntreAttaqueBoss = 50;
+                    }
+
+                    if(ennemi.vieEntite <= ennemi.maxVieEntite/2)
+                    {
+                        vitesseTire = 5;
+                    }
                 } 
+            }
+
+            foreach(Entite tire in tires)
+            {
+                switch(tire.directionProjectil)
+                {
+                    case 0:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 1:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 2:
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 3:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 4:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 5:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 6:
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 7:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                }
+
+
+
             }
         }
 

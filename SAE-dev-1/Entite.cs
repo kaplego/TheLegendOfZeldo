@@ -11,9 +11,11 @@ namespace SAE_dev_1
     {
         private int apparenceEntite;
         private int DirectionEntite;
-        private int vieEntite;
+        public int vieEntite;
+        public int maxVieEntite;
         public bool entiteEstMort = false;
         public bool estImmuniser = false;
+        public int directionProjectil;
 
 
         private ImageBrush[] textureEnnemiFace = new ImageBrush[2]
@@ -92,9 +94,10 @@ namespace SAE_dev_1
                 Y = y
             };
             vieEntite = vie;
+            maxVieEntite = vie;
         }
 
-        public Entite(int angleVersJoueur, Rectangle rectangle, int x, int y)
+        public Entite(int angleDirection, Rectangle rectangle, int x, int y)
         {
             this.RectanglePhysique = rectangle;
             this.Hitbox = new Rect()
@@ -104,6 +107,7 @@ namespace SAE_dev_1
                 X = x,
                 Y = y
             };
+            directionProjectil = angleDirection;
         }
 
         public Entite(Rectangle rectangle, Rect rect, int x, int y)
@@ -158,13 +162,16 @@ namespace SAE_dev_1
 
         public void ModifierGaucheEntite(double x)
         {
-            if (x > Canvas.GetLeft(this.RectanglePhysique))
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime")
             {
-                DirectionEntite = 1;
-            }
-            else
-            {
-                DirectionEntite = 3;
+                if (x > Canvas.GetLeft(this.RectanglePhysique))
+                {
+                    DirectionEntite = 1;
+                }
+                else
+                {
+                    DirectionEntite = 3;
+                }
             }
             Canvas.SetLeft(this.RectanglePhysique, x);
             this.hitbox.X = this.GaucheEntite();
@@ -172,13 +179,16 @@ namespace SAE_dev_1
 
         public void ModifierHautEntite(double y)
         {
-            if (y > Canvas.GetTop(this.RectanglePhysique))
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime")
             {
-                DirectionEntite = 0;
-            }
-            else
-            {
-                DirectionEntite = 2;
+                if (y > Canvas.GetTop(this.RectanglePhysique))
+                {
+                    DirectionEntite = 0;
+                }
+                else
+                {
+                    DirectionEntite = 2;
+                }
             }
             Canvas.SetTop(this.RectanglePhysique, y);
             this.hitbox.Y = this.HautEntite();
