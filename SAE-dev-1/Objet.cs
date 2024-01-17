@@ -2,13 +2,21 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
     internal class Objet
     {
-        public static MainWindow mainWindow;
+        public ImageBrush texturePorte = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"))
+        };
+        public ImageBrush textureBuisson = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"))
+        };
 
         public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
         {
@@ -23,14 +31,14 @@ namespace SAE_dev_1
                     largeurObjet = 1;
                     hauteurObjet = 1;
 
-                    texture = mainWindow.texturePorte;
+                    texture = texturePorte;
                     texture.Stretch = Stretch.Uniform;
                     break;
                 case "buisson":
                     largeurObjet = 1;
                     hauteurObjet = 1;
 
-                    texture = mainWindow.textureBuisson;
+                    texture = textureBuisson;
                     texture.Stretch = Stretch.Uniform;
                     break;
                 case "caillou":

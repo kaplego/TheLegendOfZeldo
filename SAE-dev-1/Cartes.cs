@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SAE_dev_1
 {
@@ -134,5 +135,21 @@ namespace SAE_dev_1
             null
         };
 
+        public static readonly Action<MainWindow>?[] ACTIONS_CARTE_CHARGEE = new Action<MainWindow>?[]
+        {
+            null,
+            (mainWindow) =>
+            {
+                if (mainWindow.nombreVisitesCartes[1] == 1)
+                {
+                    mainWindow.NouveauDialogue(new string[]
+                    {
+                        "Bienvenue !",
+                    });
+                }
+            },
+            null,
+            null
+        };
     }
 }

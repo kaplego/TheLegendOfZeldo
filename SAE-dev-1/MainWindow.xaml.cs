@@ -128,6 +128,10 @@ namespace SAE_dev_1
 
         Boutique? boutique = null;
 
+        // Cartes
+
+        public int[] nombreVisitesCartes = new int[Cartes.CARTES.Length];
+
         #region Textures
 
         // Terrain
@@ -140,11 +144,6 @@ namespace SAE_dev_1
         private ImageBrush textureCheminI = new ImageBrush();
         private ImageBrush textureCheminL = new ImageBrush();
         private ImageBrush textureCheminU = new ImageBrush();
-
-        // Objets
-
-        public ImageBrush texturePorte = new ImageBrush();
-        public ImageBrush textureBuisson = new ImageBrush();
 
         // HUD
 
@@ -172,7 +171,6 @@ namespace SAE_dev_1
         public MainWindow()
         {
             InitializeComponent();
-            Objet.mainWindow = this;
 
             this.Hide();
 
@@ -190,28 +188,23 @@ namespace SAE_dev_1
             textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
             textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(1 / 8, "Chargement des textures d'objets...");
-
-            texturePorte.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"));
-            textureBuisson.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"));
-
-            fenetreInitialisation.Chargement(2 / 8, "Chargement des textures du HUD...");
+            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures du HUD...");
 
             texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
             textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(3 / 8, "Chargement des textures des personnages...");
+            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures des personnages...");
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
-            fenetreInitialisation.Chargement(4 / 8, "Chargement du joueur...");
+            fenetreInitialisation.Chargement(3 / 7, "Chargement du joueur...");
 
             joueur = new Joueur();
             CanvasJeux.Children.Add(joueur.Rectangle);
 
-            fenetreInitialisation.Chargement(5 / 8, "Chargement du HUD...");
+            fenetreInitialisation.Chargement(4 / 7, "Chargement du HUD...");
 
             pieceIcone = new Rectangle()
             {
@@ -268,11 +261,14 @@ namespace SAE_dev_1
                 CanvasJeux.Children.Add(coeurs[i]);
             }
 
-            fenetreInitialisation.Chargement(6 / 8, "Chargement de la boutique");
+            fenetreInitialisation.Chargement(5 / 7, "Chargement de la boutique");
 
             Boutique.Initialiser(this);
 
-            fenetreInitialisation.Chargement(7 / 8, "Génération de la carte");
+            fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
+
+            for (int i = 0; i < Cartes.CARTES.Length; i++)
+                nombreVisitesCartes[i] = 0;
 
             GenererCarte();
 
@@ -285,6 +281,15 @@ namespace SAE_dev_1
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
+        }
+
+        public void NouveauDialogue(string[] texte)
+        {
+            dialogueActuel = new Dialogue(texte, CanvasJeux);
+
+            if (dialogueActuel.TexteSuivant())
+                dialogueActuel = null;
+            else changerLettreDialogue = true;
         }
 
         public (int, int) PositionJoueur(bool centre = true, bool tuile = true)
@@ -506,6 +511,8 @@ namespace SAE_dev_1
                 CanvasJeux.Children.Add(coeur);
             }
 
+            nombreVisitesCartes[carteActuelle]++;
+
             chargement.Opacity = 1;
             while (chargement.Opacity > 0)
             {
@@ -517,6 +524,9 @@ namespace SAE_dev_1
             this.CanvasJeux.Focus();
             minuteurJeu.Start();
             enChargement = false;
+
+            if (Cartes.ACTIONS_CARTE_CHARGEE[carteActuelle] != null)
+                Cartes.ACTIONS_CARTE_CHARGEE[carteActuelle]!(this);
         }
 
         #endregion
@@ -661,6 +671,21 @@ namespace SAE_dev_1
                 {
                     Attaque();
                     tempsCoup = DUREE_COUP;
+                }
+            }
+
+            if (dialogueActuel != null && e.Key == Key.Space)
+            {
+                if (changerLettreDialogue)
+                {
+                    changerLettreDialogue = false;
+                    dialogueActuel.Accelerer();
+                }
+                else
+                {
+                    changerLettreDialogue = true;
+                    if (dialogueActuel.TexteSuivant())
+                        dialogueActuel = null;
                 }
             }
 
