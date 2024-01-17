@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 
 namespace SAE_dev_1
 {
-    internal class Dialogue
+    public class Dialogue
     {
         public static readonly int VITESSE_ECRITURE = 5;
 

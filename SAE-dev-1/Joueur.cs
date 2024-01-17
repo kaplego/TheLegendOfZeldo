@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
-    internal class Joueur
+    public class Joueur
     {
         public static readonly int LARGEUR = 80;
         public static readonly int HAUTEUR = 80;

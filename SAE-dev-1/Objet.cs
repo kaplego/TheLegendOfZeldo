@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
-    internal class Objet
+    public class Objet
     {
         public ImageBrush texturePorte = new ImageBrush()
         {

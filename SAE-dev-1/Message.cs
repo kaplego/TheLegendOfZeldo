@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,7 +6,7 @@ using System.Windows.Threading;
 
 namespace SAE_dev_1
 {
-    internal class Message
+    public class Message
     {
         public Message(MainWindow mainWindow, string texte, Brush? couleur = null, int dureeEnSecondes = 5)
         {
@@ -47,7 +43,8 @@ namespace SAE_dev_1
         public string Texte
         {
             get { return texte; }
-            set {
+            set
+            {
                 texte = value;
                 this.texteBlock.Text = texte;
             }
@@ -56,7 +53,8 @@ namespace SAE_dev_1
         public Brush Couleur
         {
             get { return couleur; }
-            set {
+            set
+            {
                 couleur = value;
                 this.texteBlock.Foreground = this.couleur;
             }
@@ -65,7 +63,8 @@ namespace SAE_dev_1
         public int Duree
         {
             get { return duree; }
-            set {
+            set
+            {
                 duree = value;
                 minuteur.Stop();
                 minuteur.Interval = TimeSpan.FromSeconds(duree);

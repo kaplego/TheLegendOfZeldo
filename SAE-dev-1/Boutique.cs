@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace SAE_dev_1
 {
-    internal class Boutique
+    public class Boutique
     {
         public static readonly int TAILLE_ITEM = MainWindow.TAILLE_TUILE;
         public static readonly int HAUTEUR_NOM_SELECTION = 60;
@@ -189,13 +186,14 @@ namespace SAE_dev_1
         private void CliqueItem(object sender, MouseButtonEventArgs e)
         {
             Grid? grille = sender as Grid;
-            
+
             if (grille != null)
             {
                 try
                 {
                     ChangerItemSelectionne(grille.Tag.ToString());
-                } catch
+                }
+                catch
                 {
                     ChangerItemSelectionne(null);
                 }

@@ -72,7 +72,7 @@ namespace SAE_dev_1
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
 
-        public int carteActuelle = 0;
+        public Carte carteActuelle;
 
         private bool joueurMort = false;
         private bool jeuEnPause = false;
@@ -131,7 +131,7 @@ namespace SAE_dev_1
 
         // Cartes
 
-        public int[] nombreVisitesCartes = new int[Cartes.CARTES.Length];
+        public List<Carte> cartes = new List<Carte>();
 
         #region Textures
 
@@ -266,13 +266,177 @@ namespace SAE_dev_1
 
             Boutique.Initialiser(this);
 
-            fenetreInitialisation.Chargement(6 / 7, "Génération de la carte");
+            #region Chargement - Cartes
+            fenetreInitialisation.Chargement(6 / 7, "Génération des cartes");
 
-            for (int i = 0; i < Cartes.CARTES.Length; i++)
-                nombreVisitesCartes[i] = 0;
+            // Carte Maison
+
+            carteActuelle = new Carte(
+                this,
+                "maison",
+                new string[10, 20]
+                {
+                    {"mur_no", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_n", "mur_ne"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_o", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "planches", "mur_e"},
+                    {"mur_so", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_s", "mur_se"},
+                },
+                new List<Objet>
+                {
+                    new Objet("porte", 10, 9, 180, false, (mainWindow, objet) =>
+                        {
+                            mainWindow.derniereApparition = 0;
+                            mainWindow.ChangerCarte("jardin", 0);
+                        }
+                    )
+                }
+            );
+            cartes.Add(carteActuelle);
+
+            // Carte Jardin
+
+            cartes.Add(new Carte(
+                this,
+                "jardin",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("buisson", 3, 0, null, false, null),
+                    new Objet("buisson", 0, 5, null, false, null),
+                    new Objet("buisson", 5, 3, null, false, null),
+                    new Objet("buisson", 6, 4, null, false, null),
+                    new Objet("buisson", 4, 8, null, false, null),
+                    new Objet("buisson", 14, 6, null, false, null),
+                    new Objet("buisson", 18, 5, null, false, null),
+                    new Objet("buisson", 15, 9, null, false, null),
+                    new Objet("caillou", 19, 0, 90, false, (mainWindow, objet) =>
+                    {
+                        if (mainWindow.bombe)
+                        {
+                            mainWindow.bombe = false;
+                            objet.NeReapparaitPlus = true;
+                            mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
+                            objet.Hitbox = null;
+                        }
+                    })
+                },
+                new (string, int)?[4]
+                {
+                    ("maison", 4),
+                    ("combat", 3),
+                    ("marchand", 0),
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    (9, 10),
+                    (0, 1),
+                    (6, 8),
+                    null
+                },
+                (mainWindow, carte) =>
+                {
+                    if (carte.NombreVisites == 1)
+                    {
+                        mainWindow.NouveauDialogue(new string[]
+                        {
+                        "Bienvenue !",
+                        });
+                    }
+                }
+            ));
+
+            // Carte Combat
+
+            cartes.Add(new Carte(
+                this,
+                "combat",
+                new string[10, 20]
+                {
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_180", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe"},
+                    {"herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
+                    {"herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    null,
+                    null,
+                    null,
+                    ("jardin", 1)
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    null,
+                    null,
+                    (0, 1)
+                }
+            ));
+
+            // Carte Marchand
+
+            cartes.Add(new Carte(
+                this,
+                "marchand",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    ("jardin", 2),
+                    null,
+                    null,
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    (6, 8),
+                    null,
+                    null,
+                    null
+                }
+            ));
 
             GenererCarte();
 
+            #endregion
             fenetreInitialisation.Termine();
         }
 
@@ -322,12 +486,10 @@ namespace SAE_dev_1
 
         private void GenererCarte()
         {
-            string[,] carte = Cartes.CARTES[carteActuelle];
-
             // Parcourir toutes les tuiles de la carte
-            for (int y = 0; y < carte.GetLength(0); y++)
+            for (int y = 0; y < Carte.HAUTEUR; y++)
             {
-                for (int x = 0; x < carte.GetLength(1); x++)
+                for (int x = 0; x < Carte.LARGEUR; x++)
                 {
                     Rect? tuileHitbox;
 
@@ -339,7 +501,7 @@ namespace SAE_dev_1
                     ImageBrush? fondTuile = new ImageBrush();
                     fondTuile.Stretch = Stretch.Uniform;
 
-                    string textureTuile = carte[y, x];
+                    string textureTuile = carteActuelle.Tuile(x, y);
 
                     if (regexTextureMur.IsMatch(textureTuile))
                     {
@@ -460,22 +622,25 @@ namespace SAE_dev_1
             }
 
             // Ajouter les objets de la carte
-            if (Cartes.OBJETS_CARTES[carteActuelle] != null)
-                foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+            foreach (Objet objet in carteActuelle.Objets)
+            {
+                if (!objet.NeReapparaitPlus)
                 {
-                    if (!objet.NeReapparaitPlus)
-                    {
-                        objet.RegenererHitbox();
-                        objets.Add(objet);
-                        CanvasJeux.Children.Add(objet.RectanglePhysique);
-                    }
+                    objet.RegenererHitbox();
+                    objets.Add(objet);
+                    CanvasJeux.Children.Add(objet.RectanglePhysique);
                 }
+            }
         }
 
-        public async void ChangerCarte(int nouvelleCarte, int apparition = 0)
+        public async void ChangerCarte(string nomNouvelleCarte, int apparition = 0)
         {
             if (apparition < 0 || apparition > 4)
                 throw new ArgumentOutOfRangeException(nameof(apparition), "Le point d'apparition doit être entre 0 et 4 inclus.");
+
+            Carte? nouvelleCarte = cartes.Find((carte) => carte.Nom == nomNouvelleCarte);
+            if (nouvelleCarte == null)
+                throw new Exception("La carte demandée n'existe pas.");
 
             enChargement = true;
             minuteurJeu.Stop();
@@ -512,7 +677,7 @@ namespace SAE_dev_1
                 CanvasJeux.Children.Add(coeur);
             }
 
-            nombreVisitesCartes[carteActuelle]++;
+            carteActuelle.NombreVisites++;
 
             chargement.Opacity = 1;
             while (chargement.Opacity > 0)
@@ -526,8 +691,8 @@ namespace SAE_dev_1
             minuteurJeu.Start();
             enChargement = false;
 
-            if (Cartes.ACTIONS_CARTE_CHARGEE[carteActuelle] != null)
-                Cartes.ACTIONS_CARTE_CHARGEE[carteActuelle]!(this);
+            if (carteActuelle.ActionCarteChargee != null)
+                carteActuelle.ActionCarteChargee!(this, carteActuelle);
         }
 
         #endregion
@@ -560,7 +725,7 @@ namespace SAE_dev_1
                 coeur.Fill = textureCoeur;
             }
             immunite = DUREE_IMMUNITE;
-            ChangerCarte(carteActuelle, carteActuelle == 0 ? 4 : derniereApparition);
+            ChangerCarte(carteActuelle.Nom, carteActuelle.Nom == "maison" ? 4 : derniereApparition);
             joueurMort = false;
             minuteurJeu.Start();
         }
@@ -850,7 +1015,7 @@ namespace SAE_dev_1
 
         private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
-            foreach (Objet objet in Cartes.OBJETS_CARTES[carteActuelle]!)
+            foreach (Objet objet in carteActuelle.Objets!)
             {
                 if (xTuile >= objet.X &&
                     xTuile <= objet.X + objet.Largeur &&
@@ -1102,10 +1267,10 @@ namespace SAE_dev_1
 
         private bool VerifierPosition(int position)
         {
-            if (Cartes.COORDS_CHANGEMENT_MAP[carteActuelle, joueur.Direction] == null)
+            if (carteActuelle.CoordonneesCarteAdjacente(joueur.Direction) == null)
                 return true;
 
-            (int, int) positionMax = ((int, int))Cartes.COORDS_CHANGEMENT_MAP[carteActuelle, joueur.Direction]!;
+            (int, int) positionMax = ((int, int))carteActuelle.CoordonneesCarteAdjacente(joueur.Direction)!;
 
             return position >= positionMax.Item1 &&
                 position <= positionMax.Item2;
@@ -1113,43 +1278,48 @@ namespace SAE_dev_1
 
         public void ChangementCarte()
         {
-            (int, int)? carteAdjacente = null;
+            Carte? carteAdjacente = null;
+            int? apparitionCarteAdjacente = null;
 
             // Joueur va en haut
             if (PositionJoueur(true, false).Item2 == joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 0 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 0] != null &&
+                     carteActuelle.CarteAdjacente(0) != null &&
                      VerifierPosition(PositionJoueur().Item1))
             {
-                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 0]!;
+                carteAdjacente = carteActuelle.CarteAdjacente(0)!;
+                apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(0)!;
             }
             // Joueur va à droite
             else if (PositionJoueur(true, false).Item1 == CanvasJeux.Width - joueur.Hitbox.Width / 2 &&
                      joueur.Direction == 1 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 1] != null &&
+                     carteActuelle.CarteAdjacente(1) != null &&
                      VerifierPosition(PositionJoueur().Item2))
             {
-                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 1]!;
+                carteAdjacente = carteActuelle.CarteAdjacente(1)!;
+                apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(1)!;
             }
             // Joueur va en bas
             else if (PositionJoueur(true, false).Item2 == CanvasJeux.Height - joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 2 &&
-                     Cartes.CARTES_ADJACENTES[carteActuelle, 2] != null &&
+                     carteActuelle.CarteAdjacente(2) != null &&
                      VerifierPosition(PositionJoueur().Item1))
             {
-                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 2]!;
+                carteAdjacente = carteActuelle.CarteAdjacente(2)!;
+                apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(2)!;
             }
             // Joueur va à gauche
             else if (PositionJoueur(true, false).Item1 == joueur.Hitbox.Width / 2 &&
                 joueur.Direction == 3 &&
-                Cartes.CARTES_ADJACENTES[carteActuelle, 3] != null &&
+                carteActuelle.CarteAdjacente(3) != null &&
                 VerifierPosition(PositionJoueur().Item2))
             {
-                carteAdjacente = Cartes.CARTES_ADJACENTES[carteActuelle, 3]!;
+                carteAdjacente = carteActuelle.CarteAdjacente(3)!;
+                apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(3)!;
             }
 
             if (carteAdjacente != null)
-                ChangerCarte((((int, int))carteAdjacente).Item1, (((int, int))carteAdjacente).Item2);
+                ChangerCarte(carteAdjacente.Nom, (int)apparitionCarteAdjacente!);
         }
 
         private void Collision()
@@ -1326,9 +1496,9 @@ namespace SAE_dev_1
                     epeeTerain[0] = null;
                     ActionAttaque = false;
 
-                    foreach(Entite ennemi in ennemis)
+                    foreach (Entite ennemi in ennemis)
                     {
-                        if(ennemi.estImmuniser)
+                        if (ennemi.estImmuniser)
                         {
                             ennemi.estImmuniser = false;
                         }

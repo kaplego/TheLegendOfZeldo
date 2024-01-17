@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace SAE_dev_1
 {
-    internal class Entite
+    public class Entite
     {
         private int apparenceEntite;
         private int DirectionEntite;
