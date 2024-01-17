@@ -38,7 +38,7 @@ namespace SAE_dev_1
 
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
 
-        public static readonly int DUREE_IMMUNITE = 62;
+        public static readonly int DUREE_IMMUNITE = 31;
 
         //epee
 
@@ -52,6 +52,7 @@ namespace SAE_dev_1
         // Joueur
         private Joueur joueur;
 
+        private int degatJoueur = 2;
         private int immunite = 0;
         private int tempsCoup = 0;
         private int vitesseEnnemis = 3;
@@ -788,7 +789,6 @@ namespace SAE_dev_1
             Random aleatoire = new Random();
             for (int i = 0; i < nombre; i++)
             {
-                //ImageBrush apparenceEnemi = new ImageBrush();
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
                     Tag = "enemis," + type,
@@ -802,9 +802,7 @@ namespace SAE_dev_1
                 Canvas.SetTop(nouveauxEnnemy, y);
                 CanvasJeux.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y));
-
-                //apparenceEnemi.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources/" + type + ".png"));
+                ennemis.Add(new Entite(nouveauxEnnemy, x, y, 4));
             }
         }
 
@@ -1166,8 +1164,12 @@ namespace SAE_dev_1
                 {
                     if (ennemi.EnCollision(epeeTerain[0]))
                     {
-                        CanvasJeux.Children.Remove(ennemi.RectanglePhysique);
-                        ennemiASupprimer.Add(ennemi);
+                        ennemi.DegatSurEntite(degatJoueur);
+                        if (ennemi.entiteEstMort)
+                        {
+                            CanvasJeux.Children.Remove(ennemi.RectanglePhysique);
+                            ennemiASupprimer.Add(ennemi);
+                        }
                     }
                 }
 
@@ -1261,15 +1263,12 @@ namespace SAE_dev_1
         {
             if (ActionAttaque)
             {
-                int x, y;
+                int x = joueur.Gauche(), y = joueur.Haut();
                 switch (joueur.Direction)
                 {
 
                     case 0:
-                        x = joueur.Gauche();
                         y = joueur.Haut() - TAILLE_EPEE + 20;
-                        epeeTerain[0].ModifierGaucheEntite(x);
-                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 0,
@@ -1277,30 +1276,20 @@ namespace SAE_dev_1
                         break;
                     case 1:
                         x = joueur.Gauche() + TAILLE_EPEE - 20;
-                        y = joueur.Haut();
-                        epeeTerain[0].ModifierGaucheEntite(x);
-                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 90,
                         };
                         break;
                     case 2:
-                        x = joueur.Gauche();
                         y = joueur.Haut() + TAILLE_EPEE - 20;
-                        epeeTerain[0].ModifierGaucheEntite(x);
-                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = 180,
                         };
                         break;
                     case 3:
-
                         x = joueur.Gauche() - TAILLE_EPEE + 20;
-                        y = joueur.Haut();
-                        epeeTerain[0].ModifierGaucheEntite(x);
-                        epeeTerain[0].ModifierHautEntite(y);
                         epeeTerain[0].RectanglePhysique.LayoutTransform = new RotateTransform()
                         {
                             Angle = -90,
@@ -1308,6 +1297,8 @@ namespace SAE_dev_1
 
                         break;
                 }
+                epeeTerain[0].ModifierGaucheEntite(x);
+                epeeTerain[0].ModifierHautEntite(y);
 
                 tempsCoup--;
                 if (tempsCoup < 10)
@@ -1319,6 +1310,14 @@ namespace SAE_dev_1
                     CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
                     ActionAttaque = false;
+
+                    foreach(Entite ennemi in ennemis)
+                    {
+                        if(ennemi.estImmuniser)
+                        {
+                            ennemi.estImmuniser = false;
+                        }
+                    }
                 }
             }
         }
