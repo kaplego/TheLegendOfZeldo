@@ -18,7 +18,7 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face-1.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -26,17 +26,17 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos-2.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos3.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-dos-3.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -44,17 +44,17 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-droite-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-droite-2.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteD3.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-droite-3.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -62,17 +62,17 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-gauche-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-gauche-2.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-coteG3.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-gauche-3.png")),
                 Stretch = Stretch.Uniform
             }
         };

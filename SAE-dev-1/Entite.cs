@@ -16,12 +16,12 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeF1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeF2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-2.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -29,12 +29,12 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeDos1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-dos-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeDos2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-dos-2.png")),
                 Stretch = Stretch.Uniform
             },
         };
@@ -42,12 +42,12 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeD1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-droite-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeD2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-droite-2.png")),
                 Stretch = Stretch.Uniform
             },
         };
@@ -55,12 +55,12 @@ namespace SAE_dev_1
         {
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeG1.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-gauche-1.png")),
                 Stretch = Stretch.Uniform
             },
             new ImageBrush()
             {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slimeG2.png")),
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-gauche-2.png")),
                 Stretch = Stretch.Uniform
             },
         };
@@ -131,7 +131,7 @@ namespace SAE_dev_1
         {
             Canvas.SetLeft(this.RectanglePhysique, x);
             this.hitbox.X = this.GaucheEntite();
-            if(x>0)
+            if (x > 0)
             {
                 DirectionEnnemi = 1;
             }
