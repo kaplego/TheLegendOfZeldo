@@ -257,7 +257,7 @@ namespace SAE_dev_1
             {
                 Message message = new Message(mainWindow, "Vous n'avez pas assez de pièces.", Brushes.Red);
                 message.Afficher();
-                mainWindow.CanvasJeux.Focus();
+                mainWindow.canvasJeu.Focus();
                 return;
             }
 
@@ -274,7 +274,7 @@ namespace SAE_dev_1
             }
 
             ChargerItems();
-            mainWindow.CanvasJeux.Focus();
+            mainWindow.canvasJeu.Focus();
         }
     }
 }

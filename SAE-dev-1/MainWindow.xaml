@@ -34,7 +34,7 @@
             Visibility="Hidden" />
 
         <Canvas
-            x:Name="CanvasJeux"
+            x:Name="canvasJeu"
             Width="1200"
             Height="600"
             MinWidth="1200"

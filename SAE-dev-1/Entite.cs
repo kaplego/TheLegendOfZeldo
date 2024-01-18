@@ -9,15 +9,6 @@ namespace SAE_dev_1
 {
     public class Entite
     {
-        private int apparenceEntite;
-        private int directionEntite;
-        public int vieEntite;
-        public int maxVieEntite;
-        public bool entiteEstMort = false;
-        public bool estImmuniser = false;
-        public int directionProjectil;
-
-
         private ImageBrush[] textureEnnemiFace = new ImageBrush[2]
         {
             new ImageBrush()
@@ -93,8 +84,8 @@ namespace SAE_dev_1
                 X = x,
                 Y = y
             };
-            vieEntite = vie;
-            maxVieEntite = vie;
+            this.vie = vie;
+            vieMax = vie;
         }
 
         public Entite(int angleDirection, Rectangle rectangle, int x, int y)
@@ -118,6 +109,13 @@ namespace SAE_dev_1
 
         private Rect hitbox;
         private Rectangle rectanglePhysique;
+        private int apparence;
+        private int direction;
+        public int vie;
+        public int vieMax;
+        public bool estMort = false;
+        public bool estImmunise = false;
+        public int directionProjectil;
 
         public Rect Hitbox
         {
@@ -166,11 +164,11 @@ namespace SAE_dev_1
             {
                 if (x > Canvas.GetLeft(this.RectanglePhysique))
                 {
-                    directionEntite = 1;
+                    direction = 1;
                 }
                 else
                 {
-                    directionEntite = 3;
+                    direction = 3;
                 }
             }
             Canvas.SetLeft(this.RectanglePhysique, x);
@@ -183,11 +181,11 @@ namespace SAE_dev_1
             {
                 if (y > Canvas.GetTop(this.RectanglePhysique))
                 {
-                    directionEntite = 0;
+                    direction = 0;
                 }
                 else
                 {
-                    directionEntite = 2;
+                    direction = 2;
                 }
             }
             Canvas.SetTop(this.RectanglePhysique, y);
@@ -198,21 +196,21 @@ namespace SAE_dev_1
         public void ChangerImageRectangle()
         {
             this.RectanglePhysique.Fill =
-                this.directionEntite == 0
-                    ? textureEnnemiDos[apparenceEntite]
-                    : this.directionEntite == 1
-                        ? textureEnnemiDroite[apparenceEntite]
-                        : this.directionEntite == 2
+                this.direction == 0
+                    ? textureEnnemiDos[apparence]
+                    : this.direction == 1
+                        ? textureEnnemiDroite[apparence]
+                        : this.direction == 2
                             ? textureEnnemiFace[0]
-                            : textureEnnemiGauche[apparenceEntite];
+                            : textureEnnemiGauche[apparence];
         }
 
         public void ProchaineApparence()
         {
-            this.apparenceEntite++;
-            if (this.apparenceEntite >= 2)
+            this.apparence++;
+            if (this.apparence >= 2)
             {
-                this.apparenceEntite = 0;
+                this.apparence = 0;
             }
 
             ChangerImageRectangle();
@@ -220,14 +218,14 @@ namespace SAE_dev_1
 
         public void DegatSurEntite(int degat)
         {
-            if (!estImmuniser)
+            if (!estImmunise)
             {
-                vieEntite -= degat;
-                estImmuniser = true;
+                vie -= degat;
+                estImmunise = true;
             }
-            if (vieEntite <= 0)
+            if (vie <= 0)
             {
-                entiteEstMort = true;
+                estMort = true;
             }
         }
     }

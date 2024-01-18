@@ -220,7 +220,7 @@ namespace SAE_dev_1
             fenetreInitialisation.Chargement(3 / 7, "Chargement du joueur...");
 
             joueur = new Joueur();
-            CanvasJeux.Children.Add(joueur.Rectangle);
+            canvasJeu.Children.Add(joueur.Rectangle);
 
             fenetreInitialisation.Chargement(4 / 7, "Chargement du HUD...");
 
@@ -254,12 +254,12 @@ namespace SAE_dev_1
             Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
             Canvas.SetRight(pieceIcone, 5);
             Canvas.SetTop(pieceIcone, -5 - TAILLE_ICONES);
-            CanvasJeux.Children.Add(pieceIcone);
+            canvasJeu.Children.Add(pieceIcone);
 
             Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
             Canvas.SetRight(pieceNombre, TAILLE_ICONES + 10);
             Canvas.SetTop(pieceNombre, -5 - TAILLE_ICONES);
-            CanvasJeux.Children.Add(pieceNombre);
+            canvasJeu.Children.Add(pieceNombre);
 
             coeurs = new Rectangle[5];
             for (int i = 0; i < coeurs.Length; i++)
@@ -276,7 +276,7 @@ namespace SAE_dev_1
                 Canvas.SetZIndex(coeurs[i], ZINDEX_HUD);
                 Canvas.SetLeft(coeurs[i], i * (TAILLE_ICONES + 5) + 5);
                 Canvas.SetTop(coeurs[i], -5 - TAILLE_ICONES);
-                CanvasJeux.Children.Add(coeurs[i]);
+                canvasJeu.Children.Add(coeurs[i]);
             }
 
             fenetreInitialisation.Chargement(5 / 7, "Chargement de la boutique");
@@ -350,7 +350,7 @@ namespace SAE_dev_1
                         {
                             mainWindow.bombe = false;
                             objet.NeReapparaitPlus = true;
-                            mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
+                            mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
                         }
                     })
@@ -467,7 +467,7 @@ namespace SAE_dev_1
 
         public void NouveauDialogue(string[] texte)
         {
-            dialogueActuel = new Dialogue(texte, CanvasJeux);
+            dialogueActuel = new Dialogue(texte, canvasJeu);
 
             if (dialogueActuel.TexteSuivant())
                 dialogueActuel = null;
@@ -644,7 +644,7 @@ namespace SAE_dev_1
                     Panel.SetZIndex(tuile, ZINDEX_TERRAIN);
                     Canvas.SetTop(tuile, y * TAILLE_TUILE);
                     Canvas.SetLeft(tuile, x * TAILLE_TUILE);
-                    CanvasJeux.Children.Add(tuile);
+                    canvasJeu.Children.Add(tuile);
                 }
             }
 
@@ -655,7 +655,7 @@ namespace SAE_dev_1
                 {
                     objet.RegenererHitbox();
                     objets.Add(objet);
-                    CanvasJeux.Children.Add(objet.RectanglePhysique);
+                    canvasJeu.Children.Add(objet.RectanglePhysique);
                 }
             }
         }
@@ -680,7 +680,7 @@ namespace SAE_dev_1
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
 
-            CanvasJeux.Children.Clear();
+            canvasJeu.Children.Clear();
             ennemis.Clear();
             hitboxTerrain.Clear();
             objets.Clear();
@@ -694,14 +694,14 @@ namespace SAE_dev_1
             derniereApparition = apparition;
             joueur.Apparaite(apparition);
 
-            CanvasJeux.Children.Add(joueur.Rectangle);
+            canvasJeu.Children.Add(joueur.Rectangle);
 
-            CanvasJeux.Children.Add(pieceIcone);
-            CanvasJeux.Children.Add(pieceNombre);
+            canvasJeu.Children.Add(pieceIcone);
+            canvasJeu.Children.Add(pieceNombre);
 
             foreach (Rectangle coeur in coeurs)
             {
-                CanvasJeux.Children.Add(coeur);
+                canvasJeu.Children.Add(coeur);
             }
 
             carteActuelle.NombreVisites++;
@@ -714,7 +714,7 @@ namespace SAE_dev_1
             }
             chargement.Visibility = Visibility.Hidden;
 
-            this.CanvasJeux.Focus();
+            this.canvasJeu.Focus();
             minuteurJeu.Start();
             enChargement = false;
 
@@ -732,7 +732,7 @@ namespace SAE_dev_1
             grilleMenuPause.Visibility = Visibility.Hidden;
             this.Cursor = Cursors.None;
             minuteurJeu.Start();
-            CanvasJeux.Focus();
+            canvasJeu.Focus();
         }
 
         private void btnOptions_Click(object sender, RoutedEventArgs e)
@@ -771,7 +771,7 @@ namespace SAE_dev_1
             {
                 this.Close();
             }
-            else this.CanvasJeux.Focus();
+            else this.canvasJeu.Focus();
         }
 
         #endregion
@@ -903,7 +903,7 @@ namespace SAE_dev_1
                     {
                         "Bonjour !",
                         "Comment ça va ?"
-                    }, CanvasJeux);
+                    }, canvasJeu);
 
                     if (dialogueActuel.TexteSuivant())
                         dialogueActuel = null;
@@ -975,7 +975,7 @@ namespace SAE_dev_1
                     else
                     {
                         grilleMenuPause.Visibility = Visibility.Hidden;
-                        this.CanvasJeux.Focus();
+                        this.canvasJeu.Focus();
                         this.Cursor = Cursors.None;
                         minuteurJeu.Start();
                     }
@@ -1002,7 +1002,7 @@ namespace SAE_dev_1
                 int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
-                CanvasJeux.Children.Add(nouveauxEnnemy);
+                canvasJeu.Children.Add(nouveauxEnnemy);
 
                 ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
             }
@@ -1026,7 +1026,7 @@ namespace SAE_dev_1
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
-                CanvasJeux.Children.Add(nouveauxEnnemy);
+                canvasJeu.Children.Add(nouveauxEnnemy);
 
                 ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
             }
@@ -1049,7 +1049,7 @@ namespace SAE_dev_1
                 int y = (int) (Canvas.GetTop(ennemi) + ennemi.Height / 2);
                 Canvas.SetLeft(nouveauxTire, x);
                 Canvas.SetTop(nouveauxTire, y);
-                CanvasJeux.Children.Add(nouveauxTire);
+                canvasJeu.Children.Add(nouveauxTire);
                 tirs.Add(new Entite(angleDirection, nouveauxTire, x, y));
             }
         }
@@ -1069,7 +1069,7 @@ namespace SAE_dev_1
             int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
             Canvas.SetLeft(Piece, x);
             Canvas.SetTop(Piece, y);
-            CanvasJeux.Children.Add(Piece);
+            canvasJeu.Children.Add(Piece);
 
             pieces.Add(new Entite(Piece, x, y));
 
@@ -1086,7 +1086,7 @@ namespace SAE_dev_1
             Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
             Canvas.SetLeft(Piece, x);
             Canvas.SetTop(Piece, y);
-            CanvasJeux.Children.Add(Piece);
+            canvasJeu.Children.Add(Piece);
 
             pieces.Add(new Entite(Piece, x, y));
 
@@ -1166,14 +1166,14 @@ namespace SAE_dev_1
                     y = joueur.Haut() - TAILLE_EPEE + 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     break;
@@ -1183,14 +1183,14 @@ namespace SAE_dev_1
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     break;
@@ -1200,14 +1200,14 @@ namespace SAE_dev_1
                     y = joueur.Haut() + TAILLE_EPEE - 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     break;
@@ -1217,14 +1217,14 @@ namespace SAE_dev_1
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                         epeeTerain[0] = new Entite(epee, x, y);
                     }
                     break;
@@ -1444,7 +1444,7 @@ namespace SAE_dev_1
                 apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(0)!;
             }
             // Joueur va à droite
-            else if (PositionJoueur(true, false).Item1 == CanvasJeux.Width - joueur.Hitbox.Width / 2 &&
+            else if (PositionJoueur(true, false).Item1 == canvasJeu.Width - joueur.Hitbox.Width / 2 &&
                      joueur.Direction == 1 &&
                      carteActuelle.CarteAdjacente(1) != null &&
                      VerifierPosition(PositionJoueur().Item2))
@@ -1453,7 +1453,7 @@ namespace SAE_dev_1
                 apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(1)!;
             }
             // Joueur va en bas
-            else if (PositionJoueur(true, false).Item2 == CanvasJeux.Height - joueur.Hitbox.Height / 2 &&
+            else if (PositionJoueur(true, false).Item2 == canvasJeu.Height - joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 2 &&
                      carteActuelle.CarteAdjacente(2) != null &&
                      VerifierPosition(PositionJoueur().Item1))
@@ -1485,7 +1485,7 @@ namespace SAE_dev_1
                 {
                     nombrePiece++;
                     pieceNombre.Content = $"{nombrePiece:N0}";
-                    CanvasJeux.Children.Remove(piece.RectanglePhysique);
+                    canvasJeu.Children.Remove(piece.RectanglePhysique);
                     piecesASupprimer.Add(piece);
                 }
             }
@@ -1503,9 +1503,9 @@ namespace SAE_dev_1
                     if (ennemi.EnCollision(epeeTerain[0]))
                     {
                         ennemi.DegatSurEntite(degatJoueur);
-                        if (ennemi.entiteEstMort)
+                        if (ennemi.estMort)
                         {
-                            CanvasJeux.Children.Remove(ennemi.RectanglePhysique);
+                            canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                             ennemiASupprimer.Add(ennemi);
                         }
                     }
@@ -1524,7 +1524,7 @@ namespace SAE_dev_1
                         if (buisson.EnCollision(epeeTerain[0]))
                         {
                             CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
-                            CanvasJeux.Children.Remove(buisson.RectanglePhysique);
+                            canvasJeu.Children.Remove(buisson.RectanglePhysique);
                             buisson.Hitbox = null;
                         }
                     }
@@ -1554,7 +1554,7 @@ namespace SAE_dev_1
 
             foreach (Entite tir in tirASupprimer)
             {
-                CanvasJeux.Children.Remove(tir.RectanglePhysique);
+                canvasJeu.Children.Remove(tir.RectanglePhysique);
                 tirs.Remove(tir);
             }
 
@@ -1607,7 +1607,7 @@ namespace SAE_dev_1
                 {
                     estAttaque = true;
                     joueur.PrendDesDegats();
-                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
+                    canvasJeu.Children.Remove(tire.RectanglePhysique);
                     tirASupprimer.Add(tire);
 
                     if (joueur.Vie == 0)
@@ -1634,7 +1634,7 @@ namespace SAE_dev_1
             {
                 grilleEcranMort.Visibility = Visibility.Visible;
                 this.Cursor = null;
-                CanvasJeux.Children.Clear();
+                canvasJeu.Children.Clear();
                 ennemis.Clear();
                 tirs.Clear();
                 joueurMort = true;
@@ -1699,15 +1699,15 @@ namespace SAE_dev_1
                 }
                 if (tempsCoup < 0)
                 {
-                    CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                    canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
                     ActionAttaque = false;
 
                     foreach (Entite ennemi in ennemis)
                     {
-                        if (ennemi.estImmuniser)
+                        if (ennemi.estImmunise)
                         {
-                            ennemi.estImmuniser = false;
+                            ennemi.estImmunise = false;
                         }
                     }
                 }
@@ -1792,7 +1792,7 @@ namespace SAE_dev_1
                         }
                     }
 
-                    if(ennemi.vieEntite <= ennemi.maxVieEntite/2)
+                    if(ennemi.vie <= ennemi.vieMax/2)
                     {
                         vitesseTire = 5;
                     }
