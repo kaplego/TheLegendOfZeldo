@@ -92,6 +92,7 @@ namespace SAE_dev_1
         private int dureeEntrePaterneBoss = DUREE_PATERNE;
         private int PaterneActuel = 0;
         private int typeTireActuel = 0;
+        private int changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
 
         public Carte carteActuelle;
 
@@ -1743,63 +1744,46 @@ namespace SAE_dev_1
             {
                 if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime")
                 {
-                    int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
-                    int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
 
-                    int xTuile = xCentre / TAILLE_TUILE;
-                    int yTuile = yCentre / TAILLE_TUILE;
-
-                    Objet? objet = ObjetSurTuile(xTuile, yTuile);
-
-                    if (objet != null)
+                    if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
                     {
-                        if (Canvas.GetLeft(ennemi.RectanglePhysique) > Canvas.GetLeft(joueur.Rectangle))
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            xTuile--;
-                        }
-                        else
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            xTuile++;
-                        }
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+
                     }
                     else
                     {
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
 
-                        if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
-                        {
-                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            yTuile++;
-                        }
-                        else
-                        {
-                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            yTuile--;
-                        }
-                        if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            xTuile++;
-                        }
-                        else
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            xTuile--;
-                        }
-                        ennemi.ProchaineApparence();
                     }
+                    if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
+                    {
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+
+                    }
+                    else
+                    {
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+
+                    }
+                    changementTextureEnnemi--;
+                    if( changementTextureEnnemi < 0 )
+                    {
+                        ennemi.ProchaineApparence();
+                        changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE; 
+                    }
+                    
+
                 }
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
-                    ennemi.RectanglePhysique.Fill = Brushes.Red;            
+                    ennemi.RectanglePhysique.Fill = Brushes.Red;
                     dureeEntreAttaqueBoss--;
                     dureeEntrePaterneBoss--;
-                    if(dureeEntrePaterneBoss < 0)
+                    if (dureeEntrePaterneBoss < 0)
                     {
                         PaterneActuel++;
                         dureeEntrePaterneBoss = DUREE_PATERNE;
-                        if(PaterneActuel >= TOUT_PATERNE.GetLength(0))
+                        if (PaterneActuel >= TOUT_PATERNE.GetLength(0))
                         {
                             PaterneActuel = 0;
                         }
@@ -1815,7 +1799,7 @@ namespace SAE_dev_1
                         }
                     }
 
-                    if(ennemi.vie <= ennemi.vieMax/2)
+                    if (ennemi.vie <= ennemi.vieMax / 2)
                     {
                         vitesseTire = 5;
                     }
