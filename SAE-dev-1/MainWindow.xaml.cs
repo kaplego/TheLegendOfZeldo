@@ -43,6 +43,9 @@ namespace SAE_dev_1
         public static readonly int DUREE_IMMUNITE = 31;
         public static readonly int DUREE_ATTAQUE_BOSS = 62;
         public static readonly int DUREE_PATERNE = 496;
+        public static readonly int VIE_BOSS = 20;
+        public static readonly int VIE_ENNEMI = 4;
+
         public static readonly int[,] TOUT_PATERNE = {{0,5,6,2},{3,2,1,4},{6,3,0,4},{5,2,0,1}};
 
         public static readonly int NOMBRE_PATERNE = 3;
@@ -821,7 +824,7 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(2, "slime", 4);
+                CreeEnemis(2, "slime", VIE_ENNEMI);
             }
 
             if (e.Key == Key.F2 && !EmpecherAppuiTouche())
@@ -831,7 +834,7 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F5 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(1, "boss", 20, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
             }
         }
 
