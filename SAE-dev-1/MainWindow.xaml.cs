@@ -1570,6 +1570,7 @@ namespace SAE_dev_1
                         coeurs[joueur.Vie].Fill = textureCoeurVide;
                         immunite = DUREE_IMMUNITE;
                         joueur.Immunise = true;
+                        break;
                     }
                 }
             }
