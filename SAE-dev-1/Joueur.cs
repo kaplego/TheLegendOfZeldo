@@ -238,16 +238,16 @@ namespace SAE_dev_1
 
             this.ModifierGauche(
                 apparition == 1
-                ? MainWindow.LARGEUR_CANVAS - this.Rectangle.Width
+                ? MainWindow.LARGEUR_CANVAS - this.Rectangle.Width - 1
                 : apparition == 3
-                    ? 0
+                    ? 1
                     : (MainWindow.LARGEUR_CANVAS - this.Rectangle.Width) / 2
             );
             this.ModifierHaut(
                 apparition == 2
-                ? MainWindow.HAUTEUR_CANVAS - this.Rectangle.Height
+                ? MainWindow.HAUTEUR_CANVAS - this.Rectangle.Height - 1
                 : apparition == 0
-                    ? 0
+                    ? 1
                     : (MainWindow.HAUTEUR_CANVAS - this.Rectangle.Height) / 2
             );
 
