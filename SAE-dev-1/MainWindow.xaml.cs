@@ -60,6 +60,10 @@ namespace SAE_dev_1
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
+        public bool texturesRetireesTerrain = true;
+        public bool texturesRetireesObjets = false;
+        public bool texturesRetireesEntites = false;
+
         // Joueur
         private Joueur joueur;
 
@@ -357,14 +361,14 @@ namespace SAE_dev_1
                 },
                 new (string, int)?[4]
                 {
-                    ("maison", 4),
+                    null,
                     ("combat", 3),
                     ("marchand", 0),
                     null
                 },
                 new (int, int)?[4]
                 {
-                    (9, 10),
+                    null,
                     (0, 1),
                     (6, 8),
                     null
@@ -504,7 +508,37 @@ namespace SAE_dev_1
             switch (nom)
             {
                 case "mur-droit":
-                    return textureMurDroit;
+                    return texturesRetireesTerrain
+                        ? Brushes.SaddleBrown
+                        : textureMurDroit;
+                case "mur-angle":
+                    return texturesRetireesTerrain
+                        ? Brushes.SaddleBrown
+                        : textureMurAngle;
+                case "planches":
+                    return texturesRetireesTerrain
+                        ? Brushes.SandyBrown
+                        : texturePlanches;
+                case "herbe":
+                    return texturesRetireesTerrain
+                        ? Brushes.LimeGreen
+                        : textureHerbe;
+                case "chemin":
+                    return texturesRetireesTerrain
+                        ? Brushes.Tan
+                        : textureChemin;
+                case "cheminI":
+                    return texturesRetireesTerrain
+                        ? Brushes.Tan
+                        : textureCheminI;
+                case "cheminL":
+                    return texturesRetireesTerrain
+                        ? Brushes.Tan
+                        : textureCheminL;
+                case "cheminU":
+                    return texturesRetireesTerrain
+                        ? Brushes.Tan
+                        : textureCheminU;
             }
 
             return Brushes.Transparent;
@@ -526,8 +560,7 @@ namespace SAE_dev_1
                         Width = MainWindow.TAILLE_TUILE,
                         Height = TAILLE_TUILE,
                     };
-                    ImageBrush? fondTuile = new ImageBrush();
-                    fondTuile.Stretch = Stretch.Uniform;
+                    Brush? fondTuile = new ImageBrush();
 
                     string textureTuile = carteActuelle.Tuile(x, y);
 
@@ -549,7 +582,7 @@ namespace SAE_dev_1
                         if (orientation == "n" || orientation == "s")
                         {
                             // Nord / Sud
-                            fondTuile = textureMurDroit;
+                            fondTuile = Texture("mur-droit");
                             tuile.LayoutTransform = new RotateTransform()
                             {
                                 Angle = orientation == "n" ? 90 : -90
@@ -558,7 +591,7 @@ namespace SAE_dev_1
                         else if (orientation == "e" || orientation == "o")
                         {
                             // Est / Ouest
-                            fondTuile = textureMurDroit;
+                            fondTuile = Texture("mur-droit");
 
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -569,7 +602,7 @@ namespace SAE_dev_1
                         else
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
-                            fondTuile = textureMurAngle;
+                            fondTuile = Texture("mur-angle");
 
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -592,13 +625,13 @@ namespace SAE_dev_1
                         switch (type)
                         {
                             case "I":
-                                fondTuile = textureCheminI;
+                                fondTuile = Texture("cheminI");
                                 break;
                             case "L":
-                                fondTuile = textureCheminL;
+                                fondTuile = Texture("cheminL");
                                 break;
                             case "U":
-                                fondTuile = textureCheminU;
+                                fondTuile = Texture("cheminU");
                                 break;
                         }
 
@@ -613,10 +646,10 @@ namespace SAE_dev_1
                         switch (textureTuile)
                         {
                             case "planches":
-                                fondTuile = texturePlanches;
+                                fondTuile = Texture("planches");
                                 break;
                             case "herbe":
-                                fondTuile = textureHerbe;
+                                fondTuile = Texture("herbe");
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -625,7 +658,7 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile = textureChemin;
+                                fondTuile = Texture("chemin");
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -638,6 +671,9 @@ namespace SAE_dev_1
 
                     RenderOptions.SetBitmapScalingMode(tuile, BitmapScalingMode.NearestNeighbor);
                     RenderOptions.SetEdgeMode(tuile, EdgeMode.Aliased);
+
+                    if (fondTuile is ImageBrush)
+                        ((ImageBrush)fondTuile).Stretch = Stretch.Uniform;
 
                     tuile.Fill = fondTuile;
 

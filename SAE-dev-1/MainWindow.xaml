@@ -10,7 +10,7 @@
     Height="600"
     Background="#FF090300"
     Cursor="None"
-    FocusManager.FocusedElement="{Binding ElementName=CanvasJeux}"
+    FocusManager.FocusedElement="{Binding ElementName=canvasJeu}"
     Icon="ressources/icone.png"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
