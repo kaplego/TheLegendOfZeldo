@@ -10,7 +10,7 @@ namespace SAE_dev_1
     public class Entite
     {
         private int apparenceEntite;
-        private int DirectionEntite;
+        private int directionEntite;
         public int vieEntite;
         public int maxVieEntite;
         public bool entiteEstMort = false;
@@ -166,11 +166,11 @@ namespace SAE_dev_1
             {
                 if (x > Canvas.GetLeft(this.RectanglePhysique))
                 {
-                    DirectionEntite = 1;
+                    directionEntite = 1;
                 }
                 else
                 {
-                    DirectionEntite = 3;
+                    directionEntite = 3;
                 }
             }
             Canvas.SetLeft(this.RectanglePhysique, x);
@@ -183,11 +183,11 @@ namespace SAE_dev_1
             {
                 if (y > Canvas.GetTop(this.RectanglePhysique))
                 {
-                    DirectionEntite = 0;
+                    directionEntite = 0;
                 }
                 else
                 {
-                    DirectionEntite = 2;
+                    directionEntite = 2;
                 }
             }
             Canvas.SetTop(this.RectanglePhysique, y);
@@ -198,11 +198,11 @@ namespace SAE_dev_1
         public void ChangerImageRectangle()
         {
             this.RectanglePhysique.Fill =
-                this.DirectionEntite == 0
+                this.directionEntite == 0
                     ? textureEnnemiDos[apparenceEntite]
-                    : this.DirectionEntite == 1
+                    : this.directionEntite == 1
                         ? textureEnnemiDroite[apparenceEntite]
-                        : this.DirectionEntite == 2
+                        : this.directionEntite == 2
                             ? textureEnnemiFace[0]
                             : textureEnnemiGauche[apparenceEntite];
         }
