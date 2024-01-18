@@ -14,7 +14,7 @@ namespace SAE_dev_1
 
         public static readonly int NOMBRE_APPARENCES = 3;
 
-        private ImageBrush[] textureJoueurFace = new ImageBrush[1]
+        public static readonly ImageBrush[] textureJoueurFace = new ImageBrush[1]
         {
             new ImageBrush()
             {
@@ -22,7 +22,7 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             }
         };
-        private ImageBrush[] textureJoueurDos = new ImageBrush[3]
+        public static readonly ImageBrush[] textureJoueurDos = new ImageBrush[3]
         {
             new ImageBrush()
             {
@@ -40,7 +40,7 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             }
         };
-        private ImageBrush[] textureJoueurDroite = new ImageBrush[3]
+        public static readonly ImageBrush[] textureJoueurDroite = new ImageBrush[3]
         {
             new ImageBrush()
             {
@@ -58,7 +58,7 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             }
         };
-        private ImageBrush[] textureJoueurGauche = new ImageBrush[3]
+        public static readonly ImageBrush[] textureJoueurGauche = new ImageBrush[3]
         {
             new ImageBrush()
             {

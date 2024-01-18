@@ -503,45 +503,32 @@ namespace SAE_dev_1
             return (xTuile, yTuile);
         }
 
-        public Brush Texture(string nom)
+        public Brush Texture(string nom, Brush texture)
         {
-            switch (nom)
-            {
-                case "mur-droit":
-                    return texturesRetireesTerrain
-                        ? Brushes.SaddleBrown
-                        : textureMurDroit;
-                case "mur-angle":
-                    return texturesRetireesTerrain
-                        ? Brushes.SaddleBrown
-                        : textureMurAngle;
-                case "planches":
-                    return texturesRetireesTerrain
-                        ? Brushes.SandyBrown
-                        : texturePlanches;
-                case "herbe":
-                    return texturesRetireesTerrain
-                        ? Brushes.LimeGreen
-                        : textureHerbe;
-                case "chemin":
-                    return texturesRetireesTerrain
-                        ? Brushes.Tan
-                        : textureChemin;
-                case "cheminI":
-                    return texturesRetireesTerrain
-                        ? Brushes.Tan
-                        : textureCheminI;
-                case "cheminL":
-                    return texturesRetireesTerrain
-                        ? Brushes.Tan
-                        : textureCheminL;
-                case "cheminU":
-                    return texturesRetireesTerrain
-                        ? Brushes.Tan
-                        : textureCheminU;
-            }
+            //        if (texturesRetireesTerrain)
+            //        {
+            //            if (nom.StartsWith("mur"))
+            //                return Brushes.SaddleBrown;
+            //            else if (nom == "planches")
+            //                return Brushes.SandyBrown;
+            //            else if (nom.StartsWith("chemin"))
+            //                return Brushes.Tan;
+            //            else if (nom == "herbe")
+            //                return Brushes.LimeGreen;
+            //        }
+            //        else return texture;
+            //        break;
+            //    case "entite":
+            //        if (texturesRetireesEntites)
+            //        {
+            //            if (nom.StartsWith("joueur"))
+            //                return Brushes.NavajoWhite;
+            //        }
+            //        else return texture;
+            //        break;
+            //}
 
-            return Brushes.Transparent;
+            return texture;
         }
 
         #region Carte
@@ -582,7 +569,7 @@ namespace SAE_dev_1
                         if (orientation == "n" || orientation == "s")
                         {
                             // Nord / Sud
-                            fondTuile = Texture("mur-droit");
+                            fondTuile = Texture("mur", textureMurDroit);
                             tuile.LayoutTransform = new RotateTransform()
                             {
                                 Angle = orientation == "n" ? 90 : -90
@@ -591,7 +578,7 @@ namespace SAE_dev_1
                         else if (orientation == "e" || orientation == "o")
                         {
                             // Est / Ouest
-                            fondTuile = Texture("mur-droit");
+                            fondTuile = Texture("mur", textureMurDroit);
 
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -602,7 +589,7 @@ namespace SAE_dev_1
                         else
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
-                            fondTuile = Texture("mur-angle");
+                            fondTuile = Texture("mur", textureMurAngle);
 
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -625,13 +612,13 @@ namespace SAE_dev_1
                         switch (type)
                         {
                             case "I":
-                                fondTuile = Texture("cheminI");
+                                fondTuile = Texture("cheminI", textureCheminI);
                                 break;
                             case "L":
-                                fondTuile = Texture("cheminL");
+                                fondTuile = Texture("cheminL", textureCheminL);
                                 break;
                             case "U":
-                                fondTuile = Texture("cheminU");
+                                fondTuile = Texture("cheminU", textureCheminU);
                                 break;
                         }
 
@@ -646,10 +633,10 @@ namespace SAE_dev_1
                         switch (textureTuile)
                         {
                             case "planches":
-                                fondTuile = Texture("planches");
+                                fondTuile = Texture("planches", texturePlanches);
                                 break;
                             case "herbe":
-                                fondTuile = Texture("herbe");
+                                fondTuile = Texture("herbe", texturePlanches);
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -658,7 +645,7 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile = Texture("chemin");
+                                fondTuile = Texture("terrain", "chemin");
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
