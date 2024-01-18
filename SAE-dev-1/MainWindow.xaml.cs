@@ -80,7 +80,7 @@ namespace SAE_dev_1
 
         // Ennemis
         private List<Entite> ennemis = new List<Entite>();
-        private List<Entite> tires = new List<Entite>();
+        private List<Entite> tirs = new List<Entite>();
         private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
         private int dureeEntrePaterneBoss = DUREE_PATERNE;
         private int PaterneActuel = 0;
@@ -496,6 +496,17 @@ namespace SAE_dev_1
             return (xTuile, yTuile);
         }
 
+        public Brush Texture(string nom)
+        {
+            switch (nom)
+            {
+                case "mur-droit":
+                    return textureMurDroit;
+            }
+
+            return Brushes.Transparent;
+        }
+
         #region Carte
 
         private void GenererCarte()
@@ -782,6 +793,9 @@ namespace SAE_dev_1
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
         {
+            if (joueurMort)
+                return;
+
             if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = true;
@@ -823,6 +837,9 @@ namespace SAE_dev_1
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
         {
+            if (joueurMort)
+                return;
+
             if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = false;
@@ -1030,7 +1047,7 @@ namespace SAE_dev_1
                 Canvas.SetLeft(nouveauxTire, x);
                 Canvas.SetTop(nouveauxTire, y);
                 CanvasJeux.Children.Add(nouveauxTire);
-                tires.Add(new Entite(angleDirection, nouveauxTire, x, y));
+                tirs.Add(new Entite(angleDirection, nouveauxTire, x, y));
             }
         }
 
@@ -1516,20 +1533,26 @@ namespace SAE_dev_1
                 }
             }
 
-            List<Entite> tireASupprimer = new List<Entite>();
-            foreach (Entite tire in tires)
+            List<Entite> tirASupprimer = new List<Entite>();
+            foreach (Entite tir in tirs)
             {
-                if (Canvas.GetTop(tire.RectanglePhysique) + TAILLE_TIRE > 600 || Canvas.GetTop(tire.RectanglePhysique) < 0 ||
-                    Canvas.GetLeft(tire.RectanglePhysique) + TAILLE_TIRE > 1200 || Canvas.GetLeft(tire.RectanglePhysique) < 0)
+                if (Canvas.GetTop(tir.RectanglePhysique) + TAILLE_TIRE > 600 || Canvas.GetTop(tir.RectanglePhysique) < 0 ||
+                    Canvas.GetLeft(tir.RectanglePhysique) + TAILLE_TIRE > 1200 || Canvas.GetLeft(tir.RectanglePhysique) < 0)
                 {
-                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
-                    tireASupprimer.Add(tire);
+                    tirASupprimer.Add(tir);
+                }
+
+                foreach (Objet objet in objets)
+                {
+                    if (tir.EnCollision(objet))
+                        tirASupprimer.Add(tir);
                 }
             }
 
-            foreach (Entite tire in tireASupprimer)
+            foreach (Entite tir in tirASupprimer)
             {
-                tires.Remove(tire);
+                CanvasJeux.Children.Remove(tir.RectanglePhysique);
+                tirs.Remove(tir);
             }
 
         }
@@ -1574,13 +1597,15 @@ namespace SAE_dev_1
                     }
                 }
             }
-            List<Entite> tireASupprimer = new List<Entite>();
-            foreach (Entite tire in tires)
+            List<Entite> tirASupprimer = new List<Entite>();
+            foreach (Entite tire in tirs)
             {
                 if (tire.EnCollision(joueur) && joueur.Vie > 0)
                 {
                     estAttaque = true;
                     joueur.PrendDesDegats();
+                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
+                    tirASupprimer.Add(tire);
 
                     if (joueur.Vie == 0)
                     {
@@ -1592,15 +1617,15 @@ namespace SAE_dev_1
                         coeurs[joueur.Vie].Fill = textureCoeurVide;
                         immunite = DUREE_IMMUNITE;
                         joueur.Immunise = true;
+                        break;
                     }
-                    CanvasJeux.Children.Remove(tire.RectanglePhysique);
-                    tireASupprimer.Add(tire);
                 }
             }
-            foreach (Entite tire in tireASupprimer)
-            {
-                tires.Remove(tire);
-            }
+            if (!estMort)
+                foreach (Entite tir in tirASupprimer)
+                {
+                    tirs.Remove(tir);
+                }
 
             if (estMort)
             {
@@ -1608,6 +1633,7 @@ namespace SAE_dev_1
                 this.Cursor = null;
                 CanvasJeux.Children.Clear();
                 ennemis.Clear();
+                tirs.Clear();
                 joueurMort = true;
                 minuteurJeu.Stop();
             }
@@ -1770,7 +1796,7 @@ namespace SAE_dev_1
                 } 
             }
 
-            foreach(Entite tire in tires)
+            foreach(Entite tire in tirs)
             {
                 switch(tire.directionProjectil)
                 {
