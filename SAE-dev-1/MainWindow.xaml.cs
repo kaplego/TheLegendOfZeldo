@@ -161,6 +161,7 @@ namespace SAE_dev_1
 
         public MediaPlayer sonEpee = new MediaPlayer();
         public MediaPlayer sonBuisson = new MediaPlayer();
+        public MediaPlayer sonSlime = new MediaPlayer();
 
         #region Textures
 
@@ -771,6 +772,11 @@ namespace SAE_dev_1
             #endregion
             fenetreInitialisation.Chargement(7 / 7, "Génération des sons");
             sonEpee.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\slashSound.mp3"));
+            sonBuisson.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\buisson.mp3"));
+            sonSlime.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\Slime.mp3"));
+            sonBuisson.Volume = 0.3;
+            sonEpee.Volume = 0.5;
+            sonSlime.Volume = 0.5;
             fenetreInitialisation.Termine();
         }
 
@@ -1528,6 +1534,7 @@ namespace SAE_dev_1
         public void Attaque()
         {
             sonEpee.Stop();
+            sonSlime.Stop();
             Rectangle epee = new Rectangle
             {
                 Tag = "epee",
@@ -1609,8 +1616,6 @@ namespace SAE_dev_1
                     break;
             }
             actionAttaque = true;
-            
-            sonEpee.Play();
         }
 
         private void PaterneTire(Entite ennemi, int typeTireActuel)
@@ -1891,6 +1896,7 @@ namespace SAE_dev_1
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                                 ennemiASupprimer.Add(ennemi);
                             }
+                            sonSlime.Play();
                         }
                     }
 
@@ -1909,9 +1915,11 @@ namespace SAE_dev_1
                         {
                             if (buisson.EnCollision(epeeTerain[0]))
                             {
+                                sonBuisson.Stop();
                                 CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
                                 canvasJeu.Children.Remove(buisson.RectanglePhysique);
                                 buisson.Hitbox = null;
+                                sonBuisson.Play();
                             }
                         }
                     }
@@ -1921,6 +1929,7 @@ namespace SAE_dev_1
                         objets.Remove(buisson);
                     }
                 }
+                sonEpee.Play();
             }
 
             List<Entite> tirASupprimer = new List<Entite>();
@@ -2133,7 +2142,7 @@ namespace SAE_dev_1
                     if(ennemi.changementTextureEnnemi <= 0 )
                     {
                         ennemi.ProchaineApparence();
-                        ennemi.changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE; 
+                        ennemi.changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
                     }
                     
 

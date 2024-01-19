@@ -156,6 +156,12 @@
     <None Update="ressources\personnages\sprite-gauche-3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\son\buisson.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\son\Slime.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\son\slashSound.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
