@@ -114,6 +114,9 @@
     <None Update="ressources\character.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\objets\caillou.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\objets\diamant.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
