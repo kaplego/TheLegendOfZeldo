@@ -62,8 +62,9 @@ namespace SAE_dev_1
             },
         };
 
-        public Entite(Rectangle rectangle, int x, int y)
+        public Entite(string type, Rectangle rectangle, int x, int y)
         {
+            this.type = type;
             this.RectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
@@ -74,8 +75,9 @@ namespace SAE_dev_1
             };
         }
 
-        public Entite(Rectangle rectangle, int x, int y, int vie)
+        public Entite(string type, Rectangle rectangle, int x, int y, int vie)
         {
+            this.type = type;
             this.RectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
@@ -88,8 +90,9 @@ namespace SAE_dev_1
             vieMax = vie;
         }
 
-        public Entite(int angleDirection, Rectangle rectangle, int x, int y)
+        public Entite(string type, int angleDirection, Rectangle rectangle, int x, int y)
         {
+            this.type = type;
             this.RectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
@@ -101,14 +104,16 @@ namespace SAE_dev_1
             directionProjectil = angleDirection;
         }
 
-        public Entite(Rectangle rectangle, Rect rect, int x, int y)
+        public Entite(string type, Rectangle rectangle, Rect rect, int x, int y)
         {
+            this.type = type;
             this.RectanglePhysique = rectangle;
             this.Hitbox = rect;
         }
 
         private Rect hitbox;
         private Rectangle rectanglePhysique;
+        private string type;
         private int apparence;
         private int direction;
         public int vie;
@@ -195,14 +200,14 @@ namespace SAE_dev_1
 
         public void ChangerImageRectangle()
         {
-            this.RectanglePhysique.Fill =
+            this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
                 this.direction == 0
                     ? textureEnnemiDos[apparence]
                     : this.direction == 1
                         ? textureEnnemiDroite[apparence]
                         : this.direction == 2
                             ? textureEnnemiFace[0]
-                            : textureEnnemiGauche[apparence];
+                            : textureEnnemiGauche[apparence]);
         }
 
         public void ProchaineApparence()

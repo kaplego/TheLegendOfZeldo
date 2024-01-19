@@ -55,7 +55,7 @@ namespace SAE_dev_1
         //epee
 
         public static readonly int DUREE_COUP = 16;
-        private bool ActionAttaque = false;
+        private bool actionAttaque = false;
         private Entite[] epeeTerain = new Entite[1];
         // Moteur du jeu
 
@@ -155,6 +155,7 @@ namespace SAE_dev_1
         // Cartes
 
         public List<Carte> cartes = new List<Carte>();
+        private List<Rectangle> tuiles = new List<Rectangle>();
 
         #region Textures
 
@@ -419,17 +420,31 @@ namespace SAE_dev_1
                     {
                         mainWindow.NouveauDialogue(new string[]
                         {
-                        "tu voulais me voir Zeldo.",
-                        "Tu voulais me dire quelque chose ?",
-                        "Zeldo : Regarde j'ai trouvé ce diamant",
-                        "Zeldo : n'est-il pas ma...",
-                        "*Zeldo glisse* *diamant qui ce casse*",
-                        "Oh non c'est le diamant de la création. ",
-                        "Maintenant qu'il est casser le monde va être corrompue."
+                            "tu voulais me voir Zeldo.",
+                            "Tu voulais me dire quelque chose ?",
+                            "Zeldo : Regarde j'ai trouvé ce diamant",
+                            "Zeldo : n'est-il pas ma...",
+                            "*Zeldo glisse* *diamant qui ce casse*",
+                            "Oh non c'est le diamant de la création. ",
+                            "Maintenant qu'il est casser le monde va être corrompue."
                         });
-                        texturesRetireesEntites = true;
-                        texturesRetireesObjets = true;
-                        texturesRetireesTerrain = true;
+                        mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
+                        {
+                            #if !DEBUG
+                                MainWindow.texturesRetireesEntites = true;
+                                MainWindow.texturesRetireesObjets = true;
+                                MainWindow.texturesRetireesTerrain = true;
+                            #endif
+                            foreach (Objet objet in mainWindow.objets)
+                            {
+                                objet.ActualiserTexture();
+                            }
+                            foreach (Rectangle tuile in tuiles)
+                            {
+                                tuile.Fill = MainWindow.Texture(tuile.Tag.ToString()!, tuile.Fill);
+                            }
+                            joueur.Apparence = joueur.Apparence;
+                        };
                     }
                 }
             ));
@@ -513,7 +528,7 @@ namespace SAE_dev_1
 
             GenererCarte();
 
-            #endregion
+#endregion
             fenetreInitialisation.Termine();
         }
 
@@ -527,7 +542,8 @@ namespace SAE_dev_1
 
         public void NouveauDialogue(string[] texte)
         {
-            dialogueActuel = new Dialogue(texte, canvasJeu);
+            haut = droite = bas = gauche = false;
+            dialogueActuel = new Dialogue(this, texte, canvasJeu);
 
             if (dialogueActuel.TexteSuivant())
                 dialogueActuel = null;
@@ -646,6 +662,8 @@ namespace SAE_dev_1
                         {
                             // Nord / Sud
                             fondTuile = Texture("mur", textureMurDroit);
+                            tuile.Tag = "mur";
+
                             tuile.LayoutTransform = new RotateTransform()
                             {
                                 Angle = orientation == "n" ? 90 : -90
@@ -655,6 +673,7 @@ namespace SAE_dev_1
                         {
                             // Est / Ouest
                             fondTuile = Texture("mur", textureMurDroit);
+                            tuile.Tag = "mur";
 
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -666,6 +685,7 @@ namespace SAE_dev_1
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
                             fondTuile = Texture("mur", textureMurAngle);
+                            tuile.Tag = "mur";
 
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -689,12 +709,15 @@ namespace SAE_dev_1
                         {
                             case "I":
                                 fondTuile = Texture("chemin", textureCheminI);
+                                tuile.Tag = "chemin";
                                 break;
                             case "L":
                                 fondTuile = Texture("chemin", textureCheminL);
+                                tuile.Tag = "chemin";
                                 break;
                             case "U":
                                 fondTuile = Texture("chemin", textureCheminU);
+                                tuile.Tag = "chemin";
                                 break;
                         }
 
@@ -710,9 +733,11 @@ namespace SAE_dev_1
                         {
                             case "planches":
                                 fondTuile = Texture("planches", texturePlanches);
+                                tuile.Tag = "planches";
                                 break;
                             case "herbe":
                                 fondTuile = Texture("herbe", textureHerbe);
+                                tuile.Tag = "herbe";
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -722,6 +747,7 @@ namespace SAE_dev_1
                                 break;
                             case "chemin":
                                 fondTuile = Texture("chemin", textureChemin);
+                                tuile.Tag = "chemin";
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -743,6 +769,7 @@ namespace SAE_dev_1
                     Panel.SetZIndex(tuile, ZINDEX_TERRAIN);
                     Canvas.SetTop(tuile, y * TAILLE_TUILE);
                     Canvas.SetLeft(tuile, x * TAILLE_TUILE);
+                    tuiles.Add(tuile);
                     canvasJeu.Children.Add(tuile);
                 }
             }
@@ -970,7 +997,7 @@ namespace SAE_dev_1
 
             if (e.Key == touches[combinaisonTouches, 5] && !EmpecherAppuiTouche())
             {
-                if (!ActionAttaque)
+                if (!actionAttaque)
                 {
                     Attaque();
                     tempsCoup = DUREE_COUP;
@@ -998,7 +1025,7 @@ namespace SAE_dev_1
                 {
                     haut = droite = bas = gauche = false;
 
-                    dialogueActuel = new Dialogue(new string[]
+                    dialogueActuel = new Dialogue(this, new string[]
                     {
                         "Bonjour !",
                         "Comment ça va ?"
@@ -1103,7 +1130,7 @@ namespace SAE_dev_1
                 Canvas.SetTop(nouveauxEnnemy, y);
                 canvasJeu.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
+                ennemis.Add(new Entite(type, nouveauxEnnemy, x, y, vie));
             }
         }
 
@@ -1127,7 +1154,7 @@ namespace SAE_dev_1
                 Canvas.SetTop(nouveauxEnnemy, y);
                 canvasJeu.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
+                ennemis.Add(new Entite(type, nouveauxEnnemy, x, y, vie));
             }
         }
 
@@ -1149,7 +1176,7 @@ namespace SAE_dev_1
                 Canvas.SetLeft(nouveauxTire, x);
                 Canvas.SetTop(nouveauxTire, y);
                 canvasJeu.Children.Add(nouveauxTire);
-                tirs.Add(new Entite(angleDirection, nouveauxTire, x, y));
+                tirs.Add(new Entite("tir", angleDirection, nouveauxTire, x, y));
             }
         }
 
@@ -1170,7 +1197,7 @@ namespace SAE_dev_1
             Canvas.SetTop(Piece, y);
             canvasJeu.Children.Add(Piece);
 
-            pieces.Add(new Entite(Piece, x, y));
+            pieces.Add(new Entite("piece", Piece, x, y));
 
         }
         public void CreePiece(int x, int y)
@@ -1187,7 +1214,7 @@ namespace SAE_dev_1
             Canvas.SetTop(Piece, y);
             canvasJeu.Children.Add(Piece);
 
-            pieces.Add(new Entite(Piece, x, y));
+            pieces.Add(new Entite("piece", Piece, x, y));
 
         }
 
@@ -1212,6 +1239,9 @@ namespace SAE_dev_1
         public bool Interagir()
         {
             bool interaction = false;
+
+            if (texturesRetireesObjets)
+                return interaction;
 
             var (xTuile, yTuile) = PositionJoueur();
 
@@ -1268,12 +1298,12 @@ namespace SAE_dev_1
                     canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
                         canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 1:
@@ -1285,12 +1315,12 @@ namespace SAE_dev_1
                     canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
                         canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 2:
@@ -1302,12 +1332,12 @@ namespace SAE_dev_1
                     canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
                         canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 3:
@@ -1319,16 +1349,16 @@ namespace SAE_dev_1
                     canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
                         canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
             }
-            ActionAttaque = true;
+            actionAttaque = true;
         }
 
         private void PaterneTire(Entite ennemi, int typeTireActuel)
@@ -1596,42 +1626,48 @@ namespace SAE_dev_1
 
             if (epeeTerain[0] != null)
             {
-                List<Entite> ennemiASupprimer = new List<Entite>();
-                foreach (Entite ennemi in ennemis)
+                if (!texturesRetireesEntites)
                 {
-                    if (ennemi.EnCollision(epeeTerain[0]))
+                    List<Entite> ennemiASupprimer = new List<Entite>();
+                    foreach (Entite ennemi in ennemis)
                     {
-                        ennemi.DegatSurEntite(degatJoueur);
-                        if (ennemi.estMort)
+                        if (ennemi.EnCollision(epeeTerain[0]))
                         {
-                            canvasJeu.Children.Remove(ennemi.RectanglePhysique);
-                            ennemiASupprimer.Add(ennemi);
+                            ennemi.DegatSurEntite(degatJoueur);
+                            if (ennemi.estMort)
+                            {
+                                canvasJeu.Children.Remove(ennemi.RectanglePhysique);
+                                ennemiASupprimer.Add(ennemi);
+                            }
                         }
+                    }
+
+                    foreach (Entite ennemi in ennemiASupprimer)
+                    {
+                        ennemis.Remove(ennemi);
                     }
                 }
 
-                foreach (Entite ennemi in ennemiASupprimer)
+                if (!texturesRetireesObjets)
                 {
-                    ennemis.Remove(ennemi);
-                }
-
-                List<Objet> buissonsASupprimer = new List<Objet>();
-                foreach (Objet buisson in objets)
-                {
-                    if (buisson.Type == "buisson")
+                    List<Objet> buissonsASupprimer = new List<Objet>();
+                    foreach (Objet buisson in objets)
                     {
-                        if (buisson.EnCollision(epeeTerain[0]))
+                        if (buisson.Type == "buisson")
                         {
-                            CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
-                            canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                            buisson.Hitbox = null;
+                            if (buisson.EnCollision(epeeTerain[0]))
+                            {
+                                CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                buisson.Hitbox = null;
+                            }
                         }
                     }
-                }
 
-                foreach (Objet buisson in buissonsASupprimer)
-                {
-                    objets.Remove(buisson);
+                    foreach (Objet buisson in buissonsASupprimer)
+                    {
+                        objets.Remove(buisson);
+                    }
                 }
             }
 
@@ -1752,7 +1788,7 @@ namespace SAE_dev_1
 
         private void Minuteur()
         {
-            if (ActionAttaque)
+            if (actionAttaque)
             {
                 int x = joueur.Gauche(), y = joueur.Haut();
                 switch (joueur.Direction)
@@ -1800,7 +1836,7 @@ namespace SAE_dev_1
                 {
                     canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
-                    ActionAttaque = false;
+                    actionAttaque = false;
 
                     foreach (Entite ennemi in ennemis)
                     {

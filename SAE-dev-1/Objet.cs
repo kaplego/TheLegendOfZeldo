@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
@@ -222,6 +223,11 @@ namespace SAE_dev_1
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };
+        }
+
+        public void ActualiserTexture()
+        {
+            this.RectanglePhysique.Fill = MainWindow.Texture(type, RectanglePhysique.Fill);
         }
 
         public bool EnCollision(Objet objet)
