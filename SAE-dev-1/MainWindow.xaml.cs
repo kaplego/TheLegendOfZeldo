@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Media;
 
 namespace SAE_dev_1
 {
@@ -155,6 +156,11 @@ namespace SAE_dev_1
 
         public List<Carte> cartes = new List<Carte>();
         private List<Rectangle> tuiles = new List<Rectangle>();
+
+        // son
+
+        public MediaPlayer sonEpee = new MediaPlayer();
+        public MediaPlayer sonBuisson = new MediaPlayer();
 
         #region Textures
 
@@ -762,7 +768,9 @@ namespace SAE_dev_1
 
             GenererCarte();
 
-#endregion
+            #endregion
+            fenetreInitialisation.Chargement(7 / 7, "Génération des sons");
+            sonEpee.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\slashSound.mp3"));
             fenetreInitialisation.Termine();
         }
 
@@ -1519,6 +1527,7 @@ namespace SAE_dev_1
 
         public void Attaque()
         {
+            sonEpee.Stop();
             Rectangle epee = new Rectangle
             {
                 Tag = "epee",
@@ -1600,6 +1609,8 @@ namespace SAE_dev_1
                     break;
             }
             actionAttaque = true;
+            
+            sonEpee.Play();
         }
 
         private void PaterneTire(Entite ennemi, int typeTireActuel)

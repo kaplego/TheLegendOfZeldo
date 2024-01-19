@@ -156,6 +156,9 @@
     <None Update="ressources\personnages\sprite-gauche-3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\son\slashSound.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\terrain\chemin-herbe-I.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
