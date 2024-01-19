@@ -115,6 +115,7 @@ namespace SAE_dev_1
         private Rectangle rectanglePhysique;
         private string type;
         private int apparence;
+        public int changementTextureEnnemi = 0;
         private int direction;
         public int vie;
         public int vieMax;
@@ -165,7 +166,7 @@ namespace SAE_dev_1
 
         public void ModifierGaucheEntite(double x)
         {
-            if ((string)this.rectanglePhysique.Tag == "enemis,slime")
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime" || (string)this.RectanglePhysique.Tag == "enemis,diamant")
             {
                 if (x > Canvas.GetLeft(this.RectanglePhysique))
                 {
@@ -182,7 +183,7 @@ namespace SAE_dev_1
 
         public void ModifierHautEntite(double y)
         {
-            if ((string)this.rectanglePhysique.Tag == "enemis,slime")
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime" || (string)this.RectanglePhysique.Tag == "enemis,diamant")
             {
                 if (y > Canvas.GetTop(this.RectanglePhysique))
                 {

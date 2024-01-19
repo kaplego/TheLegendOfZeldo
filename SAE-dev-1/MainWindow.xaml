@@ -49,10 +49,10 @@
 
             <Canvas
                 x:Name="ZoneApparition"
-                Canvas.Left="83"
-                Canvas.Top="67"
-                Width="651"
-                Height="114"
+                Canvas.Left="285"
+                Canvas.Top="179"
+                Width="627"
+                Height="221"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" />
         </Canvas>

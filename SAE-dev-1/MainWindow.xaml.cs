@@ -93,7 +93,6 @@ namespace SAE_dev_1
         private int dureeEntrePaterneBoss = DUREE_PATERNE;
         private int PaterneActuel = 0;
         private int typeTireActuel = 0;
-        private int changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
 
         public Carte carteActuelle;
 
@@ -637,6 +636,12 @@ namespace SAE_dev_1
                     (5, 7),
                     null,
                     null
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(1, "diamant", VIE_ENNEMI*2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+
                 }
             ));
 
@@ -671,6 +676,12 @@ namespace SAE_dev_1
                     (4, 6),
                     null,
                     (4, 7)
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(2, "slime", VIE_ENNEMI);
+
                 }
             ));
 
@@ -706,6 +717,7 @@ namespace SAE_dev_1
                     null,
                     null
                 }
+                
             ));
 
             //Carte pour récupéré la texture des terrain
@@ -739,6 +751,12 @@ namespace SAE_dev_1
                     (5, 8),
                     null,
                     null
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(4, "slime", VIE_ENNEMI);
+
                 }
             ));
 
@@ -1344,11 +1362,11 @@ namespace SAE_dev_1
                 {
                     Tag = "enemis," + type,
                     Height = TAILLE_ENNEMI,
-                    Width = TAILLE_ENNEMI
+                    Width = TAILLE_ENNEMI,
                 };
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
-                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500);
-                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next((int)ZoneApparition.Width);
+                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next((int)ZoneApparition.Height);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
                 canvasJeu.Children.Add(nouveauxEnnemy);
@@ -2076,7 +2094,7 @@ namespace SAE_dev_1
         {
             foreach (Entite ennemi in ennemis)
             {
-                if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime")
+                if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                 {
 
                     if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
@@ -2099,11 +2117,12 @@ namespace SAE_dev_1
                         ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
 
                     }
-                    changementTextureEnnemi--;
-                    if( changementTextureEnnemi < 0 )
+
+                    ennemi.changementTextureEnnemi--;
+                    if(ennemi.changementTextureEnnemi <= 0 )
                     {
                         ennemi.ProchaineApparence();
-                        changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE; 
+                        ennemi.changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE; 
                     }
                     
 
