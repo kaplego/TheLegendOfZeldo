@@ -436,7 +436,14 @@ namespace SAE_dev_1
                     null,
                     null,
                     (0, 1)
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+
                 }
+
             ));
 
             // Carte Marchand
