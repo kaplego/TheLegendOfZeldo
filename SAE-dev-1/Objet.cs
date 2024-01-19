@@ -17,13 +17,17 @@ namespace SAE_dev_1
         {
             ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"))
         };
+        public ImageBrush textureCaillou = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\caillou.png"))
+        };
 
         public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
         {
             int largeurObjet = 0,
                 hauteurObjet = 0;
-            ImageBrush? texture = null;
-            Brush? textureUnie = null;
+            ImageBrush texture = new ImageBrush();
+            texture.Stretch = Stretch.Uniform;
 
             switch (type)
             {
@@ -32,20 +36,18 @@ namespace SAE_dev_1
                     hauteurObjet = 1;
 
                     texture = texturePorte;
-                    texture.Stretch = Stretch.Uniform;
                     break;
                 case "buisson":
                     largeurObjet = 1;
                     hauteurObjet = 1;
 
                     texture = textureBuisson;
-                    texture.Stretch = Stretch.Uniform;
                     break;
                 case "caillou":
                     largeurObjet = 2;
                     hauteurObjet = 1;
 
-                    textureUnie = Brushes.Gray;
+                    texture = textureCaillou;
                     break;
             }
 
@@ -70,7 +72,7 @@ namespace SAE_dev_1
                 };
             }
 
-            rectangleObjet.Fill = MainWindow.Texture(type, texture == null ? textureUnie! : texture);
+            rectangleObjet.Fill = MainWindow.Texture(type, texture);
             Panel.SetZIndex(rectangleObjet, MainWindow.ZINDEX_OBJETS);
             Canvas.SetLeft(rectangleObjet, x * MainWindow.TAILLE_TUILE);
             Canvas.SetTop(rectangleObjet, y * MainWindow.TAILLE_TUILE);
