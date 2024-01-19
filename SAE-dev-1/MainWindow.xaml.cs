@@ -358,6 +358,15 @@ namespace SAE_dev_1
                             mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
                         }
+                        else
+                        {
+                            mainWindow.NouveauDialogue(new string[]
+                            {
+                                "Zeldo se trouve de l'autre côté.",
+                                "Il me faut une bombe pour détruire le rocher",
+                                "Je crois que le marchand en vend.",
+                            });
+                        }
                     })
                 },
                 new (string, int)?[4]
@@ -380,8 +389,17 @@ namespace SAE_dev_1
                     {
                         mainWindow.NouveauDialogue(new string[]
                         {
-                        "Bienvenue !",
+                        "tu voulais me voir Zeldo.",
+                        "Tu voulais me dire quelque chose ?",
+                        "Zeldo : Regarde j'ai trouvé ce diamant",
+                        "Zeldo : n'est-il pas ma...",
+                        "*Zeldo glisse* *diamant qui ce casse*",
+                        "Oh non c'est le diamant de la création. ",
+                        "Maintenant qu'il est casser le monde va être corrompue."
                         });
+                        //texturesRetireesEntites = true;
+                        //texturesRetireesObjets = true;
+                        //texturesRetireesTerrain = true;
                     }
                 }
             ));
@@ -637,7 +655,7 @@ namespace SAE_dev_1
                                 fondTuile = Texture("planches", texturePlanches);
                                 break;
                             case "herbe":
-                                fondTuile = Texture("herbe", texturePlanches);
+                                fondTuile = Texture("herbe", textureHerbe);
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -646,7 +664,7 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile = Texture("terrain", "chemin");
+                                fondTuile = Texture("terrain", textureChemin);
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
