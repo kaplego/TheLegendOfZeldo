@@ -22,6 +22,10 @@ namespace SAE_dev_1
         {
             ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\caillou.png"))
         };
+        public ImageBrush textureBoutique = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\boutique.png"))
+        };
 
         public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
         {
@@ -49,6 +53,12 @@ namespace SAE_dev_1
                     hauteurObjet = 1;
 
                     texture = textureCaillou;
+                    break;
+                case "boutique":
+                    largeurObjet = 3;
+                    hauteurObjet = 2;
+
+                    texture = textureBoutique;
                     break;
             }
 
@@ -209,6 +219,10 @@ namespace SAE_dev_1
                 case "caillou":
                     largeurObjet = 2;
                     hauteurObjet = 1;
+                    break;
+                case "boutique":
+                    largeurObjet = 3;
+                    hauteurObjet = 2;
                     break;
             }
 

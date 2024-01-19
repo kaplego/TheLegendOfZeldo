@@ -102,6 +102,9 @@
     <None Update="ressources\items\potion_vie.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\objets\boutique.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\objets\buisson.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

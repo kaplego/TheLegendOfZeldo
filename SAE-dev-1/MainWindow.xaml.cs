@@ -74,7 +74,7 @@ namespace SAE_dev_1
         private int vitesseEnnemis = 3;
         private int vitesseTire = 3;
 
-        private bool droite, gauche, bas, haut;
+        public bool droite, gauche, bas, haut;
         // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
         public int derniereApparition;
 
@@ -182,10 +182,11 @@ namespace SAE_dev_1
         public static readonly Brush COULEUR_PORTE = Brushes.Maroon;
         public static readonly Brush COULEUR_BUISSON = Brushes.OliveDrab;
         public static readonly Brush COULEUR_CAILLOU = Brushes.Gray;
+        public static readonly Brush COULEUR_BOUTIQUE = Brushes.Gold;
 
         private static readonly string[] NOMS_OBJETS = new string[]
         {
-            "porte", "buisson", "caillou"
+            "porte", "buisson", "caillou", "boutique"
         };
 
         // Terrain
@@ -511,6 +512,21 @@ namespace SAE_dev_1
                 },
                 new List<Objet>
                 {
+                    new Objet("boutique", 14, 0, 0, false, (mainWindow, objet) =>
+                    {
+                        List<Item> itemsBoutique = new List<Item>();
+                        if (!mainWindow.bombe)
+                            itemsBoutique.Add(new Item(
+                                "bombe",
+                                100,
+                                "Une bombe très utile pour détruire de gros obstacles.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"))
+                            ));
+
+                        mainWindow.boutique = new Boutique(this, itemsBoutique);
+                        mainWindow.minuteurJeu.Stop();
+                        mainWindow.haut = mainWindow.droite = mainWindow.bas = mainWindow.gauche = false;
+                    }),
                     new Objet("buisson", 2, 1, null, false, null),
                     new Objet("buisson", 3, 2, null, false, null),
                     new Objet("buisson", 4, 7, null, false, null),
@@ -817,6 +833,8 @@ namespace SAE_dev_1
                         return COULEUR_BUISSON;
                     case "caillou":
                         return COULEUR_CAILLOU;
+                    case "boutique":
+                        return COULEUR_BOUTIQUE;
                 }
             }
 
@@ -1016,6 +1034,11 @@ namespace SAE_dev_1
             haut = droite = bas = gauche = false;
 
             GenererCarte();
+
+            foreach (Objet objet in objets)
+            {
+                objet.ActualiserTexture();
+            }
 
             derniereApparition = apparition;
             joueur.Apparaite(apparition);
