@@ -70,7 +70,7 @@ namespace SAE_dev_1
                 };
             }
 
-            rectangleObjet.Fill = texture == null ? textureUnie : texture;
+            rectangleObjet.Fill = MainWindow.Texture(type, texture == null ? textureUnie! : texture);
             Panel.SetZIndex(rectangleObjet, MainWindow.ZINDEX_OBJETS);
             Canvas.SetLeft(rectangleObjet, x * MainWindow.TAILLE_TUILE);
             Canvas.SetTop(rectangleObjet, y * MainWindow.TAILLE_TUILE);

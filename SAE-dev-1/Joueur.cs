@@ -91,7 +91,7 @@ namespace SAE_dev_1
             {
                 Width = LARGEUR,
                 Height = HAUTEUR,
-                Fill = textureJoueurFace[0]
+                Fill = MainWindow.Texture("joueur", textureJoueurFace[0])
             };
             Canvas.SetZIndex(this.Rectangle, MainWindow.ZINDEX_JOUEUR);
 
@@ -254,16 +254,16 @@ namespace SAE_dev_1
             switch (apparition)
             {
                 case 1:
-                    this.Rectangle.Fill = textureJoueurGauche[0];
+                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurGauche[0]);
                     break;
                 case 2:
-                    this.Rectangle.Fill = textureJoueurDos[0];
+                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDos[0]);
                     break;
                 case 3:
-                    this.Rectangle.Fill = textureJoueurDroite[0];
+                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDroite[0]);
                     break;
                 default:
-                    this.Rectangle.Fill = textureJoueurFace[0];
+                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurFace[0]);
                     break;
             }
         }
@@ -280,14 +280,14 @@ namespace SAE_dev_1
 
         public void ChangerImageRectangle()
         {
-            this.Rectangle.Fill =
+            this.Rectangle.Fill = MainWindow.Texture("joueur",
                 this.Direction == 0
                     ? textureJoueurDos[apparence]
                     : this.Direction == 1
                         ? textureJoueurDroite[apparence]
                         : this.Direction == 2
                             ? textureJoueurFace[0]
-                            : textureJoueurGauche[apparence];
+                            : textureJoueurGauche[apparence]);
         }
 
         public void ProchaineApparence()

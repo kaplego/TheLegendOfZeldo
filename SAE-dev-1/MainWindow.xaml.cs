@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -60,9 +61,9 @@ namespace SAE_dev_1
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
-        public bool texturesRetireesTerrain = true;
-        public bool texturesRetireesObjets = false;
-        public bool texturesRetireesEntites = false;
+        public static bool texturesRetireesTerrain = false;
+        public static bool texturesRetireesObjets = false;
+        public static bool texturesRetireesEntites = false;
 
         // Joueur
         private Joueur joueur;
@@ -156,6 +157,35 @@ namespace SAE_dev_1
         public List<Carte> cartes = new List<Carte>();
 
         #region Textures
+
+        // Sans texture
+
+        private static readonly Brush COULEUR_MUR = Brushes.SaddleBrown;
+        private static readonly Brush COULEUR_PLANCHES = Brushes.SandyBrown;
+        private static readonly Brush COULEUR_HERBE = Brushes.Green;
+        private static readonly Brush COULEUR_CHEMIN = Brushes.Tan;
+
+        private static readonly string[] NOMS_TERRAINS = new string[]
+        {
+            "mur", "planches", "herbe", "chemin"
+        };
+
+        private static readonly Brush COULEUR_JOUEUR = Brushes.NavajoWhite;
+        private static readonly Brush COULEUR_SLIME = Brushes.LimeGreen;
+
+        private static readonly string[] NOMS_ENTITES = new string[]
+        {
+            "joueur", "slime"
+        };
+
+        public static readonly Brush COULEUR_PORTE = Brushes.Maroon;
+        public static readonly Brush COULEUR_BUISSON = Brushes.OliveDrab;
+        public static readonly Brush COULEUR_CAILLOU = Brushes.Gray;
+
+        private static readonly string[] NOMS_OBJETS = new string[]
+        {
+            "porte", "buisson", "caillou"
+        };
 
         // Terrain
 
@@ -397,9 +427,9 @@ namespace SAE_dev_1
                         "Oh non c'est le diamant de la création. ",
                         "Maintenant qu'il est casser le monde va être corrompue."
                         });
-                        //texturesRetireesEntites = true;
-                        //texturesRetireesObjets = true;
-                        //texturesRetireesTerrain = true;
+                        texturesRetireesEntites = true;
+                        texturesRetireesObjets = true;
+                        texturesRetireesTerrain = true;
                     }
                 }
             ));
@@ -529,30 +559,50 @@ namespace SAE_dev_1
             return (xTuile, yTuile);
         }
 
-        public Brush Texture(string nom, Brush texture)
+        public static Brush Texture(string nom, Brush texture)
         {
-            //        if (texturesRetireesTerrain)
-            //        {
-            //            if (nom.StartsWith("mur"))
-            //                return Brushes.SaddleBrown;
-            //            else if (nom == "planches")
-            //                return Brushes.SandyBrown;
-            //            else if (nom.StartsWith("chemin"))
-            //                return Brushes.Tan;
-            //            else if (nom == "herbe")
-            //                return Brushes.LimeGreen;
-            //        }
-            //        else return texture;
-            //        break;
-            //    case "entite":
-            //        if (texturesRetireesEntites)
-            //        {
-            //            if (nom.StartsWith("joueur"))
-            //                return Brushes.NavajoWhite;
-            //        }
-            //        else return texture;
-            //        break;
-            //}
+            if (NOMS_TERRAINS.Contains(nom))
+            {
+                if (!texturesRetireesTerrain)
+                    return texture;
+                switch (nom)
+                {
+                    case "mur":
+                        return COULEUR_MUR;
+                    case "planches":
+                        return COULEUR_PLANCHES;
+                    case "herbe":
+                        return COULEUR_HERBE;
+                    case "chemin":
+                        return COULEUR_CHEMIN;
+                }
+            }
+            else if (NOMS_ENTITES.Contains(nom))
+            {
+                if (!texturesRetireesEntites)
+                    return texture;
+                switch (nom)
+                {
+                    case "joueur":
+                        return COULEUR_JOUEUR;
+                    case "slime":
+                        return COULEUR_SLIME;
+                }
+            }
+            else if (NOMS_OBJETS.Contains(nom))
+            {
+                if (!texturesRetireesObjets)
+                    return texture;
+                switch (nom)
+                {
+                    case "porte":
+                        return COULEUR_PORTE;
+                    case "buisson":
+                        return COULEUR_BUISSON;
+                    case "caillou":
+                        return COULEUR_CAILLOU;
+                }
+            }
 
             return texture;
         }
@@ -638,13 +688,13 @@ namespace SAE_dev_1
                         switch (type)
                         {
                             case "I":
-                                fondTuile = Texture("cheminI", textureCheminI);
+                                fondTuile = Texture("chemin", textureCheminI);
                                 break;
                             case "L":
-                                fondTuile = Texture("cheminL", textureCheminL);
+                                fondTuile = Texture("chemin", textureCheminL);
                                 break;
                             case "U":
-                                fondTuile = Texture("cheminU", textureCheminU);
+                                fondTuile = Texture("chemin", textureCheminU);
                                 break;
                         }
 
@@ -671,7 +721,7 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile = Texture("terrain", textureChemin);
+                                fondTuile = Texture("chemin", textureChemin);
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
