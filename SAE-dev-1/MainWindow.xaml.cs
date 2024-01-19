@@ -361,21 +361,21 @@ namespace SAE_dev_1
                 {
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
                 new List<Objet>
                 {
                     new Objet("buisson", 3, 0, null, false, null),
-                    new Objet("buisson", 0, 5, null, false, null),
+                    new Objet("buisson", 0, 7, null, false, null),
                     new Objet("buisson", 5, 3, null, false, null),
-                    new Objet("buisson", 6, 4, null, false, null),
+                    new Objet("buisson", 6, 1, null, false, null),
                     new Objet("buisson", 4, 8, null, false, null),
                     new Objet("buisson", 14, 6, null, false, null),
                     new Objet("buisson", 18, 5, null, false, null),
@@ -405,14 +405,14 @@ namespace SAE_dev_1
                     null,
                     ("combat", 3),
                     ("marchand", 0),
-                    null
+                    ("passage",1)
                 },
                 new (int, int)?[4]
                 {
                     null,
                     (0, 1),
                     (6, 8),
-                    null
+                    (2, 3)
                 },
                 (mainWindow, carte) =>
                 {
@@ -501,26 +501,226 @@ namespace SAE_dev_1
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("buisson", 2, 1, null, false, null),
+                    new Objet("buisson", 3, 2, null, false, null),
+                    new Objet("buisson", 4, 7, null, false, null),
+                    new Objet("buisson", 2, 8, null, false, null),
+                    new Objet("buisson", 15, 5, null, false, null),
+                    new Objet("buisson", 17, 6, null, false, null),
+                    new Objet("buisson", 16, 7, null, false, null),
+                    new Objet("buisson", 14, 8, null, false, null),
+                },
+                new (string, int)?[4]
+                {
+                    ("jardin", 2),
+                    null,
+                    null,
+                    ("cheminBloquer",1)
+                },
+                new (int, int)?[4]
+                {
+                    (6, 8),
+                    null,
+                    null,
+                    (4, 5)
+                }
+            ));
+
+            //Carte chemin bloquer
+            cartes.Add(new Carte(
+                this,
+                "cheminBloquer",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0"},
+                    {"chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("buisson", 9, 0, null, false, null),
+                    new Objet("buisson", 9, 1, null, false, null),
+                    new Objet("buisson", 9, 2, null, false, null),
+                    new Objet("buisson", 9, 3, null, false, null),
+                    new Objet("buisson", 9, 4, null, false, null),
+                    new Objet("buisson", 9, 5, null, false, null),
+                    new Objet("buisson", 9, 6, null, false, null),
+                    new Objet("buisson", 9, 7, null, false, null),
+                    new Objet("buisson", 9, 8, null, false, null),
+                    new Objet("buisson", 9, 9, null, false, null),
+                    new Objet("buisson", 2, 2, null, false, null),
+                    new Objet("buisson", 1, 8, null, false, null),
+                    new Objet("buisson", 4, 1, null, false, null),
+                    new Objet("buisson", 13, 2, null, false, null),
+                    new Objet("buisson", 17, 1, null, false, null),
+                    new Objet("buisson", 12, 6, null, false, null),
+                    new Objet("buisson", 16, 9, null, false, null),
+                    new Objet("buisson", 2, 7, null, false, null),
+                },
+                new (string, int)?[4]
+                {
+                    null,
+                    ("marchand", 3),
+                    null,
+                    ("diamantEntite", 1)
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (4, 6),
+                    null,
+                    (4, 6)
+                }
+            ));
+
+            //Carte pour récupéré la texture des entite
+            cartes.Add(new Carte(
+                this,
+                "diamantEntite",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "chemin_L_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe"},
+                    {"herbe", "chemin_L_0", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_L_270", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "chemin_L_270", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
                 null,
                 new (string, int)?[4]
                 {
-                    ("jardin", 2),
                     null,
+                    ("cheminBloquer", 3),
                     null,
                     null
                 },
                 new (int, int)?[4]
                 {
-                    (6, 8),
                     null,
+                    (5, 7),
+                    null,
+                    null
+                }
+            ));
+
+            //Carte passage 
+            cartes.Add(new Carte(
+                this,
+                "passage",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    ("diamantTerrain",2),
+                    ("jardin", 3),
+                    null,
+                    ("diamantObjet",1)
+                },
+                new (int, int)?[4]
+                {
+                    (8, 10),
+                    (4, 6),
+                    null,
+                    (4, 7)
+                }
+            ));
+
+            //Carte pour récupéré la texture des objet
+            cartes.Add(new Carte(
+                this,
+                "diamantObjet",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_U_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_L_270", "chemin_I_180", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_U_270", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    null,
+                    ("passage", 3),
+                    null,
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (3, 6),
+                    null,
+                    null
+                }
+            ));
+
+            //Carte pour récupéré la texture des terrain
+            cartes.Add(new Carte(
+                this,
+                "diamantTerrain",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    null,
+                    null,
+                    ("passage", 0),
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (5, 8),
                     null,
                     null
                 }
