@@ -99,10 +99,6 @@ namespace SAE_dev_1
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };
-
-            if (type == "boutique")
-                MessageBox.Show(this.Hitbox.Value.Bottom.ToString());
-
             this.RectanglePhysique = rectangleObjet;
             this.X = x;
             this.Y = y;

@@ -110,6 +110,7 @@ namespace SAE_dev_1
 
             this.vie = 5;
             this.vitesse = 8;
+            this.degats = 2;
             this.immunise = false;
             this.direction = 2;
             this.apparence = 0;
@@ -119,6 +120,7 @@ namespace SAE_dev_1
         private Rectangle rectangle;
         private int vie;
         private int vitesse;
+        private int degats;
         private bool immunise;
         private int direction;
         private int apparence;
@@ -149,6 +151,12 @@ namespace SAE_dev_1
         {
             get { return vitesse; }
             set { vitesse = value; }
+        }
+
+        public int Degats
+        {
+            get { return degats; }
+            set { degats = value; }
         }
 
         public bool Immunise

@@ -11,7 +11,7 @@ namespace SAE_dev_1
     public class Boutique
     {
         public static readonly int TAILLE_ITEM = MainWindow.TAILLE_TUILE;
-        public static readonly int HAUTEUR_NOM_SELECTION = 60;
+        public static readonly int HAUTEUR_NOM_SELECTION = 40;
         public static readonly int HAUTEUR_PRIX_SELECTION = 35;
         public static readonly int HAUTEUR_BOUTON_ACHETER = 50;
 
@@ -92,8 +92,8 @@ namespace SAE_dev_1
                 taillePixel * 5
             );
 
-            mainWindow.imageItemSelectionne.Width = mainWindow.grilleItemSelectionne.Width / 2;
-            mainWindow.imageItemSelectionne.Height = mainWindow.grilleItemSelectionne.Height / 2;
+            mainWindow.imageItemSelectionne.Width = mainWindow.grilleItemSelectionne.Width / 5 * 2;
+            mainWindow.imageItemSelectionne.Height = mainWindow.grilleItemSelectionne.Height / 5 * 2;
             mainWindow.imageItemSelectionne.Margin = new Thickness(0, 0, taillePixel, 0);
 
             mainWindow.nomItemSelectionne.Height = HAUTEUR_NOM_SELECTION;
@@ -255,8 +255,8 @@ namespace SAE_dev_1
         {
             if (mainWindow.nombrePiece < itemSelectionne!.Prix)
             {
-                Message message = new Message(mainWindow, "Vous n'avez pas assez de pièces.", Brushes.Red);
-                message.Afficher();
+                Message messageErreur = new Message(mainWindow, "Vous n'avez pas assez de pièces.", Brushes.Red);
+                messageErreur.Afficher();
                 mainWindow.canvasJeu.Focus();
                 return;
             }
@@ -271,7 +271,16 @@ namespace SAE_dev_1
                     boutonAcheterItemSelectionne!.Visibility = Visibility.Hidden;
                     items.Remove(itemSelectionne!);
                     break;
+                case "potion de vie":
+                    mainWindow.nombrePotionsVie++;
+                    break;
+                case "potion de force":
+                    mainWindow.nombrePotionsForce++;
+                    break;
             }
+
+            Message messageOK = new Message(mainWindow, $"Vous avez acheté {itemSelectionne!.Nom}.", Brushes.Green);
+            messageOK.Afficher();
 
             ChargerItems();
             mainWindow.canvasJeu.Focus();

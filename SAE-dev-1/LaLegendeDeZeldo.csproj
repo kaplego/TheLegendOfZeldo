@@ -99,6 +99,9 @@
     <None Update="ressources\items\potion_bleue.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\items\potion_force.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\items\potion_vie.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

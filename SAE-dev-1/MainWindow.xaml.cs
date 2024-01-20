@@ -65,9 +65,8 @@ namespace SAE_dev_1
         public static bool texturesRetireesEntites = false;
 
         // Joueur
-        private Joueur joueur;
+        public Joueur joueur;
 
-        private int degatJoueur = 2;
         private int immunite = 0;
         private int tempsCoup = 0;
         private int vitesseEnnemis = 3;
@@ -78,8 +77,6 @@ namespace SAE_dev_1
         public int derniereApparition;
 
         private int prochainChangementApparence = 0;
-
-        public bool bombe = false;
 
         //piece
         public int nombrePiece = 10_000;
@@ -149,6 +146,9 @@ namespace SAE_dev_1
         // Boutique
 
         Boutique? boutique = null;
+        public bool bombe = false;
+        public int nombrePotionsVie = 0;
+        public int nombrePotionsForce = 0;
 
         // Cartes
 
@@ -518,12 +518,26 @@ namespace SAE_dev_1
                 {
                     new Objet("boutique", 14, 0, 0, false, (mainWindow, objet) =>
                     {
-                        List<Item> itemsBoutique = new List<Item>();
+                        List<Item> itemsBoutique = new List<Item>()
+                        {
+                            new Item(
+                                "potion de vie",
+                                50,
+                                "Les potions de vie ont un étrange pouvoir de guérison.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_vie.png"))
+                            ),
+                            new Item(
+                                "potion de force",
+                                65,
+                                "Une potion de force pourrait vous aider à manier votre épée.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_force.png"))
+                            )
+                        };
                         if (!mainWindow.bombe)
                             itemsBoutique.Add(new Item(
                                 "bombe",
-                                100,
-                                "Une bombe très utile pour détruire de gros obstacles.",
+                                25,
+                                "Pourrait se révéler très utile pour détruire de gros obstacles.",
                                 new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"))
                             ));
 
@@ -1889,7 +1903,7 @@ namespace SAE_dev_1
                     {
                         if (ennemi.EnCollision(epeeTerain[0]))
                         {
-                            ennemi.DegatSurEntite(degatJoueur);
+                            ennemi.DegatSurEntite(joueur.Degats);
                             if (ennemi.estMort)
                             {
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);

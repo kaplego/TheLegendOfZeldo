@@ -8,6 +8,8 @@ namespace SAE_dev_1
 {
     public class Message
     {
+        private static Message messageActuel;
+
         public Message(MainWindow mainWindow, string texte, Brush? couleur = null, int dureeEnSecondes = 5)
         {
             this.mainWindow = mainWindow;
@@ -17,7 +19,7 @@ namespace SAE_dev_1
 
             this.minuteur = new DispatcherTimer();
             this.minuteur.Interval = TimeSpan.FromSeconds(dureeEnSecondes);
-            this.minuteur.Tick += Masquer;
+            this.minuteur.Tick += FinMinuteur;
 
             this.texteBlock = new TextBlock()
             {
@@ -79,11 +81,22 @@ namespace SAE_dev_1
 
         public void Afficher()
         {
+            if (messageActuel != null)
+            {
+                messageActuel.Masquer();
+            }
+            messageActuel = this;
+
             this.minuteur.Start();
             this.texteBlock.Visibility = Visibility.Visible;
         }
 
-        public void Masquer(object? sender, EventArgs e)
+        public void FinMinuteur(object? sender, EventArgs e)
+        {
+            this.Masquer();
+        }
+
+        public void Masquer()
         {
             this.minuteur.Stop();
             mainWindow.grillePrincipale.Children.Remove(this.texteBlock);
