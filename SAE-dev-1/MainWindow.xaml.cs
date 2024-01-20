@@ -452,8 +452,6 @@ namespace SAE_dev_1
                 {
                     if (carte.NombreVisites == 1)
                     {
-#if !DEBUG
-
                         mainWindow.NouveauDialogue(new string[]
                         {
                             "tu voulais me voir Zeldo.",
@@ -466,9 +464,9 @@ namespace SAE_dev_1
                         });
                         mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
                         {
-                                MainWindow.texturesRetireesEntites = true;
-                                MainWindow.texturesRetireesObjets = true;
-                                MainWindow.texturesRetireesTerrain = true;
+                            MainWindow.texturesRetireesEntites = true;
+                            MainWindow.texturesRetireesObjets = true;
+                            MainWindow.texturesRetireesTerrain = true;
                             foreach (Objet objet in mainWindow.objets)
                             {
                                 objet.ActualiserTexture();
@@ -479,8 +477,6 @@ namespace SAE_dev_1
                             }
                             joueur.Apparence = joueur.Apparence;
                         };
-#endif
-
                     }
                     bossMusic.Pause();
                     musicDeFond.Play();
@@ -902,49 +898,47 @@ namespace SAE_dev_1
 
         public static Brush Texture(string nom, Brush texture)
         {
+            if ((texturesRetireesEntites || texturesRetireesObjets || texturesRetireesTerrain) && nom == "caillou")
+                return COULEUR_CAILLOU;
+
             if (NOMS_TERRAINS.Contains(nom))
             {
-                if (!texturesRetireesTerrain)
-                    return texture;
-                switch (nom)
-                {
-                    case "mur":
-                        return COULEUR_MUR;
-                    case "planches":
-                        return COULEUR_PLANCHES;
-                    case "herbe":
-                        return COULEUR_HERBE;
-                    case "chemin":
-                        return COULEUR_CHEMIN;
-                }
+                if (MainWindow.texturesRetireesTerrain)
+                    switch (nom)
+                    {
+                        case "mur":
+                            return COULEUR_MUR;
+                        case "planches":
+                            return COULEUR_PLANCHES;
+                        case "herbe":
+                            return COULEUR_HERBE;
+                        case "chemin":
+                            return COULEUR_CHEMIN;
+                    }
             }
             else if (NOMS_ENTITES.Contains(nom))
             {
-                if (!texturesRetireesEntites)
-                    return texture;
-                switch (nom)
-                {
-                    case "joueur":
-                        return COULEUR_JOUEUR;
-                    case "slime":
-                        return COULEUR_SLIME;
-                }
+                if (MainWindow.texturesRetireesEntites)
+                    switch (nom)
+                    {
+                        case "joueur":
+                            return COULEUR_JOUEUR;
+                        case "slime":
+                            return COULEUR_SLIME;
+                    }
             }
             else if (NOMS_OBJETS.Contains(nom))
             {
-                if (!texturesRetireesObjets)
-                    return texture;
-                switch (nom)
-                {
-                    case "porte":
-                        return COULEUR_PORTE;
-                    case "buisson":
-                        return COULEUR_BUISSON;
-                    case "caillou":
-                        return COULEUR_CAILLOU;
-                    case "boutique":
-                        return COULEUR_BOUTIQUE;
-                }
+                if (MainWindow.texturesRetireesObjets)
+                    switch (nom)
+                    {
+                        case "porte":
+                            return COULEUR_PORTE;
+                        case "buisson":
+                            return COULEUR_BUISSON;
+                        case "boutique":
+                            return COULEUR_BOUTIQUE;
+                    }
             }
 
             return texture;
@@ -1230,6 +1224,7 @@ namespace SAE_dev_1
                 {
                     if (objet.Hitbox == null)
                         objet.RegenererHitbox();
+                    objet.ActualiserTexture();
                     objets.Add(objet);
                     canvasJeu.Children.Add(objet.RectanglePhysique);
                 }
@@ -1266,11 +1261,6 @@ namespace SAE_dev_1
             haut = droite = bas = gauche = false;
 
             GenererCarte();
-
-            foreach (Objet objet in objets)
-            {
-                objet.ActualiserTexture();
-            }
 
             derniereApparition = apparition;
             joueur.Apparaite(apparition);
@@ -1783,9 +1773,6 @@ namespace SAE_dev_1
         {
             bool interaction = false;
 
-            if (texturesRetireesObjets)
-                return interaction;
-
             var (xTuile, yTuile) = PositionJoueur();
 
             switch (joueur.Direction)
@@ -1808,6 +1795,15 @@ namespace SAE_dev_1
 
             if (objet != null)
             {
+                if ((texturesRetireesObjets && objet.Type != "diamant") ||
+                        (objet.Type == "caillou" && (
+                            texturesRetireesEntites ||
+                            texturesRetireesObjets ||
+                            texturesRetireesTerrain
+                        )
+                    ))
+                    return interaction;
+
                 Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
                 if (actionObjet != null)
                 {
@@ -2195,12 +2191,12 @@ namespace SAE_dev_1
                                 {
                                     carteActuelle.Objets.Add(new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
                                     {
-                                        texturesRetireesEntites = false;
+                                        MainWindow.texturesRetireesEntites = false;
+                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
+                                        mainWindow.joueur.Apparence = joueur.Apparence;
                                         objet.NeReapparaitPlus = true;
                                         mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                                         objet.Hitbox = null;
-
-
                                     }));
                                     diamantSimeMort = true;
                                     foreach (Objet objet in carteActuelle.Objets)
@@ -2229,65 +2225,64 @@ namespace SAE_dev_1
                 }
 
 
-                
-                    List<Objet> buissonsASupprimer = new List<Objet>();
-                    foreach (Objet buisson in objets)
+
+                List<Objet> buissonsASupprimer = new List<Objet>();
+                foreach (Objet buisson in objets)
+                {
+                    if (!texturesRetireesObjets || buisson.Type == "buisson,diamant")
                     {
-                        if (!texturesRetireesObjets || buisson.Type == "buisson,diamant")
+                        if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
                         {
-                            if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
+                            if (buisson.EnCollision(epeeTerain[0]))
                             {
-                                if (buisson.EnCollision(epeeTerain[0]))
+                                if (buisson.Type == "buisson,diamant")
                                 {
-                                    if (buisson.Type == "buisson,diamant")
-                                    {
-                                        sonBuisson.Stop();
+                                    sonBuisson.Stop();
                                     carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
                                     {
-                                        texturesRetireesObjets = false;
+                                        MainWindow.texturesRetireesObjets = false;
+                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
                                         objet.NeReapparaitPlus = true;
                                         mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                                         objet.Hitbox = null;
-
-
                                     }));
                                     buissonsASupprimer.Add(buisson);
-                                        canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                                        buisson.Hitbox = null;
-                                        sonBuisson.Play();
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    sonBuisson.Play();
                                 }
-                                    else
-                                    {
-                                        sonBuisson.Stop();
-                                        CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
-                                        canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                                        buisson.Hitbox = null;
-                                        sonBuisson.Play();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    foreach (Objet buisson in buissonsASupprimer)
-                    {
-                        if (buisson.Type == "buisson,diamant")
-                        {
-                            carteActuelle.Objets[0].NeReapparaitPlus = true;
-                            foreach (Objet objet in carteActuelle.Objets)
-                            {
-                                if (!objet.NeReapparaitPlus)
+                                else
                                 {
-                                    if (objet.Hitbox == null)
-                                    objet.RegenererHitbox();
-                                    objets.Add(objet);
-                                    canvasJeu.Children.Add(objet.RectanglePhysique);
+                                    sonBuisson.Stop();
+                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    sonBuisson.Play();
                                 }
                             }
                         }
-                        objets.Remove(buisson);
                     }
-                
+                }
+
+                foreach (Objet buisson in buissonsASupprimer)
+                {
+                    if (buisson.Type == "buisson,diamant")
+                    {
+                        carteActuelle.Objets[0].NeReapparaitPlus = true;
+                        foreach (Objet objet in carteActuelle.Objets)
+                        {
+                            if (!objet.NeReapparaitPlus)
+                            {
+                                if (objet.Hitbox == null)
+                                    objet.RegenererHitbox();
+                                objets.Add(objet);
+                                canvasJeu.Children.Add(objet.RectanglePhysique);
+                            }
+                        }
+                    }
+                    objets.Remove(buisson);
+                }
+
                 sonEpee.Play();
             }
 

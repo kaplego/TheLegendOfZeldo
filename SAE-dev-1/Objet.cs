@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
@@ -99,6 +98,7 @@ namespace SAE_dev_1
                 };
             }
 
+            textureParDefaut = texture;
             rectangleObjet.Fill = MainWindow.Texture(type, texture);
             Panel.SetZIndex(rectangleObjet, MainWindow.ZINDEX_OBJETS);
             Canvas.SetLeft(rectangleObjet, x * MainWindow.TAILLE_TUILE);
@@ -128,6 +128,7 @@ namespace SAE_dev_1
         private string type;
         private Rect? hitbox;
         private Rectangle rectanglePhysique;
+        private Brush textureParDefaut;
         private int x;
         private int y;
         private int largeur;
@@ -151,6 +152,11 @@ namespace SAE_dev_1
         {
             get { return rectanglePhysique; }
             set { rectanglePhysique = value; }
+        }
+
+        public Brush TextureParDefaut
+        {
+            get { return textureParDefaut; }
         }
 
         public int X
@@ -281,7 +287,8 @@ namespace SAE_dev_1
 
         public void ActualiserTexture()
         {
-            this.RectanglePhysique.Fill = MainWindow.Texture(type, RectanglePhysique.Fill);
+
+            this.RectanglePhysique.Fill = MainWindow.Texture(type, this.textureParDefaut);
         }
 
         public bool EnCollision(Objet objet)
