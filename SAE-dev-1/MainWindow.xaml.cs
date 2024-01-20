@@ -64,6 +64,17 @@ namespace SAE_dev_1
         public static bool texturesRetireesObjets = false;
         public static bool texturesRetireesEntites = false;
 
+        // Tutoriel
+
+        private bool tutoriel = true;
+        // 0 = Déplacement
+        // 1 = Attaque
+        // 2 = Inventaire
+        // 3 = Interaction
+        private int phaseTutoriel = 0;
+        private Grid? grilleTutoriel;
+        private TextBlock? texteTutoriel;
+
         // Joueur
         public Joueur joueur;
 
@@ -367,6 +378,7 @@ namespace SAE_dev_1
                         {
                             mainWindow.derniereApparition = 0;
                             mainWindow.ChangerCarte("jardin", 0);
+                            mainWindow.TutorielSuivant(3);
                         }
                     )
                 }
@@ -821,6 +833,8 @@ namespace SAE_dev_1
 
         public void Demarrer()
         {
+            tutoriel = true;
+            Tutoriel(0);
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
@@ -911,6 +925,84 @@ namespace SAE_dev_1
             }
 
             return texture;
+        }
+
+        private void Tutoriel(int phase)
+        {
+            grilleTutoriel = new Grid()
+            {
+                Width = canvasJeu.ActualWidth,
+                Height = canvasJeu.ActualHeight,
+                Background = new SolidColorBrush(Color.FromArgb(150, 0, 0, 0))
+            };
+            Canvas.SetZIndex(grilleTutoriel, ZINDEX_HUD);
+            canvasJeu.Children.Add(grilleTutoriel);
+
+            string texte = "";
+            switch (phase)
+            {
+                case 0:
+                    texte = "Utilisez " + (combinaisonTouches == 0
+                        ? "les flèches directionnelles"
+                        : combinaisonTouches == 1
+                            ? "Z, Q, S et D"
+                            : "W, A, S et D") + " pour vous déplacer.";
+                    break;
+                case 1:
+                    texte = $"Utilisez {touches[combinaisonTouches, 5]} pour attaquer.";
+                    break;
+                case 2:
+                    texte = $"Ouvrez votre inventaire avec la touche {touches[combinaisonTouches, 6]}.";
+                    break;
+                case 3:
+                    texte = $"Vous pouvez interagir avec certains objets en utilisant la touche {touches[combinaisonTouches, 4]}.";
+                    break;
+            }
+
+            texteTutoriel = new TextBlock()
+            {
+                Text = texte,
+                FontSize = 20,
+                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(20, 30, 20, 20)
+            };
+            grilleTutoriel.Children.Add(texteTutoriel);
+
+            if (phase == 0 || phase == 1)
+                Canvas.SetZIndex(joueur.Rectangle, ZINDEX_HUD + 2);
+            if (phase == 3)
+                foreach (Objet objet in objets)
+                {
+                    if (objet.Type == "porte")
+                        Canvas.SetZIndex(objet.RectanglePhysique, ZINDEX_HUD + 2);
+                }
+        }
+
+        private void FermerTutoriel()
+        {
+            canvasJeu.Children.Remove(grilleTutoriel);
+            grilleTutoriel = null;
+            Canvas.SetZIndex(joueur.Rectangle, ZINDEX_JOUEUR);
+            foreach (Objet objet in objets)
+            {
+                Canvas.SetZIndex(objet.RectanglePhysique, ZINDEX_OBJETS);
+            }
+        }
+
+        public void TutorielSuivant(int phase)
+        {
+            if (tutoriel && phaseTutoriel == phase)
+            {
+                phaseTutoriel++;
+                FermerTutoriel();
+
+                if (phaseTutoriel > 3)
+                    tutoriel = false;
+                else Tutoriel(phaseTutoriel);
+            }
         }
 
         public void PauseMinuteur()
@@ -1270,27 +1362,29 @@ namespace SAE_dev_1
             if (joueurMort)
                 return;
 
-            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 0] &&
+                !EmpecherAppuiTouche())
             {
                 gauche = true;
                 joueur.Direction = 3;
             }
-            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 1] &&
+                !EmpecherAppuiTouche())
             {
                 droite = true;
                 joueur.Direction = 1;
-
             }
-            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 2] &&
+                !EmpecherAppuiTouche())
             {
                 haut = true;
                 joueur.Direction = 0;
             }
-            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 3] &&
+                !EmpecherAppuiTouche())
             {
                 bas = true;
                 joueur.Direction = 2;
-
             }
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
@@ -1316,33 +1410,49 @@ namespace SAE_dev_1
 
             bool focusCanvas = true;
 
-            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 0] &&
+                !EmpecherAppuiTouche())
             {
                 gauche = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 1] &&
+                !EmpecherAppuiTouche())
             {
                 droite = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 2] &&
+                !EmpecherAppuiTouche())
             {
                 haut = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 3] &&
+                !EmpecherAppuiTouche())
             {
                 bas = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
 
-            if (e.Key == touches[combinaisonTouches, 4] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 4] &&
+                !EmpecherAppuiTouche() && (
+                    !tutoriel ||
+                    phaseTutoriel >= 3
+                ))
             {
                 Interagir();
             }
 
-            if (e.Key == touches[combinaisonTouches, 5] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 5] &&
+                !EmpecherAppuiTouche() && (
+                    !tutoriel ||
+                    phaseTutoriel >= 1
+                ))
             {
                 if (!actionAttaque)
                 {
@@ -1350,7 +1460,11 @@ namespace SAE_dev_1
                     tempsCoup = DUREE_COUP;
                 }
             }
-            if (e.Key == touches[combinaisonTouches, 6] && !EmpecherAppuiTouche("inventaire"))
+            if (e.Key == touches[combinaisonTouches, 6] &&
+                !EmpecherAppuiTouche("inventaire") && (
+                    !tutoriel ||
+                    phaseTutoriel >= 2
+                ))
             {
                 dansInventaire = !dansInventaire;
                 if (dansInventaire)
@@ -1366,6 +1480,7 @@ namespace SAE_dev_1
                     this.Cursor = Cursors.None;
                     grilleInventaire.Visibility = Visibility.Hidden;
                     ReprendreMinuteur();
+                    TutorielSuivant(2);
                 }
             }
 
@@ -1458,6 +1573,7 @@ namespace SAE_dev_1
                     this.Cursor = Cursors.None;
                     grilleInventaire.Visibility = Visibility.Hidden;
                     ReprendreMinuteur();
+                    TutorielSuivant(2);
                 }
                 else
                 {
@@ -1667,7 +1783,9 @@ namespace SAE_dev_1
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() - TAILLE_EPEE + 10;
                     Canvas.SetLeft(epee, x);
@@ -1684,7 +1802,9 @@ namespace SAE_dev_1
                     }
                     break;
                 case 1:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() + TAILLE_EPEE - 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
@@ -1701,7 +1821,9 @@ namespace SAE_dev_1
                     }
                     break;
                 case 2:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() + TAILLE_EPEE - 10;
                     Canvas.SetLeft(epee, x);
@@ -1718,7 +1840,9 @@ namespace SAE_dev_1
                     }
                     break;
                 case 3:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() - TAILLE_EPEE + 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
@@ -2261,6 +2385,7 @@ namespace SAE_dev_1
                     canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
                     actionAttaque = false;
+                    TutorielSuivant(1);
 
                     foreach (Entite ennemi in ennemis)
                     {
