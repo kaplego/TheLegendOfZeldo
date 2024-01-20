@@ -160,7 +160,7 @@ namespace SAE_dev_1
         public MediaPlayer sonEpee = new MediaPlayer();
         public MediaPlayer sonBuisson = new MediaPlayer();
         public MediaPlayer sonSlime = new MediaPlayer();
-
+        public MediaPlayer musicDeFond = new MediaPlayer();
         #region Textures
 
         // Sans texture
@@ -789,6 +789,8 @@ namespace SAE_dev_1
             sonBuisson.Volume = 0.3;
             sonEpee.Volume = 0.5;
             sonSlime.Volume = 0.5;
+            musicDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
+            musicDeFond.Volume = 0.2;
             fenetreInitialisation.Termine();
         }
 
@@ -798,6 +800,7 @@ namespace SAE_dev_1
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             minuteurJeu.Start();
+            musicDeFond.Play();
         }
 
         public void NouveauDialogue(string[] texte)
