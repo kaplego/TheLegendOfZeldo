@@ -14,11 +14,21 @@ namespace SAE_dev_1
 
         public static readonly int NOMBRE_APPARENCES = 3;
 
-        public static readonly ImageBrush[] textureJoueurFace = new ImageBrush[1]
+        public static readonly ImageBrush[] textureJoueurFace = new ImageBrush[3]
         {
             new ImageBrush()
             {
                 ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face-2.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-face-3.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -286,7 +296,7 @@ namespace SAE_dev_1
                     : this.Direction == 1
                         ? textureJoueurDroite[apparence]
                         : this.Direction == 2
-                            ? textureJoueurFace[0]
+                            ? textureJoueurFace[apparence]
                             : textureJoueurGauche[apparence]);
         }
 

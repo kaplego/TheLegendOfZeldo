@@ -147,6 +147,12 @@
     <None Update="ressources\personnages\sprite-face-1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ressources\personnages\sprite-face-2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ressources\personnages\sprite-face-3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ressources\personnages\sprite-gauche-1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
