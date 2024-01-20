@@ -89,6 +89,7 @@ namespace SAE_dev_1
         private int dureeEntrePaterneBoss = DUREE_PATERNE;
         private int PaterneActuel = 0;
         private int typeTireActuel = 0;
+        private bool diamantSimeMort = false;
 
         public Carte carteActuelle;
 
@@ -670,15 +671,16 @@ namespace SAE_dev_1
                 new (int, int)?[4]
                 {
                     null,
-                    (5, 7),
+                    (4, 6),
                     null,
                     null
                 },
                 (mainWindow, carte) =>
                 {
-
-                    CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
-
+                    if(!diamantSimeMort)
+                    {
+                        CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    }
                 }
             ));
 
@@ -739,7 +741,10 @@ namespace SAE_dev_1
                     {"herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_U_270", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
-                null,
+                new List<Objet>
+                {
+                    new Objet("buisson,diamant", 4, 5, null, false, null)
+                },
                 new (string, int)?[4]
                 {
                     null,
@@ -810,7 +815,7 @@ namespace SAE_dev_1
             musicDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
             musicDeFond.Volume = 0.2;
             bossMusic.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
-            bossMusic.Volume = 0.2;
+            bossMusic.Volume = 0.1;
             fenetreInitialisation.Termine();
         }
 
@@ -1997,10 +2002,10 @@ namespace SAE_dev_1
 
             if (epeeTerain[0] != null)
             {
-                if (!texturesRetireesEntites)
+                List<Entite> ennemiASupprimer = new List<Entite>();
+                foreach (Entite ennemi in ennemis)
                 {
-                    List<Entite> ennemiASupprimer = new List<Entite>();
-                    foreach (Entite ennemi in ennemis)
+                    if (!texturesRetireesEntites || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                     {
                         if (ennemi.EnCollision(epeeTerain[0]))
                         {
@@ -2009,9 +2014,19 @@ namespace SAE_dev_1
                             {
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                                 ennemiASupprimer.Add(ennemi);
-                                if((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                                if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                                 {
-                                    new Objet("diamant",10,5, null, false, null);
+                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
+                                    {
+                                        texturesRetireesEntites = false;
+                                        objet.NeReapparaitPlus = true;
+                                        mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                                        objet.Hitbox = null;
+
+
+                                    }));
+                                    diamantSimeMort = true;
+                                    GenererCarte();
                                 }
                             }
                             if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
@@ -2020,33 +2035,59 @@ namespace SAE_dev_1
                             }
                         }
                     }
-
-                    foreach (Entite ennemi in ennemiASupprimer)
-                    {
-                        ennemis.Remove(ennemi);
-                    }
                 }
+
+                foreach (Entite ennemi in ennemiASupprimer)
+                {
+                    ennemis.Remove(ennemi);
+                }
+            
 
                 if (!texturesRetireesObjets)
                 {
                     List<Objet> buissonsASupprimer = new List<Objet>();
                     foreach (Objet buisson in objets)
                     {
-                        if (buisson.Type == "buisson")
+                        if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
                         {
                             if (buisson.EnCollision(epeeTerain[0]))
                             {
-                                sonBuisson.Stop();
-                                CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
-                                canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                                buisson.Hitbox = null;
-                                sonBuisson.Play();
+                                if (buisson.Type == "buisson,diamant")
+                                {
+                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
+                                    {
+                                        texturesRetireesEntites = false;
+                                        objet.NeReapparaitPlus = true;
+                                        mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                                        objet.Hitbox = null;
+
+
+                                    }));
+                                    buissonsASupprimer.Add(buisson);
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    
+
+                                }
+                                else
+                                {
+                                    sonBuisson.Stop();
+                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    sonBuisson.Play();
+                                }
                             }
                         }
                     }
 
                     foreach (Objet buisson in buissonsASupprimer)
                     {
+                        if(buisson.Type == "buisson,diamant")
+                        {
+                            carteActuelle.Objets[0].NeReapparaitPlus = true;
+                            GenererCarte();
+                        }
                         objets.Remove(buisson);
                     }
                 }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
@@ -68,6 +69,12 @@ namespace SAE_dev_1
                     hauteurObjet = 1;
 
                     texture = texturediamant;
+                    break;
+                case "buisson,diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = textureBuisson;
                     break;
             }
 
@@ -248,6 +255,14 @@ namespace SAE_dev_1
                 case "boutique":
                     largeurObjet = 3;
                     hauteurObjet = 2;
+                    break;
+                case "diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+                    break;
+                case "buisson,diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
                     break;
             }
 
