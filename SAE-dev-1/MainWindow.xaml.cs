@@ -74,6 +74,7 @@ namespace SAE_dev_1
         private int phaseTutoriel = 0;
         private Grid? grilleTutoriel;
         private TextBlock? texteTutoriel;
+        private Button? boutonPasserTutoriel;
 
         // Joueur
         public Joueur joueur;
@@ -376,9 +377,9 @@ namespace SAE_dev_1
                 {
                     new Objet("porte", 10, 9, 180, false, (mainWindow, objet) =>
                         {
+                            mainWindow.TutorielSuivant(3);
                             mainWindow.derniereApparition = 0;
                             mainWindow.ChangerCarte("jardin", 0);
-                            mainWindow.TutorielSuivant(3);
                         }
                     )
                 }
@@ -929,6 +930,11 @@ namespace SAE_dev_1
 
         private void Tutoriel(int phase)
         {
+            if (phase < 0 || phase > 3)
+                throw new ArgumentOutOfRangeException("La phase du tutoriel doit être comprise entre 0 et 3.");
+
+            this.Cursor = null;
+
             grilleTutoriel = new Grid()
             {
                 Width = canvasJeu.ActualWidth,
@@ -971,6 +977,22 @@ namespace SAE_dev_1
             };
             grilleTutoriel.Children.Add(texteTutoriel);
 
+            boutonPasserTutoriel = new Button()
+            {
+                Content = "Passer",
+                FontSize = 20,
+                Padding = new Thickness(10),
+                Margin = new Thickness(30, 20, 20, 30),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            boutonPasserTutoriel.Click += (object sender, RoutedEventArgs e) =>
+            {
+                phaseTutoriel = 4;
+                FermerTutoriel();
+            };
+            grilleTutoriel.Children.Add(boutonPasserTutoriel);
+
             if (phase == 0 || phase == 1)
                 Canvas.SetZIndex(joueur.Rectangle, ZINDEX_HUD + 2);
             if (phase == 3)
@@ -981,7 +1003,7 @@ namespace SAE_dev_1
                 }
         }
 
-        private void FermerTutoriel()
+        private void FermerTutoriel(bool fin = false)
         {
             canvasJeu.Children.Remove(grilleTutoriel);
             grilleTutoriel = null;
@@ -989,6 +1011,13 @@ namespace SAE_dev_1
             foreach (Objet objet in objets)
             {
                 Canvas.SetZIndex(objet.RectanglePhysique, ZINDEX_OBJETS);
+            }
+
+            if (phaseTutoriel > 3)
+            {
+                tutoriel = false;
+                this.Cursor = Cursors.None;
+                this.canvasJeu.Focus();
             }
         }
 
@@ -1000,8 +1029,9 @@ namespace SAE_dev_1
                 FermerTutoriel();
 
                 if (phaseTutoriel > 3)
-                    tutoriel = false;
-                else Tutoriel(phaseTutoriel);
+                    FermerTutoriel(true);
+                else
+                    Tutoriel(phaseTutoriel);
             }
         }
 
@@ -1711,7 +1741,7 @@ namespace SAE_dev_1
 
         #endregion
 
-        #region Interraction & attaque
+        #region Interaction & attaque
 
         private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
