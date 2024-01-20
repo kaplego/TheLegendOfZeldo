@@ -49,10 +49,10 @@
 
             <Canvas
                 x:Name="ZoneApparition"
-                Canvas.Left="285"
-                Canvas.Top="179"
-                Width="627"
-                Height="221"
+                Canvas.Left="330"
+                Canvas.Top="205"
+                Width="540"
+                Height="190"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" />
         </Canvas>
@@ -121,7 +121,7 @@
                 Click="utiliserPotionVie_Click">
                 Utiliser
             </Button>
-            
+
             <TextBlock
                 Grid.Column="1"
                 Width="160"

@@ -779,7 +779,27 @@ namespace SAE_dev_1
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
-                null,
+                new List<Objet>
+                {
+                    new Objet("diamant", 9, 1, null, false, (mainWindow, objet) =>
+                    {
+                        if(ennemis.Count == 0)
+                        {
+                            texturesRetireesTerrain = false;
+                            objet.NeReapparaitPlus = true;
+                            mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                            objet.Hitbox = null;
+                        }
+                        else
+                        {
+                            mainWindow.NouveauDialogue(new string[]
+                            {
+                                "Il y a trop d'ennemis autour.",
+                            });
+
+                        }
+                    })
+                },
                 new (string, int)?[4]
                 {
                     null,
@@ -2027,7 +2047,16 @@ namespace SAE_dev_1
 
                                     }));
                                     diamantSimeMort = true;
-                                    GenererCarte();
+                                    foreach (Objet objet in carteActuelle.Objets)
+                                    {
+                                        if (!objet.NeReapparaitPlus)
+                                        {
+                                            if (objet.Hitbox == null)
+                                                objet.RegenererHitbox();
+                                            objets.Add(objet);
+                                            canvasJeu.Children.Add(objet.RectanglePhysique);
+                                        }
+                                    }
                                 }
                             }
                             if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
@@ -2087,7 +2116,16 @@ namespace SAE_dev_1
                         if (buisson.Type == "buisson,diamant")
                         {
                             carteActuelle.Objets[0].NeReapparaitPlus = true;
-                            GenererCarte();
+                            foreach (Objet objet in carteActuelle.Objets)
+                            {
+                                if (!objet.NeReapparaitPlus)
+                                {
+                                    if (objet.Hitbox == null)
+                                        objet.RegenererHitbox();
+                                    objets.Add(objet);
+                                    canvasJeu.Children.Add(objet.RectanglePhysique);
+                                }
+                            }
                         }
                         objets.Remove(buisson);
                     }
