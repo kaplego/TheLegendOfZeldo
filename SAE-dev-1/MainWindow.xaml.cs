@@ -1917,6 +1917,10 @@ namespace SAE_dev_1
                             {
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                                 ennemiASupprimer.Add(ennemi);
+                                if((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                                {
+                                    new Objet("diamant",10,5, null, false, null);
+                                }
                             }
                             if((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                             {

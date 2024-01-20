@@ -25,6 +25,10 @@ namespace SAE_dev_1
         {
             ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\boutique.png"))
         };
+        public ImageBrush texturediamant = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\eclat_diamant.png"))
+        };
 
         public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
         {
@@ -58,6 +62,12 @@ namespace SAE_dev_1
                     hauteurObjet = 2;
 
                     texture = textureBoutique;
+                    break;
+                case "diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = texturediamant;
                     break;
             }
 
