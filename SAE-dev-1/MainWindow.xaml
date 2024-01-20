@@ -384,5 +384,44 @@
             </Button>
         </Grid>
         <!--  ///////////////////////////////////Marchand//////////////////////////////////////////  -->
+        <!--  /////////////////////////////////// Fin //////////////////////////////////////////  -->
+        <Grid
+        x:Name="grilleEcranFin"
+        Panel.ZIndex="1000" Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.8" Color="#FF2F2F2F" />
+            </Grid.Background>
+            <TextBlock
+         x:Name="titreFin"
+        Margin="0,-150,0,0"
+        Padding="80,0,80,0"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontFamily="{StaticResource Monocraft}"
+        FontSize="110"
+        Foreground="White"
+        TextWrapping="WrapWithOverflow" TextAlignment="Center">
+        Tu as sauvé Zeldo
+            </TextBlock>
+            <Button
+            x:Name="btnQuitterFin"
+             Width="400"
+             Height="70"
+            Margin="0,350,0,0"
+            Padding="30,5,30,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+             Background="DimGray"
+            Click="Quitter"
+            Content="Quitter"
+            FontSize="36"
+             Foreground="White">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
     </Grid>
 </Window>
