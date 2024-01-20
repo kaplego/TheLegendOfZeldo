@@ -440,6 +440,7 @@ namespace SAE_dev_1
                     if (carte.NombreVisites == 1)
                     {
 #if !DEBUG
+
                         mainWindow.NouveauDialogue(new string[]
                         {
                             "tu voulais me voir Zeldo.",
@@ -466,6 +467,7 @@ namespace SAE_dev_1
                             joueur.Apparence = joueur.Apparence;
                         };
 #endif
+
                     }
                     bossMusic.Pause();
                     musicDeFond.Play();
@@ -743,7 +745,7 @@ namespace SAE_dev_1
                 },
                 new List<Objet>
                 {
-                    new Objet("buisson,diamant", 4, 5, null, false, null)
+                    new Objet("buisson,diamant", 9, 5, null, false, null)
                 },
                 new (string, int)?[4]
                 {
@@ -2037,7 +2039,7 @@ namespace SAE_dev_1
                                 ennemiASupprimer.Add(ennemi);
                                 if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                                 {
-                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
+                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
                                     {
                                         texturesRetireesEntites = false;
                                         objet.NeReapparaitPlus = true;
@@ -2073,20 +2075,22 @@ namespace SAE_dev_1
                 }
 
 
-                if (!texturesRetireesObjets)
-                {
+                
                     List<Objet> buissonsASupprimer = new List<Objet>();
                     foreach (Objet buisson in objets)
                     {
-                        if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
+                        if (!texturesRetireesObjets || buisson.Type == "buisson,diamant")
                         {
-                            if (buisson.EnCollision(epeeTerain[0]))
+                            if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
                             {
-                                if (buisson.Type == "buisson,diamant")
+                                if (buisson.EnCollision(epeeTerain[0]))
                                 {
+                                    if (buisson.Type == "buisson,diamant")
+                                    {
+                                        sonBuisson.Stop();
                                     carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
                                     {
-                                        texturesRetireesEntites = false;
+                                        texturesRetireesObjets = false;
                                         objet.NeReapparaitPlus = true;
                                         mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                                         objet.Hitbox = null;
@@ -2094,18 +2098,18 @@ namespace SAE_dev_1
 
                                     }));
                                     buissonsASupprimer.Add(buisson);
-                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                                    buisson.Hitbox = null;
-
-
+                                        canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                        buisson.Hitbox = null;
+                                        sonBuisson.Play();
                                 }
-                                else
-                                {
-                                    sonBuisson.Stop();
-                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
-                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
-                                    buisson.Hitbox = null;
-                                    sonBuisson.Play();
+                                    else
+                                    {
+                                        sonBuisson.Stop();
+                                        CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                        canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                        buisson.Hitbox = null;
+                                        sonBuisson.Play();
+                                    }
                                 }
                             }
                         }
@@ -2121,7 +2125,7 @@ namespace SAE_dev_1
                                 if (!objet.NeReapparaitPlus)
                                 {
                                     if (objet.Hitbox == null)
-                                        objet.RegenererHitbox();
+                                    objet.RegenererHitbox();
                                     objets.Add(objet);
                                     canvasJeu.Children.Add(objet.RectanglePhysique);
                                 }
@@ -2129,7 +2133,7 @@ namespace SAE_dev_1
                         }
                         objets.Remove(buisson);
                     }
-                }
+                
                 sonEpee.Play();
             }
 
