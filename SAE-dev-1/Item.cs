@@ -7,6 +7,8 @@ namespace SAE_dev_1
     public class Item
     {
         private static readonly BitmapImage TEXTURE_ITEM_INCONNU = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\inconnu.png"));
+        public static readonly BitmapImage TEXTURE_POTION_VIE = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_vie.png"));
+        public static readonly BitmapImage TEXTURE_POTION_FORCE = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_force.png"));
 
         public Item(string nom, int prix)
         {

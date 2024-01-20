@@ -95,34 +95,38 @@ namespace SAE_dev_1
         private bool joueurMort = false;
         private bool jeuEnPause = false;
         private bool enChargement = false;
+        private bool dansInventaire = false;
 
         // Réglages
 
-        private Key[,] touches = new Key[3, 6]
+        private Key[,] touches = new Key[3, 7]
         {
             {
                 Key.Left,
                 Key.Right,
                 Key.Up,
                 Key.Down,
-                Key.E,
-                Key.Space
+                Key.A,
+                Key.Space,
+                Key.E
             },
             {
                 Key.Q,
                 Key.D,
                 Key.Z,
                 Key.S,
-                Key.E,
-                Key.Space
+                Key.A,
+                Key.Space,
+                Key.E
             },
             {
                 Key.A,
                 Key.D,
                 Key.W,
                 Key.S,
-                Key.E,
-                Key.Space
+                Key.Q,
+                Key.Space,
+                Key.E
             }
         };
         public int combinaisonTouches = 1;
@@ -149,6 +153,8 @@ namespace SAE_dev_1
         public bool bombe = false;
         public int nombrePotionsVie = 0;
         public int nombrePotionsForce = 0;
+        public Potion potionVie;
+        public Potion potionForce;
 
         // Cartes
 
@@ -162,6 +168,7 @@ namespace SAE_dev_1
         public MediaPlayer sonSlime = new MediaPlayer();
         public MediaPlayer musicDeFond = new MediaPlayer();
         public MediaPlayer bossMusic = new MediaPlayer();
+
         #region Textures
 
         // Sans texture
@@ -208,7 +215,7 @@ namespace SAE_dev_1
         // HUD
 
         public ImageBrush texturePiece = new ImageBrush();
-        private ImageBrush textureCoeur = new ImageBrush();
+        public ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
 
         //epee
@@ -224,7 +231,7 @@ namespace SAE_dev_1
         private Rectangle pieceIcone;
         public Label pieceNombre;
 
-        private Rectangle[] coeurs;
+        public Rectangle[] coeurs;
 
         #endregion HUD
 
@@ -264,7 +271,14 @@ namespace SAE_dev_1
             joueur = new Joueur();
             canvasJeu.Children.Add(joueur.Rectangle);
 
+            this.potionVie = new Potion(this, "vie", 3);
+            this.potionForce = new Potion(this, "force", 2, 10);
+
             fenetreInitialisation.Chargement(4 / 7, "Chargement du HUD...");
+
+            imagePotionVie.Source = Item.TEXTURE_POTION_VIE;
+            imagePotionForce.Source = Item.TEXTURE_POTION_FORCE;
+            Panel.SetZIndex(grilleInventaire, ZINDEX_HUD);
 
             pieceIcone = new Rectangle()
             {
@@ -546,7 +560,7 @@ namespace SAE_dev_1
                             ));
 
                         mainWindow.boutique = new Boutique(this, itemsBoutique);
-                        mainWindow.minuteurJeu.Stop();
+                        mainWindow.PauseMinuteur();
                         mainWindow.haut = mainWindow.droite = mainWindow.bas = mainWindow.gauche = false;
                     }),
                     new Objet("buisson", 2, 1, null, false, null),
@@ -805,7 +819,7 @@ namespace SAE_dev_1
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
-            minuteurJeu.Start();
+            ReprendreMinuteur();
             musicDeFond.Play();
         }
 
@@ -892,6 +906,21 @@ namespace SAE_dev_1
             }
 
             return texture;
+        }
+
+        public void PauseMinuteur()
+        {
+            this.minuteurJeu.Stop();
+            haut = droite = bas = gauche = false;
+            if (potionForce.EnCours)
+                potionForce.Pause();
+        }
+
+        public void ReprendreMinuteur()
+        {
+            this.minuteurJeu.Start();
+            if (potionForce.EnCours)
+                potionForce.Reprendre();
         }
 
         #region Carte
@@ -1068,7 +1097,7 @@ namespace SAE_dev_1
                 throw new Exception("La carte demandée n'existe pas.");
 
             enChargement = true;
-            minuteurJeu.Stop();
+            PauseMinuteur();
 
             chargement.Opacity = 0;
             chargement.Visibility = Visibility.Visible;
@@ -1118,7 +1147,7 @@ namespace SAE_dev_1
             chargement.Visibility = Visibility.Hidden;
 
             this.canvasJeu.Focus();
-            minuteurJeu.Start();
+            ReprendreMinuteur();
             enChargement = false;
 
             if (carteActuelle.ActionCarteChargee != null)
@@ -1134,7 +1163,7 @@ namespace SAE_dev_1
             jeuEnPause = false;
             grilleMenuPause.Visibility = Visibility.Hidden;
             this.Cursor = Cursors.None;
-            minuteurJeu.Start();
+            ReprendreMinuteur();
             canvasJeu.Focus();
         }
 
@@ -1157,7 +1186,7 @@ namespace SAE_dev_1
             immunite = DUREE_IMMUNITE;
             ChangerCarte(carteActuelle.Nom, carteActuelle.Nom == "maison" ? 4 : derniereApparition);
             joueurMort = false;
-            minuteurJeu.Start();
+            ReprendreMinuteur();
         }
 
         private void Quitter(object sender, RoutedEventArgs e)
@@ -1177,6 +1206,38 @@ namespace SAE_dev_1
             else this.canvasJeu.Focus();
         }
 
+        private void utiliserPotionVie_Click(object sender, RoutedEventArgs e)
+        {
+            if (nombrePotionsVie > 0)
+            {
+                if (potionVie.Utiliser())
+                {
+                    nombrePotionsVie--;
+                    nbPotionsVie.Text = $"× {nombrePotionsVie}";
+                }
+            }
+            else
+                new Message(this, "Vous n'avez pas de potion de vie.", Brushes.Red).Afficher();
+
+            this.canvasJeu.Focus();
+        }
+
+        private void utiliserPotionForce_Click(object sender, RoutedEventArgs e)
+        {
+            if (nombrePotionsForce > 0)
+            {
+                if (potionForce.Utiliser())
+                {
+                    nombrePotionsForce--;
+                    nbPotionsForce.Text = $"× {nombrePotionsForce}";
+                }
+            }
+            else
+                new Message(this, "Vous n'avez pas de potion de force.", Brushes.Red).Afficher();
+
+            this.canvasJeu.Focus();
+        }
+
         #endregion
 
         #region Appui sur les touches
@@ -1188,13 +1249,15 @@ namespace SAE_dev_1
                 case "pause":
                     return enChargement || dialogueActuel != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null || boutique != null;
+                    return jeuEnPause || dialogueActuel != null || boutique != null || dansInventaire;
                 case "dialogue":
-                    return jeuEnPause || enChargement || boutique != null;
+                    return jeuEnPause || enChargement || boutique != null || dansInventaire;
                 case "boutique":
-                    return jeuEnPause || enChargement || dialogueActuel != null;
+                    return jeuEnPause || enChargement || dialogueActuel != null || dansInventaire;
+                case "inventaire":
+                    return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
+            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null || dansInventaire;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -1246,6 +1309,8 @@ namespace SAE_dev_1
             if (joueurMort)
                 return;
 
+            bool focusCanvas = true;
+
             if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
             {
                 gauche = false;
@@ -1278,6 +1343,24 @@ namespace SAE_dev_1
                 {
                     Attaque();
                     tempsCoup = DUREE_COUP;
+                }
+            }
+            if (e.Key == touches[combinaisonTouches, 6] && !EmpecherAppuiTouche("inventaire"))
+            {
+                dansInventaire = !dansInventaire;
+                if (dansInventaire)
+                {
+                    this.Cursor = null;
+                    nbPotionsVie.Text = $"× {nombrePotionsVie}";
+                    nbPotionsForce.Text = $"× {nombrePotionsForce}";
+                    grilleInventaire.Visibility = Visibility.Visible;
+                    PauseMinuteur();
+                }
+                else
+                {
+                    this.Cursor = Cursors.None;
+                    grilleInventaire.Visibility = Visibility.Hidden;
+                    ReprendreMinuteur();
                 }
             }
 
@@ -1334,7 +1417,7 @@ namespace SAE_dev_1
                 {
                     boutique.Fermer();
                     boutique = null;
-                    minuteurJeu.Start();
+                    ReprendreMinuteur();
                 }
                 else
                 {
@@ -1351,7 +1434,7 @@ namespace SAE_dev_1
                         ));
 
                     boutique = new Boutique(this, itemsBoutique);
-                    minuteurJeu.Stop();
+                    PauseMinuteur();
                     haut = droite = bas = gauche = false;
                 }
             }
@@ -1362,28 +1445,37 @@ namespace SAE_dev_1
                 {
                     boutique.Fermer();
                     boutique = null;
-                    minuteurJeu.Start();
+                    ReprendreMinuteur();
+                }
+                else if (dansInventaire)
+                {
+                    dansInventaire = false;
+                    this.Cursor = Cursors.None;
+                    grilleInventaire.Visibility = Visibility.Hidden;
                 }
                 else
                 {
                     jeuEnPause = !jeuEnPause;
                     if (jeuEnPause)
                     {
+                        focusCanvas = false;
                         grilleMenuPause.Visibility = Visibility.Visible;
                         grilleMenuPause.Focus();
                         this.Cursor = null;
-                        minuteurJeu.Stop();
+                        PauseMinuteur();
                         haut = droite = bas = gauche = false;
                     }
                     else
                     {
                         grilleMenuPause.Visibility = Visibility.Hidden;
-                        this.canvasJeu.Focus();
                         this.Cursor = Cursors.None;
-                        minuteurJeu.Start();
+                        ReprendreMinuteur();
                     }
                 }
             }
+
+            if (focusCanvas)
+                this.canvasJeu.Focus();
         }
 
         #endregion
@@ -1922,7 +2014,7 @@ namespace SAE_dev_1
                                     new Objet("diamant",10,5, null, false, null);
                                 }
                             }
-                            if((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                             {
                                 sonSlime.Play();
                             }
@@ -2063,7 +2155,7 @@ namespace SAE_dev_1
                 ennemis.Clear();
                 tirs.Clear();
                 joueurMort = true;
-                minuteurJeu.Stop();
+                PauseMinuteur();
             }
 
             return estAttaque;

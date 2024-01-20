@@ -4,7 +4,7 @@ using System.Windows.Threading;
 
 namespace SAE_dev_1
 {
-    internal class Potion
+    public class Potion
     {
         public static readonly SolidColorBrush COULEUR_VIE = Brushes.Red;
         public static readonly SolidColorBrush COULEUR_FORCE = Brushes.SkyBlue;
@@ -32,10 +32,17 @@ namespace SAE_dev_1
         private int puissance;
         private int? duree = null;
         private DispatcherTimer? minuteur = null;
+        private bool enCours = false;
 
         public string Type
         {
             get { return type; }
+        }
+
+        public int Puissance
+        {
+            get { return puissance; }
+            set { puissance = value; }
         }
 
         public int? Duree
@@ -49,23 +56,35 @@ namespace SAE_dev_1
             }
         }
 
-        public int Puissance
+        public bool EnCours
         {
-            get { return puissance; }
-            set { puissance = value; }
+            get { return enCours; }
         }
 
-        public void Utiliser()
+        public bool Utiliser()
         {
             switch (this.type)
             {
                 case "vie":
-                    mainWindow.joueur.Vie += puissance;
+                    mainWindow.joueur.Vie = Math.Min(Joueur.VIE_MAX, mainWindow.joueur.Vie + puissance);
+                    for (int i = 0; i < mainWindow.joueur.Vie; i++)
+                        mainWindow.coeurs[i].Fill = mainWindow.textureCoeur;
                     break;
                 case "force":
+                    if (enCours)
+                    {
+                        new Message(mainWindow, "Vous ne pouvez pas utiliser deux potions de force en même temps.", Brushes.Red).Afficher();
+                        return false;
+                    }
+
                     mainWindow.joueur.Degats += puissance;
+                    mainWindow.BorderBrush = COULEUR_FORCE;
+                    mainWindow.BorderThickness = new System.Windows.Thickness(5);
+                    enCours = true;
                     break;
             }
+
+            return true;
         }
 
         private void FinMinuteur(object? sender, EventArgs e)
@@ -80,8 +99,23 @@ namespace SAE_dev_1
             {
                 case "force":
                     mainWindow.joueur.Degats -= puissance;
+                    mainWindow.BorderThickness = new System.Windows.Thickness(0);
                     break;
             }
+
+            enCours = false;
+        }
+
+        public void Pause()
+        {
+            if (minuteur != null)
+                minuteur.Stop();
+        }
+
+        public void Reprendre()
+        {
+            if (minuteur != null)
+                minuteur.Start();
         }
     }
 }

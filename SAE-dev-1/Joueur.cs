@@ -9,6 +9,8 @@ namespace SAE_dev_1
 {
     public class Joueur
     {
+        public static readonly int VIE_MAX = 5;
+
         public static readonly int LARGEUR = 80;
         public static readonly int HAUTEUR = 80;
 
@@ -140,8 +142,8 @@ namespace SAE_dev_1
             get { return vie; }
             set
             {
-                if (value < 0 || value > 5)
-                    throw new ArgumentOutOfRangeException("La vie du joueur doit être entre 0 et 5 inclus.");
+                if (value < 0 || value > VIE_MAX)
+                    throw new ArgumentOutOfRangeException($"La vie du joueur doit être entre 0 et {VIE_MAX} inclus.");
 
                 vie = value;
             }

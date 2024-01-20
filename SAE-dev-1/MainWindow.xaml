@@ -56,6 +56,118 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" />
         </Canvas>
+        <!--  /////////////////////////////// Inventaire ////////////////////////////////////////  -->
+        <Grid
+            x:Name="grilleInventaire"
+            Width="1200"
+            Height="600"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            RenderOptions.EdgeMode="Aliased"
+            Background="#AA000000"
+            Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                FontFamily="{StaticResource Monocraft}"
+                Margin="0,30,0,0"
+                FontSize="48"
+                Foreground="White">
+                Inventaire
+            </TextBlock>
+            <TextBlock
+                Width="160"
+                Height="65"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0,0,0,265"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="30"
+                TextWrapping="Wrap"
+                Foreground="White"
+                TextAlignment="Center">
+                Potion de vie
+            </TextBlock>
+            <TextBlock
+                x:Name="nbPotionsVie"
+                Width="160"
+                Height="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0,0,0,170"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="20"
+                Foreground="White"
+                TextAlignment="Center">
+                × 0
+            </TextBlock>
+            <Image
+                x:Name="imagePotionVie"
+                Height="120"
+                Width="120" />
+            <Button
+                x:Name="utiliserPotionVie"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="10,10,10,10"
+                Margin="0,220,0,0"
+                Width="120"
+                Click="utiliserPotionVie_Click">
+                Utiliser
+            </Button>
+            
+            <TextBlock
+                Grid.Column="1"
+                Width="160"
+                Height="65"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0,0,0,265"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="30"
+                TextWrapping="Wrap"
+                Foreground="White"
+                TextAlignment="Center">
+                Potion de force
+            </TextBlock>
+            <TextBlock
+                x:Name="nbPotionsForce"
+                Grid.Column="1"
+                Width="160"
+                Height="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0,0,0,170"
+                FontFamily="{StaticResource Monocraft}"
+                FontSize="20"
+                Foreground="White"
+                TextAlignment="Center">
+                × 0
+            </TextBlock>
+            <Image
+                x:Name="imagePotionForce" 
+                Grid.Column="1"
+                Height="120"
+                Width="120"
+                Margin="0,0,0,0" />
+            <Button
+                x:Name="utiliserPotionForce"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="10,10,10,10"
+                Margin="0,220,0,0"
+                Width="120"
+                Click="utiliserPotionForce_Click">
+                Utiliser
+            </Button>
+        </Grid>
         <!--  ///////////////////////////////// Boutique /////////////////////////////////////////  -->
         <Grid
             x:Name="grilleBoutique"
