@@ -95,7 +95,7 @@ namespace SAE_dev_1
         private bool joueurMort = false;
         private bool jeuEnPause = false;
         private bool enChargement = false;
-        private bool dansInventaire = false;
+        private bool inventaireOuvert = false;
 
         // Réglages
 
@@ -1249,15 +1249,15 @@ namespace SAE_dev_1
                 case "pause":
                     return enChargement || dialogueActuel != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null || boutique != null || dansInventaire;
+                    return jeuEnPause || dialogueActuel != null || boutique != null || inventaireOuvert;
                 case "dialogue":
-                    return jeuEnPause || enChargement || boutique != null || dansInventaire;
+                    return jeuEnPause || enChargement || boutique != null || inventaireOuvert;
                 case "boutique":
-                    return jeuEnPause || enChargement || dialogueActuel != null || dansInventaire;
+                    return jeuEnPause || enChargement || dialogueActuel != null || inventaireOuvert;
                 case "inventaire":
                     return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null || dansInventaire;
+            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null || inventaireOuvert;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
@@ -1347,8 +1347,8 @@ namespace SAE_dev_1
             }
             if (e.Key == touches[combinaisonTouches, 6] && !EmpecherAppuiTouche("inventaire"))
             {
-                dansInventaire = !dansInventaire;
-                if (dansInventaire)
+                inventaireOuvert = !inventaireOuvert;
+                if (inventaireOuvert)
                 {
                     this.Cursor = null;
                     nbPotionsVie.Text = $"× {nombrePotionsVie}";
@@ -1447,11 +1447,12 @@ namespace SAE_dev_1
                     boutique = null;
                     ReprendreMinuteur();
                 }
-                else if (dansInventaire)
+                else if (inventaireOuvert)
                 {
-                    dansInventaire = false;
+                    inventaireOuvert = false;
                     this.Cursor = Cursors.None;
                     grilleInventaire.Visibility = Visibility.Hidden;
+                    ReprendreMinuteur();
                 }
                 else
                 {
@@ -2009,9 +2010,9 @@ namespace SAE_dev_1
                             {
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                                 ennemiASupprimer.Add(ennemi);
-                                if((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                                if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                                 {
-                                    new Objet("diamant",10,5, null, false, null);
+                                    new Objet("diamant", 10, 5, null, false, null);
                                 }
                             }
                             if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
