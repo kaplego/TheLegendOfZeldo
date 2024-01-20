@@ -677,7 +677,7 @@ namespace SAE_dev_1
                 },
                 (mainWindow, carte) =>
                 {
-                    if(!diamantSimeMort)
+                    if (!diamantSimeMort)
                     {
                         CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
                     }
@@ -1457,6 +1457,7 @@ namespace SAE_dev_1
                     dansInventaire = false;
                     this.Cursor = Cursors.None;
                     grilleInventaire.Visibility = Visibility.Hidden;
+                    ReprendreMinuteur();
                 }
                 else
                 {
@@ -2041,7 +2042,7 @@ namespace SAE_dev_1
                 {
                     ennemis.Remove(ennemi);
                 }
-            
+
 
                 if (!texturesRetireesObjets)
                 {
@@ -2066,7 +2067,7 @@ namespace SAE_dev_1
                                     buissonsASupprimer.Add(buisson);
                                     canvasJeu.Children.Remove(buisson.RectanglePhysique);
                                     buisson.Hitbox = null;
-                                    
+
 
                                 }
                                 else
@@ -2083,7 +2084,7 @@ namespace SAE_dev_1
 
                     foreach (Objet buisson in buissonsASupprimer)
                     {
-                        if(buisson.Type == "buisson,diamant")
+                        if (buisson.Type == "buisson,diamant")
                         {
                             carteActuelle.Objets[0].NeReapparaitPlus = true;
                             GenererCarte();
