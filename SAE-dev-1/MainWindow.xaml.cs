@@ -161,6 +161,7 @@ namespace SAE_dev_1
         public MediaPlayer sonBuisson = new MediaPlayer();
         public MediaPlayer sonSlime = new MediaPlayer();
         public MediaPlayer musicDeFond = new MediaPlayer();
+        public MediaPlayer bossMusic = new MediaPlayer();
         #region Textures
 
         // Sans texture
@@ -383,7 +384,7 @@ namespace SAE_dev_1
                     new Objet("buisson", 6, 1, null, false, null),
                     new Objet("buisson", 4, 8, null, false, null),
                     new Objet("buisson", 14, 6, null, false, null),
-                    new Objet("buisson", 18, 5, null, false, null),
+                    new Objet("buisson", 18, 7, null, false, null),
                     new Objet("buisson", 15, 9, null, false, null),
                     new Objet("caillou", 19, 0, 90, false, (mainWindow, objet) =>
                     {
@@ -451,6 +452,8 @@ namespace SAE_dev_1
                         };
 #endif
                     }
+                    bossMusic.Pause();
+                    musicDeFond.Play();
                 }
             ));
 
@@ -489,8 +492,9 @@ namespace SAE_dev_1
                 },
                 (mainWindow, carte) =>
                 {
-
+                    musicDeFond.Pause();
                     CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    bossMusic.Play();
 
                 }
 
@@ -791,6 +795,8 @@ namespace SAE_dev_1
             sonSlime.Volume = 0.5;
             musicDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
             musicDeFond.Volume = 0.2;
+            bossMusic.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
+            bossMusic.Volume = 0.2;
             fenetreInitialisation.Termine();
         }
 
@@ -1912,7 +1918,10 @@ namespace SAE_dev_1
                                 canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                                 ennemiASupprimer.Add(ennemi);
                             }
-                            sonSlime.Play();
+                            if((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                            {
+                                sonSlime.Play();
+                            }
                         }
                     }
 
