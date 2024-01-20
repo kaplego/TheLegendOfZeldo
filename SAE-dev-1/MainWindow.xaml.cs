@@ -1795,6 +1795,8 @@ namespace SAE_dev_1
 
             if (objet != null)
             {
+                Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
+
                 if ((texturesRetireesObjets && objet.Type != "diamant") ||
                         (objet.Type == "caillou" && (
                             texturesRetireesEntites ||
@@ -1802,9 +1804,13 @@ namespace SAE_dev_1
                             texturesRetireesTerrain
                         )
                     ))
-                    return interaction;
+                {
+                    if (actionObjet != null)
+                        new Message(this, "Je ne peux pas interagir avec des objets sans texture...", Brushes.Gold).Afficher();
 
-                Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
+                    return interaction;
+                }
+
                 if (actionObjet != null)
                 {
                     interaction = true;
@@ -2178,43 +2184,46 @@ namespace SAE_dev_1
                 List<Entite> ennemiASupprimer = new List<Entite>();
                 foreach (Entite ennemi in ennemis)
                 {
-                    if (!texturesRetireesEntites || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                    if (ennemi.EnCollision(epeeTerain[0]))
                     {
-                        if (ennemi.EnCollision(epeeTerain[0]))
+                        if (texturesRetireesEntites && (string)ennemi.RectanglePhysique.Tag != "enemis,diamant")
                         {
-                            ennemi.DegatSurEntite(joueur.Degats);
-                            if (ennemi.estMort)
+                            new Message(this, "Je ne peux pas attaquer des ennemis sans texture...", Brushes.Gold).Afficher();
+                            return;
+                        }
+
+                        ennemi.DegatSurEntite(joueur.Degats);
+                        if (ennemi.estMort)
+                        {
+                            canvasJeu.Children.Remove(ennemi.RectanglePhysique);
+                            ennemiASupprimer.Add(ennemi);
+                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                             {
-                                canvasJeu.Children.Remove(ennemi.RectanglePhysique);
-                                ennemiASupprimer.Add(ennemi);
-                                if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                                carteActuelle.Objets.Add(new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
                                 {
-                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
+                                    MainWindow.texturesRetireesEntites = false;
+                                    new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
+                                    mainWindow.joueur.Apparence = joueur.Apparence;
+                                    objet.NeReapparaitPlus = true;
+                                    mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                                    objet.Hitbox = null;
+                                }));
+                                diamantSimeMort = true;
+                                foreach (Objet objet in carteActuelle.Objets)
+                                {
+                                    if (!objet.NeReapparaitPlus)
                                     {
-                                        MainWindow.texturesRetireesEntites = false;
-                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
-                                        mainWindow.joueur.Apparence = joueur.Apparence;
-                                        objet.NeReapparaitPlus = true;
-                                        mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
-                                        objet.Hitbox = null;
-                                    }));
-                                    diamantSimeMort = true;
-                                    foreach (Objet objet in carteActuelle.Objets)
-                                    {
-                                        if (!objet.NeReapparaitPlus)
-                                        {
-                                            if (objet.Hitbox == null)
-                                                objet.RegenererHitbox();
-                                            objets.Add(objet);
-                                            canvasJeu.Children.Add(objet.RectanglePhysique);
-                                        }
+                                        if (objet.Hitbox == null)
+                                            objet.RegenererHitbox();
+                                        objets.Add(objet);
+                                        canvasJeu.Children.Add(objet.RectanglePhysique);
                                     }
                                 }
                             }
-                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
-                            {
-                                sonSlime.Play();
-                            }
+                        }
+                        if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                        {
+                            sonSlime.Play();
                         }
                     }
                 }
@@ -2223,8 +2232,6 @@ namespace SAE_dev_1
                 {
                     ennemis.Remove(ennemi);
                 }
-
-
 
                 List<Objet> buissonsASupprimer = new List<Objet>();
                 foreach (Objet buisson in objets)
