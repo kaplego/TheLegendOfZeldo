@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Media;
 
 namespace SAE_dev_1
 {
@@ -48,7 +46,7 @@ namespace SAE_dev_1
         public static readonly int VIE_BOSS = 20;
         public static readonly int VIE_ENNEMI = 4;
 
-        public static readonly int[,] TOUT_PATERNE = {{0,5,6,2},{3,2,1,4},{6,3,0,4},{5,2,0,1}};
+        public static readonly int[,] TOUT_PATERNE = { { 0, 5, 6, 2 }, { 3, 2, 1, 4 }, { 6, 3, 0, 4 }, { 5, 2, 0, 1 } };
 
         public static readonly int NOMBRE_PATERNE = 3;
 
@@ -425,6 +423,7 @@ namespace SAE_dev_1
                 {
                     if (carte.NombreVisites == 1)
                     {
+#if !DEBUG
                         mainWindow.NouveauDialogue(new string[]
                         {
                             "tu voulais me voir Zeldo.",
@@ -437,11 +436,9 @@ namespace SAE_dev_1
                         });
                         mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
                         {
-                            #if !DEBUG
                                 MainWindow.texturesRetireesEntites = true;
                                 MainWindow.texturesRetireesObjets = true;
                                 MainWindow.texturesRetireesTerrain = true;
-                            #endif
                             foreach (Objet objet in mainWindow.objets)
                             {
                                 objet.ActualiserTexture();
@@ -452,6 +449,7 @@ namespace SAE_dev_1
                             }
                             joueur.Apparence = joueur.Apparence;
                         };
+#endif
                     }
                 }
             ));
@@ -647,7 +645,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
 
-                    CreeEnemis(1, "diamant", VIE_ENNEMI*2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
 
                 }
             ));
@@ -724,7 +722,7 @@ namespace SAE_dev_1
                     null,
                     null
                 }
-                
+
             ));
 
             //Carte pour récupéré la texture des terrain
@@ -1029,7 +1027,8 @@ namespace SAE_dev_1
             {
                 if (!objet.NeReapparaitPlus)
                 {
-                    objet.RegenererHitbox();
+                    if (objet.Hitbox == null)
+                        objet.RegenererHitbox();
                     objets.Add(objet);
                     canvasJeu.Children.Add(objet.RectanglePhysique);
                 }
@@ -1389,7 +1388,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeEnemis(int nombre, string type, int vie , int x, int y)
+        public void CreeEnemis(int nombre, string type, int vie, int x, int y)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -1399,9 +1398,9 @@ namespace SAE_dev_1
                     Height = TAILLE_ENNEMI,
                     Width = TAILLE_ENNEMI
                 };
-                if(type == "boss")
+                if (type == "boss")
                 {
-                    nouveauxEnnemy.Height = TAILLE_ENNEMI*1.5;
+                    nouveauxEnnemy.Height = TAILLE_ENNEMI * 1.5;
                     nouveauxEnnemy.Width = TAILLE_ENNEMI * 1.5;
                 }
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
@@ -1425,9 +1424,9 @@ namespace SAE_dev_1
                     Width = TAILLE_TIRE,
                     Fill = Brushes.White,
                 };
-                Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES-1);
-                int x = (int) (Canvas.GetLeft(ennemi) + ennemi.Width / 2);
-                int y = (int) (Canvas.GetTop(ennemi) + ennemi.Height / 2);
+                Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES - 1);
+                int x = (int)(Canvas.GetLeft(ennemi) + ennemi.Width / 2);
+                int y = (int)(Canvas.GetTop(ennemi) + ennemi.Height / 2);
                 Canvas.SetLeft(nouveauxTire, x);
                 Canvas.SetTop(nouveauxTire, y);
                 canvasJeu.Children.Add(nouveauxTire);
@@ -2139,12 +2138,12 @@ namespace SAE_dev_1
                     }
 
                     ennemi.changementTextureEnnemi--;
-                    if(ennemi.changementTextureEnnemi <= 0 )
+                    if (ennemi.changementTextureEnnemi <= 0)
                     {
                         ennemi.ProchaineApparence();
                         ennemi.changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
                     }
-                    
+
 
                 }
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
@@ -2176,12 +2175,12 @@ namespace SAE_dev_1
                     {
                         vitesseTire = 5;
                     }
-                } 
+                }
             }
 
-            foreach(Entite tire in tirs)
+            foreach (Entite tire in tirs)
             {
-                switch(tire.directionProjectil)
+                switch (tire.directionProjectil)
                 {
                     case 0:
                         tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);

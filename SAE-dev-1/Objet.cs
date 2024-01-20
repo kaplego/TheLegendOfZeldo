@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 
 namespace SAE_dev_1
@@ -100,6 +99,10 @@ namespace SAE_dev_1
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };
+
+            if (type == "boutique")
+                MessageBox.Show(this.Hitbox.Value.Bottom.ToString());
+
             this.RectanglePhysique = rectangleObjet;
             this.X = x;
             this.Y = y;
@@ -145,6 +148,14 @@ namespace SAE_dev_1
                 if (value < 0 || value > 19)
                     throw new ArgumentOutOfRangeException("X doit être entre 0 et 19.");
 
+                Canvas.SetLeft(this.RectanglePhysique, value * MainWindow.TAILLE_TUILE);
+                if (this.Hitbox != null)
+                {
+                    Rect hitbox = (Rect)this.Hitbox;
+                    hitbox.X = value * MainWindow.TAILLE_TUILE;
+                    this.Hitbox = hitbox;
+                }
+
                 x = value;
             }
         }
@@ -156,6 +167,14 @@ namespace SAE_dev_1
             {
                 if (value < 0 || value > 9)
                     throw new ArgumentOutOfRangeException("Y doit être entre 0 et 9.");
+
+                Canvas.SetTop(this.RectanglePhysique, value * MainWindow.TAILLE_TUILE);
+                if (this.Hitbox != null)
+                {
+                    Rect hitbox = (Rect)this.Hitbox;
+                    hitbox.Y = value * MainWindow.TAILLE_TUILE;
+                    this.Hitbox = hitbox;
+                }
 
                 y = value;
             }
