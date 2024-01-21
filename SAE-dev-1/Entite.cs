@@ -289,7 +289,7 @@ namespace SAE_dev_1
 
         public void ChangerImageRectangle()
         {
-            if (this.Type.Contains("slime"))
+            if (this.Type.Contains("slime") || this.Type.Contains("diamant"))
                 this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
                     this.direction == 0
                         ? textureSlimeDos[apparence]

@@ -142,7 +142,7 @@ namespace SAE_dev_1
 
         // Pièces
 
-        public int nombrePiece = 10_000;
+        public int nombrePiece = 0;
         private List<Entite> pieces = new List<Entite>();
 
         // Ennemis
@@ -159,6 +159,7 @@ namespace SAE_dev_1
         private bool jeuEnPause = false;
         private bool enChargement = false;
         private bool dansInventaire = false;
+        
 
         // RegExps Textures
 
@@ -243,6 +244,10 @@ namespace SAE_dev_1
         private ImageBrush textureEpee1 = new ImageBrush();
         private ImageBrush textureEpee2 = new ImageBrush();
 
+        //Zeldo
+
+        private ImageBrush textureZeldo = new ImageBrush();
+
 
         #endregion Textures
 
@@ -290,6 +295,9 @@ namespace SAE_dev_1
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
+
+            //Zeldo
+            textureZeldo.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\Zeldo.png"));
 
             #endregion
 
@@ -490,6 +498,7 @@ namespace SAE_dev_1
                             MainWindow.texturesRetireesEntites = true;
                             MainWindow.texturesRetireesObjets = true;
                             MainWindow.texturesRetireesTerrain = true;
+                            joueur.passerDialogue = true;
                             foreach (Objet objet in mainWindow.objets)
                             {
                                 objet.ActualiserTexture();
@@ -543,6 +552,19 @@ namespace SAE_dev_1
                 {
                     musiqueDeFond.Pause();
                     CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    Rectangle Zeldo = new Rectangle
+                    {
+                        Tag = "Zeldo",
+                        Height = joueur.Rectangle.Height-10,
+                        Width = joueur.Rectangle.Width-20,
+                        Fill = textureZeldo
+                    };
+                    Canvas.SetZIndex(Zeldo, ZINDEX_ENTITES);
+                    Canvas.SetLeft(Zeldo, 1100);
+                    Canvas.SetTop(Zeldo, 220);
+                    canvasJeu.Children.Add(Zeldo);
+
+                    new Entite("Zeldo", Zeldo, 1100, 220);
                     musiqueDuBoss.Play();
 
                 }
@@ -824,6 +846,7 @@ namespace SAE_dev_1
                             objet.NeReapparaitPlus = true;
                             mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
+                            GenererCarte();
                         }
                         else
                         {
@@ -951,8 +974,6 @@ namespace SAE_dev_1
                 if (MainWindow.texturesRetireesEntites)
                     switch (nom)
                     {
-                        case "joueur":
-                            return COULEUR_JOUEUR;
                         case "slime":
                             return COULEUR_SLIME;
                     }
