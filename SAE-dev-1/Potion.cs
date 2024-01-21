@@ -9,31 +9,16 @@ namespace SAE_dev_1
         public static readonly SolidColorBrush COULEUR_VIE = Brushes.Red;
         public static readonly SolidColorBrush COULEUR_FORCE = Brushes.SkyBlue;
 
-        public Potion(MainWindow mainWindow, string type, int puissance, int? duree = null)
-        {
-            this.mainWindow = mainWindow;
-            this.type = type;
-            this.duree = duree;
-            this.puissance = puissance;
-
-            if (type != "vie")
-            {
-                if (duree == null)
-                    throw new Exception($"Une potion de type {type} doit avoir une durée.");
-
-                this.minuteur = new DispatcherTimer();
-                this.minuteur.Interval = TimeSpan.FromSeconds((int)duree);
-                this.minuteur.Tick += FinMinuteur;
-            }
-        }
-
+        #region Champs
         private MainWindow mainWindow;
         private string type;
         private int puissance;
         private int? duree = null;
         private DispatcherTimer? minuteur = null;
         private bool enCours = false;
+        #endregion
 
+        #region Propriétés
         public string Type
         {
             get { return type; }
@@ -59,6 +44,25 @@ namespace SAE_dev_1
         public bool EnCours
         {
             get { return enCours; }
+        }
+        #endregion
+
+        public Potion(MainWindow mainWindow, string type, int puissance, int? duree = null)
+        {
+            this.mainWindow = mainWindow;
+            this.type = type;
+            this.duree = duree;
+            this.puissance = puissance;
+
+            if (type != "vie")
+            {
+                if (duree == null)
+                    throw new Exception($"Une potion de type {type} doit avoir une durée.");
+
+                this.minuteur = new DispatcherTimer();
+                this.minuteur.Interval = TimeSpan.FromSeconds((int)duree);
+                this.minuteur.Tick += FinMinuteur;
+            }
         }
 
         public bool Utiliser()

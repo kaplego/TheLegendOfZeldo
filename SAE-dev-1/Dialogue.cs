@@ -15,27 +15,10 @@ namespace SAE_dev_1
             Stretch = Stretch.Uniform
         };
 
-        public Dialogue(MainWindow mainWindow, string[] textes, Canvas canvas)
-        {
-            this.mainWindow = mainWindow;
-            this.canvas = canvas;
-            this.textes = textes;
-            this.grille = new Grid()
-            {
-                Background = Dialogue.textureDialogue,
-                Width = MainWindow.LARGEUR_CANVAS,
-                Height = MainWindow.LARGEUR_CANVAS / 4
-            };
-            Canvas.SetZIndex(this.Grille, MainWindow.ZINDEX_HUD);
-            Canvas.SetTop(this.Grille, MainWindow.HAUTEUR_CANVAS - MainWindow.LARGEUR_CANVAS / 4);
-            Canvas.SetLeft(this.Grille, 0);
-            canvas.Children.Add(this.Grille);
-        }
-
         private MainWindow mainWindow;
         private Canvas canvas;
         private Grid grille;
-        private TextBlock texte;
+        private TextBlock? texte;
         private string[] textes;
         private int indiceTexte = -1;
         private Action<MainWindow>? quandTermine;
@@ -55,6 +38,23 @@ namespace SAE_dev_1
         {
             get { return this.quandTermine; }
             set { this.quandTermine = value; }
+        }
+
+        public Dialogue(MainWindow mainWindow, string[] textes, Canvas canvas)
+        {
+            this.mainWindow = mainWindow;
+            this.canvas = canvas;
+            this.textes = textes;
+            this.grille = new Grid()
+            {
+                Background = Dialogue.textureDialogue,
+                Width = MainWindow.LARGEUR_CANVAS,
+                Height = MainWindow.LARGEUR_CANVAS / 4
+            };
+            Canvas.SetZIndex(this.Grille, MainWindow.ZINDEX_HUD);
+            Canvas.SetTop(this.Grille, MainWindow.HAUTEUR_CANVAS - MainWindow.LARGEUR_CANVAS / 4);
+            Canvas.SetLeft(this.Grille, 0);
+            canvas.Children.Add(this.Grille);
         }
 
         public string TexteActuel()

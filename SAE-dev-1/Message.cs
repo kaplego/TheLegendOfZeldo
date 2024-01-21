@@ -8,40 +8,18 @@ namespace SAE_dev_1
 {
     public class Message
     {
-        private static Message messageActuel;
+        private static Message? messageActuel;
 
-        public Message(MainWindow mainWindow, string texte, Brush? couleur = null, int dureeEnSecondes = 5)
-        {
-            this.mainWindow = mainWindow;
-            this.texte = texte;
-            this.couleur = couleur == null ? Brushes.White : couleur;
-            this.duree = dureeEnSecondes;
-
-            this.minuteur = new DispatcherTimer();
-            this.minuteur.Interval = TimeSpan.FromSeconds(dureeEnSecondes);
-            this.minuteur.Tick += FinMinuteur;
-
-            this.texteBlock = new TextBlock()
-            {
-                Visibility = Visibility.Hidden,
-                Text = texte,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Margin = new Thickness(20),
-                Foreground = this.couleur,
-                FontSize = 30,
-                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
-            };
-            mainWindow.grillePrincipale.Children.Add(this.texteBlock);
-        }
-
+        #region Champs
         private MainWindow mainWindow;
         private string texte;
         private Brush couleur;
         private int duree;
         private DispatcherTimer minuteur;
         private TextBlock texteBlock;
+        #endregion
 
+        #region Propriétés
         public string Texte
         {
             get { return texte; }
@@ -77,6 +55,32 @@ namespace SAE_dev_1
         public TextBlock TexteBlock
         {
             get { return this.texteBlock; }
+        }
+        #endregion
+
+        public Message(MainWindow mainWindow, string texte, Brush? couleur = null, int dureeEnSecondes = 5)
+        {
+            this.mainWindow = mainWindow;
+            this.texte = texte;
+            this.couleur = couleur == null ? Brushes.White : couleur;
+            this.duree = dureeEnSecondes;
+
+            this.minuteur = new DispatcherTimer();
+            this.minuteur.Interval = TimeSpan.FromSeconds(dureeEnSecondes);
+            this.minuteur.Tick += FinMinuteur;
+
+            this.texteBlock = new TextBlock()
+            {
+                Visibility = Visibility.Hidden,
+                Text = texte,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(20),
+                Foreground = this.couleur,
+                FontSize = 30,
+                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
+            };
+            mainWindow.grillePrincipale.Children.Add(this.texteBlock);
         }
 
         public void Afficher()

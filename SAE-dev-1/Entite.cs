@@ -9,6 +9,8 @@ namespace SAE_dev_1
 {
     public class Entite
     {
+        #region Textures
+
         private ImageBrush[] textureEnnemiFace = new ImageBrush[2]
         {
             new ImageBrush()
@@ -62,10 +64,94 @@ namespace SAE_dev_1
             },
         };
 
+        #endregion
+
+        #region Champs
+        private Rect hitbox;
+        private Rectangle rectanglePhysique;
+        private string type;
+        private int apparence;
+        private int changementTextureEnnemi = 0;
+        private int direction;
+        private int vie;
+        private int vieMax;
+        private bool estMort = false;
+        private bool estImmunise = false;
+        private int directionProjectil;
+        #endregion
+
+        #region Propriétés
+        public Rect Hitbox
+        {
+            get { return this.hitbox; }
+            set { this.hitbox = value; }
+        }
+
+        public Rectangle RectanglePhysique
+        {
+            get { return this.rectanglePhysique; }
+            set { this.rectanglePhysique = value; }
+        }
+
+        public string Type
+        {
+            get { return this.type; }
+        }
+
+        public int Apparence
+        {
+            get { return this.apparence; }
+        }
+
+        public int ChangementTextureEnnemi
+        {
+            get { return this.changementTextureEnnemi; }
+            set { this.changementTextureEnnemi = value; }
+        }
+
+        public int Direction
+        {
+            get { return this.direction; }
+        }
+
+        public int Vie
+        {
+            get { return this.vie; }
+            set
+            {
+                if (value > vieMax)
+                    this.vie = vieMax;
+                else
+                    this.vie = value;
+            }
+        }
+
+        public int VieMax
+        {
+            get { return this.vieMax; }
+        }
+
+        public bool EstMort
+        {
+            get { return this.estMort; }
+        }
+
+        public bool EstImmunise
+        {
+            get { return this.estImmunise; }
+            set { this.estImmunise = value; }
+        }
+
+        public int DirectionProjectil
+        {
+            get { return this.directionProjectil; }
+        }
+        #endregion
+
         public Entite(string type, Rectangle rectangle, int x, int y)
         {
             this.type = type;
-            this.RectanglePhysique = rectangle;
+            this.rectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
                 Height = rectangle.Height,
@@ -78,7 +164,7 @@ namespace SAE_dev_1
         public Entite(string type, Rectangle rectangle, int x, int y, int vie)
         {
             this.type = type;
-            this.RectanglePhysique = rectangle;
+            this.rectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
                 Height = rectangle.Height,
@@ -93,7 +179,7 @@ namespace SAE_dev_1
         public Entite(string type, int angleDirection, Rectangle rectangle, int x, int y)
         {
             this.type = type;
-            this.RectanglePhysique = rectangle;
+            this.rectanglePhysique = rectangle;
             this.Hitbox = new Rect()
             {
                 Height = rectangle.Height,
@@ -104,38 +190,12 @@ namespace SAE_dev_1
             directionProjectil = angleDirection;
         }
 
-        public Entite(string type, Rectangle rectangle, Rect rect, int x, int y)
+        public Entite(string type, Rectangle rectangle, Rect rect)
         {
             this.type = type;
-            this.RectanglePhysique = rectangle;
+            this.rectanglePhysique = rectangle;
             this.Hitbox = rect;
         }
-
-        private Rect hitbox;
-        private Rectangle rectanglePhysique;
-        private string type;
-        private int apparence;
-        public int changementTextureEnnemi = 0;
-        private int direction;
-        public int vie;
-        public int vieMax;
-        public bool estMort = false;
-        public bool estImmunise = false;
-        public int directionProjectil;
-
-        public Rect Hitbox
-        {
-            get { return this.hitbox; }
-            set { this.hitbox = value; }
-        }
-
-        public Rectangle RectanglePhysique
-        {
-            get { return this.rectanglePhysique; }
-            set { this.rectanglePhysique = value; }
-        }
-
-        public RotateTransform LayoutTransform { get; internal set; }
 
         public bool EnCollision(Entite entite)
         {
@@ -196,7 +256,7 @@ namespace SAE_dev_1
             }
             Canvas.SetTop(this.RectanglePhysique, y);
             this.hitbox.Y = this.HautEntite();
-            
+
         }
 
         public void ChangerImageRectangle()

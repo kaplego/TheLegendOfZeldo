@@ -6,30 +6,11 @@ namespace SAE_dev_1
 {
     public class Item
     {
+        #region Textures
         private static readonly BitmapImage TEXTURE_ITEM_INCONNU = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\inconnu.png"));
         public static readonly BitmapImage TEXTURE_POTION_VIE = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_vie.png"));
         public static readonly BitmapImage TEXTURE_POTION_FORCE = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_force.png"));
-
-        public Item(string nom, int prix)
-        {
-            this.nom = nom;
-            this.prix = prix;
-        }
-
-        public Item(string nom, int prix, string description)
-        {
-            this.nom = nom;
-            this.prix = prix;
-            this.description = description;
-        }
-
-        public Item(string nom, int prix, string description, BitmapImage texture)
-        {
-            this.nom = nom;
-            this.prix = prix;
-            this.description = description;
-            this.texture = texture;
-        }
+        #endregion
 
         private string nom;
         private int prix;
@@ -70,6 +51,27 @@ namespace SAE_dev_1
         {
             get { return texture; }
             set { texture = value; }
+        }
+
+        public Item(string nom, int prix)
+        {
+            this.nom = nom;
+            this.prix = prix;
+        }
+
+        public Item(string nom, int prix, string description)
+        {
+            this.nom = nom;
+            this.prix = prix;
+            this.description = description;
+        }
+
+        public Item(string nom, int prix, string description, BitmapImage texture)
+        {
+            this.nom = nom;
+            this.prix = prix;
+            this.description = description;
+            this.texture = texture;
         }
 
         public BitmapImage RecupererTexture()

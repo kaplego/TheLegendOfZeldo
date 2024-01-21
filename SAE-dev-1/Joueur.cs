@@ -16,6 +16,7 @@ namespace SAE_dev_1
 
         public static readonly int NOMBRE_APPARENCES = 3;
 
+        #region Textures
         public static readonly ImageBrush[] textureJoueurFace = new ImageBrush[3]
         {
             new ImageBrush()
@@ -88,36 +89,9 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             }
         };
+        #endregion
 
-        public Joueur()
-        {
-            this.hitbox = new Rect()
-            {
-                X = 560,
-                Y = 260,
-                Width = LARGEUR,
-                Height = HAUTEUR,
-            };
-
-            this.rectangle = new Rectangle()
-            {
-                Width = LARGEUR,
-                Height = HAUTEUR,
-                Fill = MainWindow.Texture("joueur", textureJoueurFace[0])
-            };
-            Canvas.SetZIndex(this.Rectangle, MainWindow.ZINDEX_JOUEUR);
-
-            Canvas.SetTop(this.Rectangle, 260);
-            Canvas.SetLeft(this.Rectangle, 560);
-
-            this.vie = 5;
-            this.vitesse = 8;
-            this.degats = 2;
-            this.immunise = false;
-            this.direction = 2;
-            this.apparence = 0;
-        }
-
+        #region Champs
         private Rect hitbox;
         private Rectangle rectangle;
         private int vie;
@@ -126,7 +100,9 @@ namespace SAE_dev_1
         private bool immunise;
         private int direction;
         private int apparence;
+        #endregion
 
+        #region Propriétés
         public Rect Hitbox
         {
             get { return hitbox; }
@@ -185,6 +161,36 @@ namespace SAE_dev_1
                 this.apparence = value;
                 ChangerImageRectangle();
             }
+        }
+        #endregion
+
+        public Joueur()
+        {
+            this.hitbox = new Rect()
+            {
+                X = 560,
+                Y = 260,
+                Width = LARGEUR,
+                Height = HAUTEUR,
+            };
+
+            this.rectangle = new Rectangle()
+            {
+                Width = LARGEUR,
+                Height = HAUTEUR,
+                Fill = MainWindow.Texture("joueur", textureJoueurFace[0])
+            };
+            Canvas.SetZIndex(this.Rectangle, MainWindow.ZINDEX_JOUEUR);
+
+            Canvas.SetTop(this.Rectangle, 260);
+            Canvas.SetLeft(this.Rectangle, 560);
+
+            this.vie = 5;
+            this.vitesse = 8;
+            this.degats = 2;
+            this.immunise = false;
+            this.direction = 2;
+            this.apparence = 0;
         }
 
         public int Gauche()

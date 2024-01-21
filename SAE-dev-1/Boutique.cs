@@ -22,26 +22,6 @@ namespace SAE_dev_1
 
         public static int taillePixel;
 
-        public Boutique(MainWindow mainWindow)
-        {
-            this.mainWindow = mainWindow;
-            this.items = new List<Item>();
-            ChargerItems();
-            ChangerItemSelectionne(null);
-            mainWindow.grilleBoutique.Visibility = Visibility.Visible;
-            mainWindow.Cursor = null;
-        }
-
-        public Boutique(MainWindow mainWindow, List<Item> items)
-        {
-            this.mainWindow = mainWindow;
-            this.items = items;
-            ChargerItems();
-            ChangerItemSelectionne(null);
-            mainWindow.grilleBoutique.Visibility = Visibility.Visible;
-            mainWindow.Cursor = null;
-        }
-
         private MainWindow mainWindow;
         private List<Item> items;
         private Item? itemSelectionne;
@@ -69,6 +49,16 @@ namespace SAE_dev_1
         public Button? BoutonAcheterItemSelectionne
         {
             get { return this.boutonAcheterItemSelectionne; }
+        }
+
+        public Boutique(MainWindow mainWindow, List<Item>? items = null)
+        {
+            this.mainWindow = mainWindow;
+            this.items = items ?? new List<Item>();
+            ChargerItems();
+            ChangerItemSelectionne(null);
+            mainWindow.grilleBoutique.Visibility = Visibility.Visible;
+            mainWindow.Cursor = null;
         }
 
         public static void Initialiser(MainWindow mainWindow)

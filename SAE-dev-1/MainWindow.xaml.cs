@@ -18,6 +18,7 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constantes
         // Constantes
 
         public static readonly int TAILLE_TUILE = 60;
@@ -50,12 +51,12 @@ namespace SAE_dev_1
 
         public static readonly int NOMBRE_PATERNE = 3;
 
-        public static readonly Random aleatoire = new Random();
-        //epee
+        #endregion
 
-        public static readonly int DUREE_COUP = 16;
-        private bool actionAttaque = false;
-        private Entite[] epeeTerain = new Entite[1];
+        #region Champs
+
+        public static readonly Random aleatoire = new Random();
+
         // Moteur du jeu
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
@@ -64,51 +65,14 @@ namespace SAE_dev_1
         public static bool texturesRetireesObjets = false;
         public static bool texturesRetireesEntites = false;
 
-        // Tutoriel
-
-        private bool tutoriel = true;
-        // 0 = Déplacement
-        // 1 = Attaque
-        // 2 = Inventaire
-        // 3 = Interaction
-        private int phaseTutoriel = 0;
-        private Grid? grilleTutoriel;
-        private TextBlock? texteTutoriel;
-        private Button? boutonPasserTutoriel;
-
-        // Joueur
-        public Joueur joueur;
-
-        private int immunite = 0;
-        private int tempsCoup = 0;
-        private int vitesseEnnemis = 3;
-        private int vitesseTire = 3;
-
-        public bool droite, gauche, bas, haut;
-        // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
-        public int derniereApparition;
-
-        private int prochainChangementApparence = 0;
-
-        //piece
-        public int nombrePiece = 10_000;
-        private List<Entite> pieces = new List<Entite>();
-
-        // Ennemis
-        private List<Entite> ennemis = new List<Entite>();
-        private List<Entite> tirs = new List<Entite>();
-        private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
-        private int dureeEntrePaterneBoss = DUREE_PATERNE;
-        private int PaterneActuel = 0;
-        private int typeTireActuel = 0;
-        private bool diamantSimeMort = false;
+        // Cartes
 
         public Carte carteActuelle;
+        public List<Carte> cartes = new List<Carte>();
+        private List<Rectangle> tuiles = new List<Rectangle>();
+        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
 
-        private bool joueurMort = false;
-        private bool jeuEnPause = false;
-        private bool enChargement = false;
-        private bool dansInventaire = false;
+        private List<Objet> objets = new List<Objet>();
 
         // Réglages
 
@@ -144,16 +108,62 @@ namespace SAE_dev_1
         };
         public int combinaisonTouches = 1;
 
-        // Hitbox
+        // Tutoriel
 
-        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
+        private bool tutoriel = true;
+        // 0 = Déplacement
+        // 1 = Attaque
+        // 2 = Inventaire
+        // 3 = Interaction
+        private int phaseTutoriel = 0;
+        private Grid? grilleTutoriel;
+        private TextBlock? texteTutoriel;
+        private Button? boutonPasserTutoriel;
+
+        // Joueur
+
+        public Joueur joueur;
+
+        private int immunite = 0;
+        private int tempsCoup = 0;
+        private int vitesseEnnemis = 3;
+        private int vitesseTire = 3;
+
+        public bool droite, gauche, bas, haut;
+        public int derniereApparition;
+
+        private int prochainChangementApparence = 0;
+
+        // Épée
+
+        public static readonly int DUREE_COUP = 16;
+        private bool actionAttaque = false;
+        private Entite[] epeeTerain = new Entite[1];
+
+        // Pièces
+
+        public int nombrePiece = 10_000;
+        private List<Entite> pieces = new List<Entite>();
+
+        // Ennemis
+
+        private List<Entite> ennemis = new List<Entite>();
+        private List<Entite> tirs = new List<Entite>();
+        private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
+        private int dureeEntrePaterneBoss = DUREE_PATERNE;
+        private int PaterneActuel = 0;
+        private int typeTireActuel = 0;
+        private bool diamantSimeMort = false;
+
+        private bool joueurMort = false;
+        private bool jeuEnPause = false;
+        private bool enChargement = false;
+        private bool dansInventaire = false;
 
         // RegExps Textures
 
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
         private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
-
-        private List<Objet> objets = new List<Objet>();
 
         // Dialogue
 
@@ -169,18 +179,15 @@ namespace SAE_dev_1
         public Potion potionVie;
         public Potion potionForce;
 
-        // Cartes
-
-        public List<Carte> cartes = new List<Carte>();
-        private List<Rectangle> tuiles = new List<Rectangle>();
-
-        // son
+        // Sons
 
         public MediaPlayer sonEpee = new MediaPlayer();
         public MediaPlayer sonBuisson = new MediaPlayer();
         public MediaPlayer sonSlime = new MediaPlayer();
         public MediaPlayer musicDeFond = new MediaPlayer();
         public MediaPlayer bossMusic = new MediaPlayer();
+
+        #endregion
 
         #region Textures
 
@@ -257,7 +264,12 @@ namespace SAE_dev_1
             Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0 / 8, "Chargement des textures de terrain...");
+            int nombreChargements = 6;
+
+            #region Chargement 0 - Textures
+            fenetreInitialisation.Chargement(0 / nombreChargements, "Chargement des textures...");
+
+            // Terrain
 
             textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
             textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
@@ -268,18 +280,21 @@ namespace SAE_dev_1
             textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
             textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures du HUD...");
+            // HUD
 
             texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
             textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures des personnages...");
+            // Items
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
-            fenetreInitialisation.Chargement(3 / 7, "Chargement du joueur...");
+            #endregion
+
+            #region Chargement 1 - Joueur
+            fenetreInitialisation.Chargement(1 / nombreChargements, "Chargement du joueur...");
 
             joueur = new Joueur();
             canvasJeu.Children.Add(joueur.Rectangle);
@@ -287,7 +302,10 @@ namespace SAE_dev_1
             this.potionVie = new Potion(this, "vie", 3);
             this.potionForce = new Potion(this, "force", 2, 10);
 
-            fenetreInitialisation.Chargement(4 / 7, "Chargement du HUD...");
+            #endregion
+
+            #region Chargement 2 - HUD
+            fenetreInitialisation.Chargement(2 / nombreChargements, "Chargement du HUD...");
 
             imagePotionVie.Source = Item.TEXTURE_POTION_VIE;
             imagePotionForce.Source = Item.TEXTURE_POTION_FORCE;
@@ -348,12 +366,17 @@ namespace SAE_dev_1
                 canvasJeu.Children.Add(coeurs[i]);
             }
 
-            fenetreInitialisation.Chargement(5 / 7, "Chargement de la boutique");
+            #endregion
+
+            #region Chargement 3 - Boutique
+            fenetreInitialisation.Chargement(3 / nombreChargements, "Chargement de la boutique");
 
             Boutique.Initialiser(this);
 
-            #region Chargement - Cartes
-            fenetreInitialisation.Chargement(6 / 7, "Génération des cartes");
+            #endregion
+
+            #region Chargement 4 - Cartes
+            fenetreInitialisation.Chargement(4 / nombreChargements, "Génération des cartes");
 
             // Carte Maison
 
@@ -836,7 +859,10 @@ namespace SAE_dev_1
             GenererCarte();
 
             #endregion
-            fenetreInitialisation.Chargement(7 / 7, "Génération des sons");
+
+            #region Chargement 5 - Sons
+            fenetreInitialisation.Chargement(5 / nombreChargements, "Chargement des sons...");
+
             sonEpee.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\slashSound.mp3"));
             sonBuisson.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\buisson.mp3"));
             sonSlime.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\Slime.mp3"));
@@ -847,6 +873,9 @@ namespace SAE_dev_1
             musicDeFond.Volume = 0.2;
             bossMusic.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
             bossMusic.Volume = 0.1;
+
+            #endregion
+
             fenetreInitialisation.Termine();
         }
 
@@ -943,6 +972,8 @@ namespace SAE_dev_1
 
             return texture;
         }
+
+        #region Tutoriel
 
         private void Tutoriel(int phase)
         {
@@ -1050,6 +1081,8 @@ namespace SAE_dev_1
                     Tutoriel(phaseTutoriel);
             }
         }
+
+        #endregion
 
         public void PauseMinuteur()
         {
@@ -2193,7 +2226,7 @@ namespace SAE_dev_1
                         }
 
                         ennemi.DegatSurEntite(joueur.Degats);
-                        if (ennemi.estMort)
+                        if (ennemi.EstMort)
                         {
                             canvasJeu.Children.Remove(ennemi.RectanglePhysique);
                             ennemiASupprimer.Add(ennemi);
@@ -2463,9 +2496,9 @@ namespace SAE_dev_1
 
                     foreach (Entite ennemi in ennemis)
                     {
-                        if (ennemi.estImmunise)
+                        if (ennemi.EstImmunise)
                         {
-                            ennemi.estImmunise = false;
+                            ennemi.EstImmunise = false;
                         }
                     }
                 }
@@ -2500,11 +2533,11 @@ namespace SAE_dev_1
 
                     }
 
-                    ennemi.changementTextureEnnemi--;
-                    if (ennemi.changementTextureEnnemi <= 0)
+                    ennemi.ChangementTextureEnnemi--;
+                    if (ennemi.ChangementTextureEnnemi <= 0)
                     {
                         ennemi.ProchaineApparence();
-                        ennemi.changementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
+                        ennemi.ChangementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
                     }
 
 
@@ -2534,7 +2567,7 @@ namespace SAE_dev_1
                         }
                     }
 
-                    if (ennemi.vie <= ennemi.vieMax / 2)
+                    if (ennemi.Vie <= ennemi.VieMax / 2)
                     {
                         vitesseTire = 5;
                     }
@@ -2543,7 +2576,7 @@ namespace SAE_dev_1
 
             foreach (Entite tire in tirs)
             {
-                switch (tire.directionProjectil)
+                switch (tire.DirectionProjectil)
                 {
                     case 0:
                         tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
@@ -2574,9 +2607,6 @@ namespace SAE_dev_1
                         tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
                         break;
                 }
-
-
-
             }
         }
 
