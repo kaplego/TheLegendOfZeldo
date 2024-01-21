@@ -159,7 +159,7 @@ namespace SAE_dev_1
         private bool jeuEnPause = false;
         private bool enChargement = false;
         private bool dansInventaire = false;
-        
+
 
         // RegExps Textures
 
@@ -555,8 +555,8 @@ namespace SAE_dev_1
                     Rectangle Zeldo = new Rectangle
                     {
                         Tag = "Zeldo",
-                        Height = joueur.Rectangle.Height-10,
-                        Width = joueur.Rectangle.Width-20,
+                        Height = joueur.Rectangle.Height - 10,
+                        Width = joueur.Rectangle.Width - 20,
                         Fill = textureZeldo
                     };
                     Canvas.SetZIndex(Zeldo, ZINDEX_ENTITES);
@@ -2056,7 +2056,7 @@ namespace SAE_dev_1
 
         private void MusicFini(object sender, EventArgs e)
         {
-            if(carteActuelle.Nom == "combat")
+            if (carteActuelle.Nom == "combat")
             {
                 musiqueDuBoss.Position = TimeSpan.Zero;
                 musiqueDuBoss.Play();
@@ -2206,6 +2206,20 @@ namespace SAE_dev_1
                     joueur.ProchaineApparence();
                 }
                 else prochainChangementApparence--;
+
+                if (ennemis.Find((ennemi) => ennemi.Type.Contains("boss")) != null)
+                {
+                    Entite boss = ennemis.Find((ennemi) => ennemi.Type.Contains("boss"))!;
+
+                    if (joueur.Hitbox.Right < boss.Hitbox.Left)
+                        boss.Direction = 3;
+                    else if (joueur.Hitbox.Left > boss.Hitbox.Right)
+                        boss.Direction = 1;
+                    else if (joueur.Hitbox.Bottom < boss.Hitbox.Top)
+                        boss.Direction = 0;
+                    else if (joueur.Hitbox.Top > boss.Hitbox.Bottom)
+                        boss.Direction = 2;
+                }
             }
 
             return seDeplace;

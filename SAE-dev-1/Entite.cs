@@ -136,6 +136,11 @@ namespace SAE_dev_1
         public int Direction
         {
             get { return this.direction; }
+            set
+            {
+                this.direction = value;
+                ChangerImageRectangle();
+            }
         }
 
         public int Vie
