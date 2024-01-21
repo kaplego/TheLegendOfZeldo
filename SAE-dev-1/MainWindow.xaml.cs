@@ -2282,6 +2282,13 @@ namespace SAE_dev_1
 
                                 diamantSimeMort = true;
                             }
+                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
+                            {
+                                grilleEcranFin.Visibility = Visibility.Visible;
+                                this.Cursor = null;
+                                joueurMort = true;
+                                PauseMinuteur();
+                            }
                         }
                         if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                         {
