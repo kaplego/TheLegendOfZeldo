@@ -48,8 +48,9 @@ namespace SAE_dev_1
         public static readonly int VIE_ENNEMI = 4;
 
         public static readonly int[,] TOUT_PATERNE = { { 0, 5, 6, 2 }, { 3, 2, 1, 4 }, { 6, 3, 0, 4 }, { 5, 2, 0, 1 } };
-
         public static readonly int NOMBRE_PATERNE = 3;
+
+        public static readonly int DUREE_COUP = 16;
 
         #endregion
 
@@ -136,7 +137,6 @@ namespace SAE_dev_1
 
         // Épée
 
-        public static readonly int DUREE_COUP = 16;
         private bool actionAttaque = false;
         private Entite[] epeeTerain = new Entite[1];
 
@@ -151,7 +151,7 @@ namespace SAE_dev_1
         private List<Entite> tirs = new List<Entite>();
         private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
         private int dureeEntrePaterneBoss = DUREE_PATERNE;
-        private int PaterneActuel = 0;
+        private int motifActuel = 0;
         private int typeTireActuel = 0;
         private bool diamantSimeMort = false;
 
@@ -184,8 +184,8 @@ namespace SAE_dev_1
         public MediaPlayer sonEpee = new MediaPlayer();
         public MediaPlayer sonBuisson = new MediaPlayer();
         public MediaPlayer sonSlime = new MediaPlayer();
-        public MediaPlayer musicDeFond = new MediaPlayer();
-        public MediaPlayer bossMusic = new MediaPlayer();
+        public MediaPlayer musiqueDeFond = new MediaPlayer();
+        public MediaPlayer musiqueDuBoss = new MediaPlayer();
 
         #endregion
 
@@ -501,8 +501,8 @@ namespace SAE_dev_1
                             joueur.Apparence = joueur.Apparence;
                         };
                     }
-                    bossMusic.Pause();
-                    musicDeFond.Play();
+                    musiqueDuBoss.Pause();
+                    musiqueDeFond.Play();
                 }
             ));
 
@@ -541,9 +541,9 @@ namespace SAE_dev_1
                 },
                 (mainWindow, carte) =>
                 {
-                    musicDeFond.Pause();
+                    musiqueDeFond.Pause();
                     CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
-                    bossMusic.Play();
+                    musiqueDuBoss.Play();
 
                 }
 
@@ -575,13 +575,13 @@ namespace SAE_dev_1
                         {
                             new Item(
                                 "potion de vie",
-                                50,
+                                30,
                                 "Les potions de vie ont un étrange pouvoir de guérison.",
                                 new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_vie.png"))
                             ),
                             new Item(
                                 "potion de force",
-                                65,
+                                35,
                                 "Une potion de force pourrait vous aider à manier votre épée.",
                                 new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_force.png"))
                             )
@@ -820,6 +820,7 @@ namespace SAE_dev_1
                         if(ennemis.Count == 0)
                         {
                             texturesRetireesTerrain = false;
+                            new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
                             objet.NeReapparaitPlus = true;
                             mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
@@ -869,10 +870,10 @@ namespace SAE_dev_1
             sonBuisson.Volume = 0.3;
             sonEpee.Volume = 0.5;
             sonSlime.Volume = 0.5;
-            musicDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
-            musicDeFond.Volume = 0.2;
-            bossMusic.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
-            bossMusic.Volume = 0.1;
+            musiqueDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
+            musiqueDeFond.Volume = 0.2;
+            musiqueDuBoss.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
+            musiqueDuBoss.Volume = 0.1;
 
             #endregion
 
@@ -887,7 +888,7 @@ namespace SAE_dev_1
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
             ReprendreMinuteur();
-            musicDeFond.Play();
+            musiqueDeFond.Play();
         }
 
         public void NouveauDialogue(string[] texte)
@@ -2029,17 +2030,43 @@ namespace SAE_dev_1
                 Dialogue();
             else
             {
+                List<Entite> tirsASupprimer = new List<Entite>();
+                List<Entite> piecesASupprimer = new List<Entite>();
+                List<Entite> ennemisASupprimer = new List<Entite>();
+                List<Objet> objetsASupprimer = new List<Objet>();
+
+                List<Objet> objetsAAjouter = new List<Objet>();
+
                 Deplacement();
 
                 ChangementCarte();
 
-                Collision();
+                Collision(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer,
+                    objetsAAjouter
+                );
 
-                EstAttaque();
+                EstAttaque(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer
+                );
 
                 Minuteur();
 
                 RechercheDeChemain();
+
+                AjouterSupprimer(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer,
+                    objetsAAjouter
+                );
             }
         }
 
@@ -2192,10 +2219,14 @@ namespace SAE_dev_1
                 ChangerCarte(carteAdjacente.Nom, (int)apparitionCarteAdjacente!);
         }
 
-        private void Collision()
+        private void Collision(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer,
+            List<Objet> objetsAAjouter
+        )
         {
-            List<Entite> piecesASupprimer = new List<Entite>();
-
             foreach (Entite piece in pieces)
             {
                 if (piece.Hitbox.IntersectsWith(joueur.Hitbox))
@@ -2207,14 +2238,8 @@ namespace SAE_dev_1
                 }
             }
 
-            foreach (Entite piece in piecesASupprimer)
-            {
-                pieces.Remove(piece);
-            }
-
             if (epeeTerain[0] != null)
             {
-                List<Entite> ennemiASupprimer = new List<Entite>();
                 foreach (Entite ennemi in ennemis)
                 {
                     if (ennemi.EnCollision(epeeTerain[0]))
@@ -2229,29 +2254,22 @@ namespace SAE_dev_1
                         if (ennemi.EstMort)
                         {
                             canvasJeu.Children.Remove(ennemi.RectanglePhysique);
-                            ennemiASupprimer.Add(ennemi);
+                            ennemisASupprimer.Add(ennemi);
                             if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                             {
-                                carteActuelle.Objets.Add(new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
+                                Objet diamant = new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
                                 {
                                     MainWindow.texturesRetireesEntites = false;
-                                    new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
+                                    new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
                                     mainWindow.joueur.Apparence = joueur.Apparence;
                                     objet.NeReapparaitPlus = true;
                                     mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                                     objet.Hitbox = null;
-                                }));
+                                });
+
+                                objetsAAjouter.Add(diamant);
+
                                 diamantSimeMort = true;
-                                foreach (Objet objet in carteActuelle.Objets)
-                                {
-                                    if (!objet.NeReapparaitPlus)
-                                    {
-                                        if (objet.Hitbox == null)
-                                            objet.RegenererHitbox();
-                                        objets.Add(objet);
-                                        canvasJeu.Children.Add(objet.RectanglePhysique);
-                                    }
-                                }
                             }
                         }
                         if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
@@ -2261,12 +2279,6 @@ namespace SAE_dev_1
                     }
                 }
 
-                foreach (Entite ennemi in ennemiASupprimer)
-                {
-                    ennemis.Remove(ennemi);
-                }
-
-                List<Objet> buissonsASupprimer = new List<Objet>();
                 foreach (Objet buisson in objets)
                 {
                     if (!texturesRetireesObjets || buisson.Type == "buisson,diamant")
@@ -2278,15 +2290,18 @@ namespace SAE_dev_1
                                 if (buisson.Type == "buisson,diamant")
                                 {
                                     sonBuisson.Stop();
-                                    carteActuelle.Objets.Add(new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
+                                    Objet diamant = new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
                                     {
                                         MainWindow.texturesRetireesObjets = false;
-                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparues...", Brushes.CornflowerBlue).Afficher();
+                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
                                         objet.NeReapparaitPlus = true;
                                         mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                                         objet.Hitbox = null;
-                                    }));
-                                    buissonsASupprimer.Add(buisson);
+                                    });
+
+                                    objetsAAjouter.Add(diamant);
+
+                                    objetsASupprimer.Add(buisson);
                                     canvasJeu.Children.Remove(buisson.RectanglePhysique);
                                     buisson.Hitbox = null;
                                     sonBuisson.Play();
@@ -2304,53 +2319,31 @@ namespace SAE_dev_1
                     }
                 }
 
-                foreach (Objet buisson in buissonsASupprimer)
-                {
-                    if (buisson.Type == "buisson,diamant")
-                    {
-                        carteActuelle.Objets[0].NeReapparaitPlus = true;
-                        foreach (Objet objet in carteActuelle.Objets)
-                        {
-                            if (!objet.NeReapparaitPlus)
-                            {
-                                if (objet.Hitbox == null)
-                                    objet.RegenererHitbox();
-                                objets.Add(objet);
-                                canvasJeu.Children.Add(objet.RectanglePhysique);
-                            }
-                        }
-                    }
-                    objets.Remove(buisson);
-                }
-
                 sonEpee.Play();
             }
 
-            List<Entite> tirASupprimer = new List<Entite>();
             foreach (Entite tir in tirs)
             {
                 if (Canvas.GetTop(tir.RectanglePhysique) + TAILLE_TIRE > 600 || Canvas.GetTop(tir.RectanglePhysique) < 0 ||
                     Canvas.GetLeft(tir.RectanglePhysique) + TAILLE_TIRE > 1200 || Canvas.GetLeft(tir.RectanglePhysique) < 0)
                 {
-                    tirASupprimer.Add(tir);
+                    tirsASupprimer.Add(tir);
                 }
 
                 foreach (Objet objet in objets)
                 {
                     if (tir.EnCollision(objet))
-                        tirASupprimer.Add(tir);
+                        tirsASupprimer.Add(tir);
                 }
             }
-
-            foreach (Entite tir in tirASupprimer)
-            {
-                canvasJeu.Children.Remove(tir.RectanglePhysique);
-                tirs.Remove(tir);
-            }
-
         }
 
-        private bool EstAttaque()
+        private bool EstAttaque(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer
+        )
         {
             bool estAttaque = false,
                 estMort = false;
@@ -2390,15 +2383,15 @@ namespace SAE_dev_1
                     }
                 }
             }
-            List<Entite> tirASupprimer = new List<Entite>();
-            foreach (Entite tire in tirs)
+
+            foreach (Entite tir in tirs)
             {
-                if (tire.EnCollision(joueur) && joueur.Vie > 0)
+                if (tir.EnCollision(joueur) && joueur.Vie > 0)
                 {
                     estAttaque = true;
                     joueur.PrendDesDegats();
-                    canvasJeu.Children.Remove(tire.RectanglePhysique);
-                    tirASupprimer.Add(tire);
+                    canvasJeu.Children.Remove(tir.RectanglePhysique);
+                    tirsASupprimer.Add(tir);
 
                     if (joueur.Vie == 0)
                     {
@@ -2414,11 +2407,6 @@ namespace SAE_dev_1
                     }
                 }
             }
-            if (!estMort)
-                foreach (Entite tir in tirASupprimer)
-                {
-                    tirs.Remove(tir);
-                }
 
             if (estMort)
             {
@@ -2426,7 +2414,13 @@ namespace SAE_dev_1
                 this.Cursor = null;
                 canvasJeu.Children.Clear();
                 ennemis.Clear();
+                ennemisASupprimer.Clear();
                 tirs.Clear();
+                tirsASupprimer.Clear();
+                objets.Clear();
+                objetsASupprimer.Clear();
+                pieces.Clear();
+                piecesASupprimer.Clear();
                 joueurMort = true;
                 PauseMinuteur();
             }
@@ -2549,16 +2543,16 @@ namespace SAE_dev_1
                     dureeEntrePaterneBoss--;
                     if (dureeEntrePaterneBoss < 0)
                     {
-                        PaterneActuel++;
+                        motifActuel++;
                         dureeEntrePaterneBoss = DUREE_PATERNE;
-                        if (PaterneActuel >= TOUT_PATERNE.GetLength(0))
+                        if (motifActuel >= TOUT_PATERNE.GetLength(0))
                         {
-                            PaterneActuel = 0;
+                            motifActuel = 0;
                         }
                     }
                     if (dureeEntreAttaqueBoss < 0)
                     {
-                        PaterneTire(ennemi, TOUT_PATERNE[PaterneActuel, typeTireActuel]);
+                        PaterneTire(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
                         dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
                         typeTireActuel++;
                         if (typeTireActuel >= TOUT_PATERNE.GetLength(1))
@@ -2607,6 +2601,50 @@ namespace SAE_dev_1
                         tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
                         break;
                 }
+            }
+        }
+
+        private void AjouterSupprimer(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer,
+            List<Objet> objetsAAjouter
+        )
+        {
+            foreach (Entite tir in tirsASupprimer)
+            {
+                canvasJeu.Children.Remove(tir.RectanglePhysique);
+                tirs.Remove(tir);
+            }
+            foreach (Entite piece in piecesASupprimer)
+            {
+                pieces.Remove(piece);
+            }
+            foreach (Entite ennemi in ennemisASupprimer)
+            {
+                ennemis.Remove(ennemi);
+            }
+            foreach (Objet objet in objetsASupprimer)
+            {
+                if (objet.Type == "buisson,diamant")
+                {
+                    carteActuelle.Objets[0].NeReapparaitPlus = true;
+                    foreach (Objet objetCarte in carteActuelle.Objets)
+                    {
+                        objetCarte.ActualiserTexture();
+                    }
+                }
+                objets.Remove(objet);
+            }
+            foreach (Objet objet in objetsAAjouter)
+            {
+                carteActuelle.Objets.Add(objet);
+                if (objet.Hitbox == null)
+                    objet.RegenererHitbox();
+                objet.ActualiserTexture();
+                objets.Add(objet);
+                canvasJeu.Children.Add(objet.RectanglePhysique);
             }
         }
 
