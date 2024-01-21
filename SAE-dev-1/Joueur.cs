@@ -16,6 +16,7 @@ namespace SAE_dev_1
 
         public static readonly int NOMBRE_APPARENCES = 3;
 
+        public bool passerDialogue = false;
         #region Textures
         public static readonly ImageBrush[] textureJoueurFace = new ImageBrush[3]
         {
@@ -86,6 +87,79 @@ namespace SAE_dev_1
             new ImageBrush()
             {
                 ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite-gauche-3.png")),
+                Stretch = Stretch.Uniform
+            }
+        };
+
+        public static readonly ImageBrush[] textureJoueurFace2 = new ImageBrush[3]
+       {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-face-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-face-2.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-face-3.png")),
+                Stretch = Stretch.Uniform
+            }
+       };
+        public static readonly ImageBrush[] textureJoueurDos2 = new ImageBrush[3]
+        {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-dos-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-dos-2.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-dos-3.png")),
+                Stretch = Stretch.Uniform
+            }
+        };
+        public static readonly ImageBrush[] textureJoueurDroite2 = new ImageBrush[3]
+        {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-droite-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-droite-2.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-droite-3.png")),
+                Stretch = Stretch.Uniform
+            }
+        };
+        public static readonly ImageBrush[] textureJoueurGauche2 = new ImageBrush[3]
+        {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-gauche-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-gauche-2.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\sprite2-gauche-3.png")),
                 Stretch = Stretch.Uniform
             }
         };
@@ -276,22 +350,44 @@ namespace SAE_dev_1
                     ? 1
                     : (MainWindow.HAUTEUR_CANVAS - this.Rectangle.Height) / 2
             );
-
-            switch (apparition)
+            if (!passerDialogue)
             {
-                case 1:
-                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurGauche[0]);
-                    break;
-                case 2:
-                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDos[0]);
-                    break;
-                case 3:
-                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDroite[0]);
-                    break;
-                default:
-                    this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurFace[0]);
-                    break;
+                switch (apparition)
+                {
+                    case 1:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurGauche[0]);
+                        break;
+                    case 2:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDos[0]);
+                        break;
+                    case 3:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDroite[0]);
+                        break;
+                    default:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurFace[0]);
+                        break;
+                }
             }
+            else
+            {
+                switch (apparition)
+                {
+                    case 1:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurGauche2[0]);
+                        break;
+                    case 2:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDos2[0]);
+                        break;
+                    case 3:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurDroite2[0]);
+                        break;
+                    default:
+                        this.Rectangle.Fill = MainWindow.Texture("joueur", textureJoueurFace2[0]);
+                        break;
+                }
+            }
+
+
         }
 
         public void PrendDesDegats()
@@ -306,14 +402,28 @@ namespace SAE_dev_1
 
         public void ChangerImageRectangle()
         {
-            this.Rectangle.Fill = MainWindow.Texture("joueur",
-                this.Direction == 0
-                    ? textureJoueurDos[apparence]
-                    : this.Direction == 1
-                        ? textureJoueurDroite[apparence]
-                        : this.Direction == 2
-                            ? textureJoueurFace[apparence]
-                            : textureJoueurGauche[apparence]);
+            if (!passerDialogue)
+            {
+                this.Rectangle.Fill = MainWindow.Texture("joueur",
+                    this.Direction == 0
+                        ? textureJoueurDos[apparence]
+                        : this.Direction == 1
+                            ? textureJoueurDroite[apparence]
+                            : this.Direction == 2
+                                ? textureJoueurFace[apparence]
+                                : textureJoueurGauche[apparence]);
+            }
+            else
+            {
+                this.Rectangle.Fill = MainWindow.Texture("joueur",
+                    this.Direction == 0
+                        ? textureJoueurDos2[apparence]
+                        : this.Direction == 1
+                            ? textureJoueurDroite2[apparence]
+                            : this.Direction == 2
+                                ? textureJoueurFace2[apparence]
+                                : textureJoueurGauche2[apparence]);
+            }
         }
 
         public void ProchaineApparence()
