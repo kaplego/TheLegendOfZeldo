@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="SAE_dev_1.Boutique" Collapsed="true">
+    <Position X="25.25" Y="4.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACACACAAAAAkQCAACFAEACAAAAACAKAAAlCA=</HashCode>
+      <FileName>Boutique.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Carte" Collapsed="true">
+    <Position X="25.25" Y="8.75" Width="12.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAIAkAAAkAIARCBOAEQgAAAAAAABAAAEQ=</HashCode>
+      <FileName>Carte.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Dialogue" Collapsed="true">
+    <Position X="25.25" Y="4" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAABAAAQAQCBEggECAAAEAgABAACAA=</HashCode>
+      <FileName>Dialogue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Entite" Collapsed="true">
+    <Position X="25.25" Y="6.75" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>BggAAAYAAICmoAAIA6JAAAIAQIIRAACBAQIBwgJAQAA=</HashCode>
+      <FileName>Entite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Item" Collapsed="true">
+    <Position X="25.25" Y="2" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAIEAIIAAAACIAAgAAAQIEAAEAAAA=</HashCode>
+      <FileName>Item.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Joueur" Collapsed="true">
+    <Position X="25.25" Y="7.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAEAYAAAAHoAkCCqAAEiAARJAiAESAAAgAAgAAQAA=</HashCode>
+      <FileName>Joueur.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Message" Collapsed="true">
+    <Position X="25.25" Y="3.25" Width="6.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAkACAAIAAAAAAASQAAAFEBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Message.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Objet" Collapsed="true">
+    <Position X="25.25" Y="6" Width="6.75" />
+    <TypeIdentifier>
+      <HashCode>AgwAAAQEAAAECIACAYiAAAAAAYABAAGAAQhkAAICYAE=</HashCode>
+      <FileName>Objet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Potion" Collapsed="true">
+    <Position X="25.25" Y="1.25" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAAsAAAYDAAIAAAAAAAAAAABBABRAQAEAQgAAAAAAAA=</HashCode>
+      <FileName>Potion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SAE_dev_1.Initialisation">
+    <Position X="17.5" Y="1.25" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAABIAAAAAEAAAAABAAAAACFAAAAgAAAAAA=</HashCode>
+      <FileName>Initialisation.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SAE_dev_1.Options">
+    <Position X="13" Y="2" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAQAAgAAABAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Options.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SAE_dev_1.MainWindow">
+    <Position X="13" Y="4.75" Width="10.75" />
+    <TypeIdentifier>
+      <HashCode>9tMHGkBbyNh9pQlQXSGwK9HVYYAWUDaguw+ZFCHZEcQ=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
