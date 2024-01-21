@@ -491,7 +491,7 @@ namespace SAE_dev_1
                             "Zeldo : n'est-il pas ma...",
                             "*Zeldo glisse* *diamant qui ce casse*",
                             "Oh non c'est le diamant de la création. ",
-                            "Maintenant qu'il est casser le monde va être corrompue."
+                            "Maintenant qu'il est cassé le monde va être corrompu."
                         });
                         mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
                         {
@@ -2054,6 +2054,20 @@ namespace SAE_dev_1
 
         #endregion
 
+        private void MusicFini(object sender, EventArgs e)
+        {
+            if(carteActuelle.Nom == "combat")
+            {
+                musiqueDuBoss.Position = TimeSpan.Zero;
+                musiqueDuBoss.Play();
+            }
+            else
+            {
+                musiqueDeFond.Position = TimeSpan.Zero;
+                musiqueDeFond.Play();
+            }
+        }
+
         #region Moteur du jeu
 
         private void MoteurDeJeu(object? sender, EventArgs e)
@@ -2100,6 +2114,9 @@ namespace SAE_dev_1
                     objetsAAjouter
                 );
             }
+            musiqueDeFond.MediaEnded += new EventHandler(MusicFini);
+            musiqueDuBoss.MediaEnded += new EventHandler(MusicFini);
+
         }
 
         private bool Deplacement()
