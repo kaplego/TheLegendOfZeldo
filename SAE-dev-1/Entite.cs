@@ -9,27 +9,9 @@ namespace SAE_dev_1
 {
     public class Entite
     {
-        private int apparenceEntite;
-        private int DirectionEntite;
-        private int vieEntite;
-        public bool entiteEstMort = false;
-        public bool estImmuniser = false;
+        #region Textures
 
-
-        private ImageBrush[] textureEnnemiFace = new ImageBrush[2]
-        {
-            new ImageBrush()
-            {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-1.png")),
-                Stretch = Stretch.Uniform
-            },
-            new ImageBrush()
-            {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-2.png")),
-                Stretch = Stretch.Uniform
-            }
-        };
-        private ImageBrush[] textureEnnemiDos = new ImageBrush[2]
+        private ImageBrush[] textureSlimeDos = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -42,7 +24,7 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             },
         };
-        private ImageBrush[] textureEnnemiDroite = new ImageBrush[2]
+        private ImageBrush[] textureSlimeDroite = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -55,7 +37,20 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             },
         };
-        private ImageBrush[] textureEnnemiGauche = new ImageBrush[2]
+        private ImageBrush[] textureSlimeFace = new ImageBrush[2]
+        {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-2.png")),
+                Stretch = Stretch.Uniform
+            }
+        };
+        private ImageBrush[] textureSlimeGauche = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -69,52 +64,47 @@ namespace SAE_dev_1
             },
         };
 
-        public Entite(Rectangle rectangle, int x, int y)
+        private ImageBrush textureAraigneeDos = new ImageBrush()
         {
-            this.RectanglePhysique = rectangle;
-            this.Hitbox = new Rect()
-            {
-                Height = rectangle.Height,
-                Width = rectangle.Width,
-                X = x,
-                Y = y
-            };
-        }
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-dos.png")),
+            Stretch = Stretch.Uniform
+        };
 
-        public Entite(Rectangle rectangle, int x, int y, int vie)
+        private ImageBrush textureAraigneeDroite = new ImageBrush()
         {
-            this.RectanglePhysique = rectangle;
-            this.Hitbox = new Rect()
-            {
-                Height = rectangle.Height,
-                Width = rectangle.Width,
-                X = x,
-                Y = y
-            };
-            vieEntite = vie;
-        }
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-droite.png")),
+            Stretch = Stretch.Uniform
+        };
 
-        public Entite(int angleVersJoueur, Rectangle rectangle, int x, int y)
+        private ImageBrush textureAraigneeFace = new ImageBrush()
         {
-            this.RectanglePhysique = rectangle;
-            this.Hitbox = new Rect()
-            {
-                Height = rectangle.Height,
-                Width = rectangle.Width,
-                X = x,
-                Y = y
-            };
-        }
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-face.png")),
+            Stretch = Stretch.Uniform
+        };
 
-        public Entite(Rectangle rectangle, Rect rect, int x, int y)
+        private ImageBrush textureAraigneeGauche = new ImageBrush()
         {
-            this.RectanglePhysique = rectangle;
-            this.Hitbox = rect;
-        }
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-gauche.png")),
+            Stretch = Stretch.Uniform
+        };
 
+        #endregion
+
+        #region Champs
         private Rect hitbox;
         private Rectangle rectanglePhysique;
+        private string type;
+        private int apparence;
+        private int changementTextureEnnemi = 0;
+        private int direction;
+        private int vie;
+        private int vieMax;
+        private bool estMort = false;
+        private bool estImmunise = false;
+        private int directionProjectil;
+        #endregion
 
+        #region Propriétés
         public Rect Hitbox
         {
             get { return this.hitbox; }
@@ -127,7 +117,118 @@ namespace SAE_dev_1
             set { this.rectanglePhysique = value; }
         }
 
-        public RotateTransform LayoutTransform { get; internal set; }
+        public string Type
+        {
+            get { return this.type; }
+        }
+
+        public int Apparence
+        {
+            get { return this.apparence; }
+        }
+
+        public int ChangementTextureEnnemi
+        {
+            get { return this.changementTextureEnnemi; }
+            set { this.changementTextureEnnemi = value; }
+        }
+
+        public int Direction
+        {
+            get { return this.direction; }
+            set
+            {
+                this.direction = value;
+                ChangerImageRectangle();
+            }
+        }
+
+        public int Vie
+        {
+            get { return this.vie; }
+            set
+            {
+                if (value > vieMax)
+                    this.vie = vieMax;
+                else
+                    this.vie = value;
+            }
+        }
+
+        public int VieMax
+        {
+            get { return this.vieMax; }
+        }
+
+        public bool EstMort
+        {
+            get { return this.estMort; }
+        }
+
+        public bool EstImmunise
+        {
+            get { return this.estImmunise; }
+            set { this.estImmunise = value; }
+        }
+
+        public int DirectionProjectil
+        {
+            get { return this.directionProjectil; }
+        }
+        #endregion
+
+        public Entite(string type, Rectangle rectangle, int x, int y)
+        {
+            this.type = type;
+            this.rectanglePhysique = rectangle;
+            this.Hitbox = new Rect()
+            {
+                Height = rectangle.Height,
+                Width = rectangle.Width,
+                X = x,
+                Y = y
+            };
+            ChangerImageRectangle();
+        }
+
+        public Entite(string type, Rectangle rectangle, int x, int y, int vie)
+        {
+            this.type = type;
+            this.rectanglePhysique = rectangle;
+            this.Hitbox = new Rect()
+            {
+                Height = rectangle.Height,
+                Width = rectangle.Width,
+                X = x,
+                Y = y
+            };
+            this.vie = vie;
+            vieMax = vie;
+            ChangerImageRectangle();
+        }
+
+        public Entite(string type, int angleDirection, Rectangle rectangle, int x, int y)
+        {
+            this.type = type;
+            this.rectanglePhysique = rectangle;
+            this.Hitbox = new Rect()
+            {
+                Height = rectangle.Height,
+                Width = rectangle.Width,
+                X = x,
+                Y = y
+            };
+            directionProjectil = angleDirection;
+            ChangerImageRectangle();
+        }
+
+        public Entite(string type, Rectangle rectangle, Rect rect)
+        {
+            this.type = type;
+            this.rectanglePhysique = rectangle;
+            this.Hitbox = rect;
+            ChangerImageRectangle();
+        }
 
         public bool EnCollision(Entite entite)
         {
@@ -158,13 +259,16 @@ namespace SAE_dev_1
 
         public void ModifierGaucheEntite(double x)
         {
-            if (x > Canvas.GetLeft(this.RectanglePhysique))
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime" || (string)this.RectanglePhysique.Tag == "enemis,diamant")
             {
-                DirectionEntite = 1;
-            }
-            else
-            {
-                DirectionEntite = 3;
+                if (x > Canvas.GetLeft(this.RectanglePhysique))
+                {
+                    direction = 1;
+                }
+                else
+                {
+                    direction = 3;
+                }
             }
             Canvas.SetLeft(this.RectanglePhysique, x);
             this.hitbox.X = this.GaucheEntite();
@@ -172,37 +276,50 @@ namespace SAE_dev_1
 
         public void ModifierHautEntite(double y)
         {
-            if (y > Canvas.GetTop(this.RectanglePhysique))
+            if ((string)this.rectanglePhysique.Tag == "enemis,slime" || (string)this.RectanglePhysique.Tag == "enemis,diamant")
             {
-                DirectionEntite = 0;
-            }
-            else
-            {
-                DirectionEntite = 2;
+                if (y > Canvas.GetTop(this.RectanglePhysique))
+                {
+                    direction = 0;
+                }
+                else
+                {
+                    direction = 2;
+                }
             }
             Canvas.SetTop(this.RectanglePhysique, y);
             this.hitbox.Y = this.HautEntite();
-            
+
         }
 
         public void ChangerImageRectangle()
         {
-            this.RectanglePhysique.Fill =
-                this.DirectionEntite == 0
-                    ? textureEnnemiDos[apparenceEntite]
-                    : this.DirectionEntite == 1
-                        ? textureEnnemiDroite[apparenceEntite]
-                        : this.DirectionEntite == 2
-                            ? textureEnnemiFace[0]
-                            : textureEnnemiGauche[apparenceEntite];
+            if (this.Type.Contains("slime") || this.Type.Contains("diamant"))
+                this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
+                    this.direction == 0
+                        ? textureSlimeDos[apparence]
+                        : this.direction == 1
+                            ? textureSlimeDroite[apparence]
+                            : this.direction == 2
+                                ? textureSlimeFace[0]
+                                : textureSlimeGauche[apparence]);
+            else if (this.Type.Contains("boss"))
+                this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
+                    this.direction == 0
+                        ? textureAraigneeDos
+                        : this.direction == 1
+                            ? textureAraigneeDroite
+                            : this.direction == 2
+                                ? textureAraigneeFace
+                                : textureAraigneeGauche);
         }
 
         public void ProchaineApparence()
         {
-            this.apparenceEntite++;
-            if (this.apparenceEntite >= 2)
+            this.apparence++;
+            if (this.apparence >= 2)
             {
-                this.apparenceEntite = 0;
+                this.apparence = 0;
             }
 
             ChangerImageRectangle();
@@ -210,14 +327,14 @@ namespace SAE_dev_1
 
         public void DegatSurEntite(int degat)
         {
-            if (!estImmuniser)
+            if (!estImmunise)
             {
-                vieEntite -= degat;
-                estImmuniser = true;
+                vie -= degat;
+                estImmunise = true;
             }
-            if (vieEntite <= 0)
+            if (vie <= 0)
             {
-                entiteEstMort = true;
+                estMort = true;
             }
         }
     }

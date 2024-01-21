@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,13 +18,13 @@ namespace SAE_dev_1
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constantes
         // Constantes
 
         public static readonly int TAILLE_TUILE = 60;
         public static readonly int TAILLE_PIECE = 20;
         public static readonly int TAILLE_ENNEMI = 80;
-        public static readonly int TAILLE_TIRE_LONGUER = 30;
-        public static readonly int TAILLE_TIRE_LARGEUR = 15;
+        public static readonly int TAILLE_TIRE = 20;
         public static readonly int TAILLE_EPEE = 80;
         public static readonly int TAILLE_ICONES = 30;
 
@@ -41,87 +42,129 @@ namespace SAE_dev_1
         public static readonly int TEMPS_CHANGEMENT_APPARENCE = 3;
 
         public static readonly int DUREE_IMMUNITE = 31;
+        public static readonly int DUREE_ATTAQUE_BOSS = 62;
+        public static readonly int DUREE_PATERNE = 496;
+        public static readonly int VIE_BOSS = 20;
+        public static readonly int VIE_ENNEMI = 4;
 
-        //epee
+        public static readonly int[,] TOUT_PATERNE = { { 0, 5, 6, 2 }, { 3, 2, 1, 4 }, { 6, 3, 0, 4 }, { 5, 2, 0, 1 } };
+        public static readonly int NOMBRE_PATERNE = 3;
 
         public static readonly int DUREE_COUP = 16;
-        private bool ActionAttaque = false;
-        private Entite[] epeeTerain = new Entite[1];
+
+        #endregion
+
+        #region Champs
+
+        public static readonly Random aleatoire = new Random();
+
         // Moteur du jeu
 
         private DispatcherTimer minuteurJeu = new DispatcherTimer();
 
-        // Joueur
-        private Joueur joueur;
+        public static bool texturesRetireesTerrain = false;
+        public static bool texturesRetireesObjets = false;
+        public static bool texturesRetireesEntites = false;
 
-        private int degatJoueur = 2;
-        private int immunite = 0;
-        private int tempsCoup = 0;
-        private int vitesseEnnemis = 3;
-
-        private bool droite, gauche, bas, haut;
-        // haut = 0 ; droite = 1 ; bas = 2 ; gauche = 3
-        public int derniereApparition;
-
-        private int prochainChangementApparence = 0;
-
-        public bool bombe = false;
-
-        //piece
-        public int nombrePiece = 10_000;
-        private List<Entite> pieces = new List<Entite>();
-
-        // Ennemis
-        private List<Entite> ennemis = new List<Entite>();
-        private List<Entite> tires = new List<Entite>();
+        // Cartes
 
         public Carte carteActuelle;
+        public List<Carte> cartes = new List<Carte>();
+        private List<Rectangle> tuiles = new List<Rectangle>();
+        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
 
-        private bool joueurMort = false;
-        private bool jeuEnPause = false;
-        private bool enChargement = false;
+        private List<Objet> objets = new List<Objet>();
 
         // Réglages
 
-        private Key[,] touches = new Key[3, 6]
+        private Key[,] touches = new Key[3, 7]
         {
             {
                 Key.Left,
                 Key.Right,
                 Key.Up,
                 Key.Down,
-                Key.E,
-                Key.Space
+                Key.A,
+                Key.Space,
+                Key.E
             },
             {
                 Key.Q,
                 Key.D,
                 Key.Z,
                 Key.S,
-                Key.E,
-                Key.Space
+                Key.A,
+                Key.Space,
+                Key.E
             },
             {
                 Key.A,
                 Key.D,
                 Key.W,
                 Key.S,
-                Key.E,
-                Key.Space
+                Key.Q,
+                Key.Space,
+                Key.E
             }
         };
         public int combinaisonTouches = 1;
 
-        // Hitbox
+        // Tutoriel
 
-        private List<System.Windows.Rect> hitboxTerrain = new List<System.Windows.Rect>();
+        private bool tutoriel = true;
+        // 0 = Déplacement
+        // 1 = Attaque
+        // 2 = Inventaire
+        // 3 = Interaction
+        private int phaseTutoriel = 0;
+        private Grid? grilleTutoriel;
+        private TextBlock? texteTutoriel;
+        private Button? boutonPasserTutoriel;
+
+        // Joueur
+
+        public Joueur joueur;
+
+        private int immunite = 0;
+        private int tempsCoup = 0;
+        private int vitesseEnnemis = 3;
+        private int vitesseTire = 3;
+
+        public bool droite, gauche, bas, haut;
+        public int derniereApparition;
+
+        private int prochainChangementApparence = 0;
+
+        // Épée
+
+        private bool actionAttaque = false;
+        private Entite[] epeeTerain = new Entite[1];
+
+        // Pièces
+
+        public int nombrePiece = 0;
+        private List<Entite> pieces = new List<Entite>();
+
+        // Ennemis
+
+        private List<Entite> ennemis = new List<Entite>();
+        private List<Entite> tirs = new List<Entite>();
+        private int dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
+        private int dureeEntrePaterneBoss = DUREE_PATERNE;
+        private int motifActuel = 0;
+        private int typeTireActuel = 0;
+        private bool diamantSimeMort = false;
+
+        private bool joueurMort = false;
+        private bool jeuEnPause = false;
+        private bool enChargement = false;
+        private bool dansInventaire = false;
+
 
         // RegExps Textures
 
         private Regex regexTextureMur = new Regex("^mur_((n|s)(e|o)?|e|o)$");
         private Regex regexTextureChemin = new Regex("^chemin_(I|L|U)_(0|90|180|270)$");
-
-        private List<Objet> objets = new List<Objet>();
 
         // Dialogue
 
@@ -131,12 +174,53 @@ namespace SAE_dev_1
         // Boutique
 
         Boutique? boutique = null;
+        public bool bombe = false;
+        public int nombrePotionsVie = 0;
+        public int nombrePotionsForce = 0;
+        public Potion potionVie;
+        public Potion potionForce;
 
-        // Cartes
+        // Sons
 
-        public List<Carte> cartes = new List<Carte>();
+        public MediaPlayer sonEpee = new MediaPlayer();
+        public MediaPlayer sonBuisson = new MediaPlayer();
+        public MediaPlayer sonSlime = new MediaPlayer();
+        public MediaPlayer musiqueDeFond = new MediaPlayer();
+        public MediaPlayer musiqueDuBoss = new MediaPlayer();
+
+        #endregion
 
         #region Textures
+
+        // Sans texture
+
+        private static readonly Brush COULEUR_MUR = Brushes.SaddleBrown;
+        private static readonly Brush COULEUR_PLANCHES = Brushes.SandyBrown;
+        private static readonly Brush COULEUR_HERBE = Brushes.Green;
+        private static readonly Brush COULEUR_CHEMIN = Brushes.Tan;
+
+        private static readonly string[] NOMS_TERRAINS = new string[]
+        {
+            "mur", "planches", "herbe", "chemin"
+        };
+
+        private static readonly Brush COULEUR_JOUEUR = Brushes.NavajoWhite;
+        private static readonly Brush COULEUR_SLIME = Brushes.LimeGreen;
+
+        private static readonly string[] NOMS_ENTITES = new string[]
+        {
+            "joueur", "slime"
+        };
+
+        public static readonly Brush COULEUR_PORTE = Brushes.Maroon;
+        public static readonly Brush COULEUR_BUISSON = Brushes.OliveDrab;
+        public static readonly Brush COULEUR_CAILLOU = Brushes.Gray;
+        public static readonly Brush COULEUR_BOUTIQUE = Brushes.Gold;
+
+        private static readonly string[] NOMS_OBJETS = new string[]
+        {
+            "porte", "buisson", "caillou", "boutique"
+        };
 
         // Terrain
 
@@ -152,13 +236,17 @@ namespace SAE_dev_1
         // HUD
 
         public ImageBrush texturePiece = new ImageBrush();
-        private ImageBrush textureCoeur = new ImageBrush();
+        public ImageBrush textureCoeur = new ImageBrush();
         private ImageBrush textureCoeurVide = new ImageBrush();
 
         //epee
 
         private ImageBrush textureEpee1 = new ImageBrush();
         private ImageBrush textureEpee2 = new ImageBrush();
+
+        //Zeldo
+
+        private ImageBrush textureZeldo = new ImageBrush();
 
 
         #endregion Textures
@@ -168,7 +256,7 @@ namespace SAE_dev_1
         private Rectangle pieceIcone;
         public Label pieceNombre;
 
-        private Rectangle[] coeurs;
+        public Rectangle[] coeurs;
 
         #endregion HUD
 
@@ -181,7 +269,12 @@ namespace SAE_dev_1
             Initialisation fenetreInitialisation = new Initialisation(this);
             fenetreInitialisation.Show();
 
-            fenetreInitialisation.Chargement(0 / 8, "Chargement des textures de terrain...");
+            int nombreChargements = 6;
+
+            #region Chargement 0 - Textures
+            fenetreInitialisation.Chargement(0 / nombreChargements, "Chargement des textures...");
+
+            // Terrain
 
             textureMurDroit.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_droit.png"));
             textureMurAngle.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\mur_angle.png"));
@@ -192,23 +285,39 @@ namespace SAE_dev_1
             textureCheminL.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-L.png"));
             textureCheminU.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\terrain\\chemin-herbe-U.png"));
 
-            fenetreInitialisation.Chargement(1 / 7, "Chargement des textures du HUD...");
+            // HUD
 
             texturePiece.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\piece.png"));
             textureCoeur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur.png"));
             textureCoeurVide.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\hud\\coeur_vide.png"));
 
-            fenetreInitialisation.Chargement(2 / 7, "Chargement des textures des personnages...");
+            // Items
 
             textureEpee1.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee1.png"));
             textureEpee2.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\epee2.png"));
 
-            fenetreInitialisation.Chargement(3 / 7, "Chargement du joueur...");
+            //Zeldo
+            textureZeldo.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\personnages\\Zeldo.png"));
+
+            #endregion
+
+            #region Chargement 1 - Joueur
+            fenetreInitialisation.Chargement(1 / nombreChargements, "Chargement du joueur...");
 
             joueur = new Joueur();
-            CanvasJeux.Children.Add(joueur.Rectangle);
+            canvasJeu.Children.Add(joueur.Rectangle);
 
-            fenetreInitialisation.Chargement(4 / 7, "Chargement du HUD...");
+            this.potionVie = new Potion(this, "vie", 3);
+            this.potionForce = new Potion(this, "force", 2, 10);
+
+            #endregion
+
+            #region Chargement 2 - HUD
+            fenetreInitialisation.Chargement(2 / nombreChargements, "Chargement du HUD...");
+
+            imagePotionVie.Source = Item.TEXTURE_POTION_VIE;
+            imagePotionForce.Source = Item.TEXTURE_POTION_FORCE;
+            Panel.SetZIndex(grilleInventaire, ZINDEX_HUD);
 
             pieceIcone = new Rectangle()
             {
@@ -240,12 +349,12 @@ namespace SAE_dev_1
             Canvas.SetZIndex(pieceIcone, ZINDEX_HUD);
             Canvas.SetRight(pieceIcone, 5);
             Canvas.SetTop(pieceIcone, -5 - TAILLE_ICONES);
-            CanvasJeux.Children.Add(pieceIcone);
+            canvasJeu.Children.Add(pieceIcone);
 
             Canvas.SetZIndex(pieceNombre, ZINDEX_HUD);
             Canvas.SetRight(pieceNombre, TAILLE_ICONES + 10);
             Canvas.SetTop(pieceNombre, -5 - TAILLE_ICONES);
-            CanvasJeux.Children.Add(pieceNombre);
+            canvasJeu.Children.Add(pieceNombre);
 
             coeurs = new Rectangle[5];
             for (int i = 0; i < coeurs.Length; i++)
@@ -262,15 +371,20 @@ namespace SAE_dev_1
                 Canvas.SetZIndex(coeurs[i], ZINDEX_HUD);
                 Canvas.SetLeft(coeurs[i], i * (TAILLE_ICONES + 5) + 5);
                 Canvas.SetTop(coeurs[i], -5 - TAILLE_ICONES);
-                CanvasJeux.Children.Add(coeurs[i]);
+                canvasJeu.Children.Add(coeurs[i]);
             }
 
-            fenetreInitialisation.Chargement(5 / 7, "Chargement de la boutique");
+            #endregion
+
+            #region Chargement 3 - Boutique
+            fenetreInitialisation.Chargement(3 / nombreChargements, "Chargement de la boutique");
 
             Boutique.Initialiser(this);
 
-            #region Chargement - Cartes
-            fenetreInitialisation.Chargement(6 / 7, "Génération des cartes");
+            #endregion
+
+            #region Chargement 4 - Cartes
+            fenetreInitialisation.Chargement(4 / nombreChargements, "Génération des cartes");
 
             // Carte Maison
 
@@ -294,6 +408,7 @@ namespace SAE_dev_1
                 {
                     new Objet("porte", 10, 9, 180, false, (mainWindow, objet) =>
                         {
+                            mainWindow.TutorielSuivant(3);
                             mainWindow.derniereApparition = 0;
                             mainWindow.ChangerCarte("jardin", 0);
                         }
@@ -311,24 +426,24 @@ namespace SAE_dev_1
                 {
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin_I_90", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_L_90", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
                 new List<Objet>
                 {
                     new Objet("buisson", 3, 0, null, false, null),
-                    new Objet("buisson", 0, 5, null, false, null),
+                    new Objet("buisson", 0, 7, null, false, null),
                     new Objet("buisson", 5, 3, null, false, null),
-                    new Objet("buisson", 6, 4, null, false, null),
+                    new Objet("buisson", 6, 1, null, false, null),
                     new Objet("buisson", 4, 8, null, false, null),
                     new Objet("buisson", 14, 6, null, false, null),
-                    new Objet("buisson", 18, 5, null, false, null),
+                    new Objet("buisson", 18, 7, null, false, null),
                     new Objet("buisson", 15, 9, null, false, null),
                     new Objet("caillou", 19, 0, 90, false, (mainWindow, objet) =>
                     {
@@ -336,24 +451,33 @@ namespace SAE_dev_1
                         {
                             mainWindow.bombe = false;
                             objet.NeReapparaitPlus = true;
-                            mainWindow.CanvasJeux.Children.Remove(objet.RectanglePhysique);
+                            mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
+                        }
+                        else
+                        {
+                            mainWindow.NouveauDialogue(new string[]
+                            {
+                                "Zeldo se trouve de l'autre côté.",
+                                "Il me faut une bombe pour détruire le rocher",
+                                "Je crois que le marchand en vend.",
+                            });
                         }
                     })
                 },
                 new (string, int)?[4]
                 {
-                    ("maison", 4),
+                    null,
                     ("combat", 3),
                     ("marchand", 0),
-                    null
+                    ("passage",1)
                 },
                 new (int, int)?[4]
                 {
-                    (9, 10),
+                    null,
                     (0, 1),
                     (6, 8),
-                    null
+                    (2, 3)
                 },
                 (mainWindow, carte) =>
                 {
@@ -361,9 +485,33 @@ namespace SAE_dev_1
                     {
                         mainWindow.NouveauDialogue(new string[]
                         {
-                        "Bienvenue !",
+                            "tu voulais me voir Zeldo.",
+                            "Tu voulais me dire quelque chose ?",
+                            "Zeldo : Regarde j'ai trouvé ce diamant",
+                            "Zeldo : n'est-il pas ma...",
+                            "*Zeldo glisse* *diamant qui ce casse*",
+                            "Oh non c'est le diamant de la création. ",
+                            "Maintenant qu'il est cassé le monde va être corrompu."
                         });
+                        mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
+                        {
+                            MainWindow.texturesRetireesEntites = true;
+                            MainWindow.texturesRetireesObjets = true;
+                            MainWindow.texturesRetireesTerrain = true;
+                            joueur.passerDialogue = true;
+                            foreach (Objet objet in mainWindow.objets)
+                            {
+                                objet.ActualiserTexture();
+                            }
+                            foreach (Rectangle tuile in tuiles)
+                            {
+                                tuile.Fill = MainWindow.Texture(tuile.Tag.ToString()!, tuile.Fill);
+                            }
+                            joueur.Apparence = joueur.Apparence;
+                        };
                     }
+                    musiqueDuBoss.Pause();
+                    musiqueDeFond.Play();
                 }
             ));
 
@@ -399,7 +547,28 @@ namespace SAE_dev_1
                     null,
                     null,
                     (0, 1)
+                },
+                (mainWindow, carte) =>
+                {
+                    musiqueDeFond.Pause();
+                    CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    Rectangle Zeldo = new Rectangle
+                    {
+                        Tag = "Zeldo",
+                        Height = joueur.Rectangle.Height - 10,
+                        Width = joueur.Rectangle.Width - 20,
+                        Fill = textureZeldo
+                    };
+                    Canvas.SetZIndex(Zeldo, ZINDEX_ENTITES);
+                    Canvas.SetLeft(Zeldo, 1100);
+                    Canvas.SetTop(Zeldo, 220);
+                    canvasJeu.Children.Add(Zeldo);
+
+                    new Entite("Zeldo", Zeldo, 1100, 220);
+                    musiqueDuBoss.Play();
+
                 }
+
             ));
 
             // Carte Marchand
@@ -412,48 +581,343 @@ namespace SAE_dev_1
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_90", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
-                    {"herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
                     {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
                 },
-                null,
+                new List<Objet>
+                {
+                    new Objet("boutique", 14, 0, 0, false, (mainWindow, objet) =>
+                    {
+                        List<Item> itemsBoutique = new List<Item>()
+                        {
+                            new Item(
+                                "potion de vie",
+                                30,
+                                "Les potions de vie ont un étrange pouvoir de guérison.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_vie.png"))
+                            ),
+                            new Item(
+                                "potion de force",
+                                35,
+                                "Une potion de force pourrait vous aider à manier votre épée.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\potion_force.png"))
+                            )
+                        };
+                        if (!mainWindow.bombe)
+                            itemsBoutique.Add(new Item(
+                                "bombe",
+                                25,
+                                "Pourrait se révéler très utile pour détruire de gros obstacles.",
+                                new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\items\\bombe.png"))
+                            ));
+
+                        mainWindow.boutique = new Boutique(this, itemsBoutique);
+                        mainWindow.PauseMinuteur();
+                        mainWindow.haut = mainWindow.droite = mainWindow.bas = mainWindow.gauche = false;
+                    }),
+                    new Objet("buisson", 2, 1, null, false, null),
+                    new Objet("buisson", 3, 2, null, false, null),
+                    new Objet("buisson", 4, 7, null, false, null),
+                    new Objet("buisson", 2, 8, null, false, null),
+                    new Objet("buisson", 15, 5, null, false, null),
+                    new Objet("buisson", 17, 6, null, false, null),
+                    new Objet("buisson", 16, 7, null, false, null),
+                    new Objet("buisson", 14, 8, null, false, null),
+                },
                 new (string, int)?[4]
                 {
                     ("jardin", 2),
                     null,
                     null,
-                    null
+                    ("cheminBloquer",1)
                 },
                 new (int, int)?[4]
                 {
                     (6, 8),
                     null,
                     null,
+                    (4, 5)
+                }
+            ));
+
+            //Carte chemin bloquer
+            cartes.Add(new Carte(
+                this,
+                "cheminBloquer",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0"},
+                    {"chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("buisson", 9, 0, null, false, null),
+                    new Objet("buisson", 9, 1, null, false, null),
+                    new Objet("buisson", 9, 2, null, false, null),
+                    new Objet("buisson", 9, 3, null, false, null),
+                    new Objet("buisson", 9, 4, null, false, null),
+                    new Objet("buisson", 9, 5, null, false, null),
+                    new Objet("buisson", 9, 6, null, false, null),
+                    new Objet("buisson", 9, 7, null, false, null),
+                    new Objet("buisson", 9, 8, null, false, null),
+                    new Objet("buisson", 9, 9, null, false, null),
+                    new Objet("buisson", 2, 2, null, false, null),
+                    new Objet("buisson", 1, 8, null, false, null),
+                    new Objet("buisson", 4, 1, null, false, null),
+                    new Objet("buisson", 13, 2, null, false, null),
+                    new Objet("buisson", 17, 1, null, false, null),
+                    new Objet("buisson", 12, 6, null, false, null),
+                    new Objet("buisson", 16, 9, null, false, null),
+                    new Objet("buisson", 2, 7, null, false, null),
+                },
+                new (string, int)?[4]
+                {
+                    null,
+                    ("marchand", 3),
+                    null,
+                    ("diamantEntite", 1)
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (4, 6),
+                    null,
+                    (4, 6)
+                }
+            ));
+
+            //Carte pour récupéré la texture des entite
+            cartes.Add(new Carte(
+                this,
+                "diamantEntite",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "chemin_L_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe"},
+                    {"herbe", "chemin_L_0", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"herbe", "chemin_I_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_L_270", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "chemin_L_270", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    null,
+                    ("cheminBloquer", 3),
+                    null,
                     null
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (4, 6),
+                    null,
+                    null
+                },
+                (mainWindow, carte) =>
+                {
+                    if (!diamantSimeMort)
+                    {
+                        CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    }
+                }
+            ));
+
+            //Carte passage 
+            cartes.Add(new Carte(
+                this,
+                "passage",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin_L_90", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                null,
+                new (string, int)?[4]
+                {
+                    ("diamantTerrain",2),
+                    ("jardin", 3),
+                    null,
+                    ("diamantObjet",1)
+                },
+                new (int, int)?[4]
+                {
+                    (8, 10),
+                    (4, 6),
+                    null,
+                    (4, 7)
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(2, "slime", VIE_ENNEMI);
+
+                }
+            ));
+
+            //Carte pour récupéré la texture des objet
+            cartes.Add(new Carte(
+                this,
+                "diamantObjet",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_U_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0"},
+                    {"herbe", "chemin_L_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "chemin_L_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin"},
+                    {"herbe", "chemin_L_270", "chemin_I_180", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180", "chemin_I_180"},
+                    {"herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_U_270", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("buisson,diamant", 9, 5, null, false, null)
+                },
+                new (string, int)?[4]
+                {
+                    null,
+                    ("passage", 3),
+                    null,
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (3, 6),
+                    null,
+                    null
+                }
+
+            ));
+
+            //Carte pour récupéré la texture des terrain
+            cartes.Add(new Carte(
+                this,
+                "diamantTerrain",
+                new string[10, 20]
+                {
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "chemin_L_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_I_0", "chemin_L_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_I_270", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_90", "herbe", "herbe"},
+                    {"herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin_I_180", "chemin_I_180", "chemin", "chemin", "chemin", "chemin", "chemin", "chemin_I_180", "chemin_I_180", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_L_270", "chemin", "chemin", "chemin", "chemin_L_180", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"},
+                    {"herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "chemin_I_270", "chemin", "chemin_I_90", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe", "herbe"}
+                },
+                new List<Objet>
+                {
+                    new Objet("diamant", 9, 1, null, false, (mainWindow, objet) =>
+                    {
+                        if(ennemis.Count == 0)
+                        {
+                            texturesRetireesTerrain = false;
+                            new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
+                            objet.NeReapparaitPlus = true;
+                            mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                            objet.Hitbox = null;
+                            GenererCarte();
+                        }
+                        else
+                        {
+                            mainWindow.NouveauDialogue(new string[]
+                            {
+                                "Il y a trop d'ennemis autour.",
+                            });
+
+                        }
+                    })
+                },
+                new (string, int)?[4]
+                {
+                    null,
+                    null,
+                    ("passage", 0),
+                    null
+                },
+                new (int, int)?[4]
+                {
+                    null,
+                    (5, 8),
+                    null,
+                    null
+                },
+                (mainWindow, carte) =>
+                {
+
+                    CreeEnemis(4, "slime", VIE_ENNEMI);
+
                 }
             ));
 
             GenererCarte();
 
             #endregion
+
+            #region Chargement 5 - Sons
+            fenetreInitialisation.Chargement(5 / nombreChargements, "Chargement des sons...");
+
+            sonEpee.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\slashSound.mp3"));
+            sonBuisson.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\buisson.mp3"));
+            sonSlime.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\Slime.mp3"));
+            sonBuisson.Volume = 0.3;
+            sonEpee.Volume = 0.5;
+            sonSlime.Volume = 0.5;
+            musiqueDeFond.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\bgmusic1.mp3"));
+            musiqueDeFond.Volume = 0.2;
+            musiqueDuBoss.Open(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\son\\BossMusic.mp3"));
+            musiqueDuBoss.Volume = 0.1;
+
+            #endregion
+
             fenetreInitialisation.Termine();
         }
 
         public void Demarrer()
         {
+            tutoriel = true;
+            Tutoriel(0);
 
             minuteurJeu.Tick += MoteurDeJeu;
             minuteurJeu.Interval = TimeSpan.FromMilliseconds(16);
-            minuteurJeu.Start();
+            ReprendreMinuteur();
+            musiqueDeFond.Play();
         }
 
         public void NouveauDialogue(string[] texte)
         {
-            dialogueActuel = new Dialogue(texte, CanvasJeux);
+            haut = droite = bas = gauche = false;
+            dialogueActuel = new Dialogue(this, texte, canvasJeu);
 
             if (dialogueActuel.TexteSuivant())
                 dialogueActuel = null;
@@ -485,6 +949,178 @@ namespace SAE_dev_1
             return (xTuile, yTuile);
         }
 
+        public static Brush Texture(string nom, Brush texture)
+        {
+            if ((texturesRetireesEntites || texturesRetireesObjets || texturesRetireesTerrain) && nom == "caillou")
+                return COULEUR_CAILLOU;
+
+            if (NOMS_TERRAINS.Contains(nom))
+            {
+                if (MainWindow.texturesRetireesTerrain)
+                    switch (nom)
+                    {
+                        case "mur":
+                            return COULEUR_MUR;
+                        case "planches":
+                            return COULEUR_PLANCHES;
+                        case "herbe":
+                            return COULEUR_HERBE;
+                        case "chemin":
+                            return COULEUR_CHEMIN;
+                    }
+            }
+            else if (NOMS_ENTITES.Contains(nom))
+            {
+                if (MainWindow.texturesRetireesEntites)
+                    switch (nom)
+                    {
+                        case "slime":
+                            return COULEUR_SLIME;
+                    }
+            }
+            else if (NOMS_OBJETS.Contains(nom))
+            {
+                if (MainWindow.texturesRetireesObjets)
+                    switch (nom)
+                    {
+                        case "porte":
+                            return COULEUR_PORTE;
+                        case "buisson":
+                            return COULEUR_BUISSON;
+                        case "boutique":
+                            return COULEUR_BOUTIQUE;
+                    }
+            }
+
+            return texture;
+        }
+
+        #region Tutoriel
+
+        private void Tutoriel(int phase)
+        {
+            if (phase < 0 || phase > 3)
+                throw new ArgumentOutOfRangeException("La phase du tutoriel doit être comprise entre 0 et 3.");
+
+            this.Cursor = null;
+
+            grilleTutoriel = new Grid()
+            {
+                Width = canvasJeu.ActualWidth,
+                Height = canvasJeu.ActualHeight,
+                Background = new SolidColorBrush(Color.FromArgb(150, 0, 0, 0))
+            };
+            Canvas.SetZIndex(grilleTutoriel, ZINDEX_HUD);
+            canvasJeu.Children.Add(grilleTutoriel);
+
+            string texte = "";
+            switch (phase)
+            {
+                case 0:
+                    texte = "Utilisez " + (combinaisonTouches == 0
+                        ? "les flèches directionnelles"
+                        : combinaisonTouches == 1
+                            ? "Z, Q, S et D"
+                            : "W, A, S et D") + " pour vous déplacer.";
+                    break;
+                case 1:
+                    texte = $"Utilisez {touches[combinaisonTouches, 5]} pour attaquer.";
+                    break;
+                case 2:
+                    texte = $"Ouvrez votre inventaire avec la touche {touches[combinaisonTouches, 6]}.";
+                    break;
+                case 3:
+                    texte = $"Vous pouvez interagir avec certains objets en utilisant la touche {touches[combinaisonTouches, 4]}.";
+                    break;
+            }
+
+            texteTutoriel = new TextBlock()
+            {
+                Text = texte,
+                FontSize = 20,
+                FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Fonts/#Monocraft"),
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(20, 30, 20, 20)
+            };
+            grilleTutoriel.Children.Add(texteTutoriel);
+
+            boutonPasserTutoriel = new Button()
+            {
+                Content = "Passer",
+                FontSize = 20,
+                Padding = new Thickness(10),
+                Margin = new Thickness(30, 20, 20, 30),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            boutonPasserTutoriel.Click += (object sender, RoutedEventArgs e) =>
+            {
+                phaseTutoriel = 4;
+                FermerTutoriel();
+            };
+            grilleTutoriel.Children.Add(boutonPasserTutoriel);
+
+            if (phase == 0 || phase == 1)
+                Canvas.SetZIndex(joueur.Rectangle, ZINDEX_HUD + 2);
+            if (phase == 3)
+                foreach (Objet objet in objets)
+                {
+                    if (objet.Type == "porte")
+                        Canvas.SetZIndex(objet.RectanglePhysique, ZINDEX_HUD + 2);
+                }
+        }
+
+        private void FermerTutoriel(bool fin = false)
+        {
+            canvasJeu.Children.Remove(grilleTutoriel);
+            grilleTutoriel = null;
+            Canvas.SetZIndex(joueur.Rectangle, ZINDEX_JOUEUR);
+            foreach (Objet objet in objets)
+            {
+                Canvas.SetZIndex(objet.RectanglePhysique, ZINDEX_OBJETS);
+            }
+
+            if (phaseTutoriel > 3)
+            {
+                tutoriel = false;
+                this.Cursor = Cursors.None;
+                this.canvasJeu.Focus();
+            }
+        }
+
+        public void TutorielSuivant(int phase)
+        {
+            if (tutoriel && phaseTutoriel == phase)
+            {
+                phaseTutoriel++;
+                FermerTutoriel();
+
+                if (phaseTutoriel > 3)
+                    FermerTutoriel(true);
+                else
+                    Tutoriel(phaseTutoriel);
+            }
+        }
+
+        #endregion
+
+        public void PauseMinuteur()
+        {
+            this.minuteurJeu.Stop();
+            haut = droite = bas = gauche = false;
+            if (potionForce.EnCours)
+                potionForce.Pause();
+        }
+
+        public void ReprendreMinuteur()
+        {
+            this.minuteurJeu.Start();
+            if (potionForce.EnCours)
+                potionForce.Reprendre();
+        }
+
         #region Carte
 
         private void GenererCarte()
@@ -501,8 +1137,7 @@ namespace SAE_dev_1
                         Width = MainWindow.TAILLE_TUILE,
                         Height = TAILLE_TUILE,
                     };
-                    ImageBrush? fondTuile = new ImageBrush();
-                    fondTuile.Stretch = Stretch.Uniform;
+                    Brush? fondTuile = new ImageBrush();
 
                     string textureTuile = carteActuelle.Tuile(x, y);
 
@@ -524,7 +1159,9 @@ namespace SAE_dev_1
                         if (orientation == "n" || orientation == "s")
                         {
                             // Nord / Sud
-                            fondTuile = textureMurDroit;
+                            fondTuile = Texture("mur", textureMurDroit);
+                            tuile.Tag = "mur";
+
                             tuile.LayoutTransform = new RotateTransform()
                             {
                                 Angle = orientation == "n" ? 90 : -90
@@ -533,7 +1170,8 @@ namespace SAE_dev_1
                         else if (orientation == "e" || orientation == "o")
                         {
                             // Est / Ouest
-                            fondTuile = textureMurDroit;
+                            fondTuile = Texture("mur", textureMurDroit);
+                            tuile.Tag = "mur";
 
                             if (orientation == "e")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -544,7 +1182,8 @@ namespace SAE_dev_1
                         else
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
-                            fondTuile = textureMurAngle;
+                            fondTuile = Texture("mur", textureMurAngle);
+                            tuile.Tag = "mur";
 
                             if (orientation != "no")
                                 tuile.LayoutTransform = new RotateTransform()
@@ -567,13 +1206,16 @@ namespace SAE_dev_1
                         switch (type)
                         {
                             case "I":
-                                fondTuile = textureCheminI;
+                                fondTuile = Texture("chemin", textureCheminI);
+                                tuile.Tag = "chemin";
                                 break;
                             case "L":
-                                fondTuile = textureCheminL;
+                                fondTuile = Texture("chemin", textureCheminL);
+                                tuile.Tag = "chemin";
                                 break;
                             case "U":
-                                fondTuile = textureCheminU;
+                                fondTuile = Texture("chemin", textureCheminU);
+                                tuile.Tag = "chemin";
                                 break;
                         }
 
@@ -584,15 +1226,16 @@ namespace SAE_dev_1
                     }
                     else
                     {
-                        Random aleatoire = new Random();
 
                         switch (textureTuile)
                         {
                             case "planches":
-                                fondTuile = texturePlanches;
+                                fondTuile = Texture("planches", texturePlanches);
+                                tuile.Tag = "planches";
                                 break;
                             case "herbe":
-                                fondTuile = textureHerbe;
+                                fondTuile = Texture("herbe", textureHerbe);
+                                tuile.Tag = "herbe";
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -601,7 +1244,8 @@ namespace SAE_dev_1
                                 };
                                 break;
                             case "chemin":
-                                fondTuile = textureChemin;
+                                fondTuile = Texture("chemin", textureChemin);
+                                tuile.Tag = "chemin";
 
                                 // Rotation aléatoire de la tuile
                                 tuile.LayoutTransform = new RotateTransform()
@@ -615,12 +1259,16 @@ namespace SAE_dev_1
                     RenderOptions.SetBitmapScalingMode(tuile, BitmapScalingMode.NearestNeighbor);
                     RenderOptions.SetEdgeMode(tuile, EdgeMode.Aliased);
 
+                    if (fondTuile is ImageBrush)
+                        ((ImageBrush)fondTuile).Stretch = Stretch.Uniform;
+
                     tuile.Fill = fondTuile;
 
                     Panel.SetZIndex(tuile, ZINDEX_TERRAIN);
                     Canvas.SetTop(tuile, y * TAILLE_TUILE);
                     Canvas.SetLeft(tuile, x * TAILLE_TUILE);
-                    CanvasJeux.Children.Add(tuile);
+                    tuiles.Add(tuile);
+                    canvasJeu.Children.Add(tuile);
                 }
             }
 
@@ -629,9 +1277,11 @@ namespace SAE_dev_1
             {
                 if (!objet.NeReapparaitPlus)
                 {
-                    objet.RegenererHitbox();
+                    if (objet.Hitbox == null)
+                        objet.RegenererHitbox();
+                    objet.ActualiserTexture();
                     objets.Add(objet);
-                    CanvasJeux.Children.Add(objet.RectanglePhysique);
+                    canvasJeu.Children.Add(objet.RectanglePhysique);
                 }
             }
         }
@@ -646,7 +1296,7 @@ namespace SAE_dev_1
                 throw new Exception("La carte demandée n'existe pas.");
 
             enChargement = true;
-            minuteurJeu.Stop();
+            PauseMinuteur();
 
             chargement.Opacity = 0;
             chargement.Visibility = Visibility.Visible;
@@ -656,7 +1306,7 @@ namespace SAE_dev_1
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
 
-            CanvasJeux.Children.Clear();
+            canvasJeu.Children.Clear();
             ennemis.Clear();
             hitboxTerrain.Clear();
             objets.Clear();
@@ -670,14 +1320,14 @@ namespace SAE_dev_1
             derniereApparition = apparition;
             joueur.Apparaite(apparition);
 
-            CanvasJeux.Children.Add(joueur.Rectangle);
+            canvasJeu.Children.Add(joueur.Rectangle);
 
-            CanvasJeux.Children.Add(pieceIcone);
-            CanvasJeux.Children.Add(pieceNombre);
+            canvasJeu.Children.Add(pieceIcone);
+            canvasJeu.Children.Add(pieceNombre);
 
             foreach (Rectangle coeur in coeurs)
             {
-                CanvasJeux.Children.Add(coeur);
+                canvasJeu.Children.Add(coeur);
             }
 
             carteActuelle.NombreVisites++;
@@ -690,8 +1340,8 @@ namespace SAE_dev_1
             }
             chargement.Visibility = Visibility.Hidden;
 
-            this.CanvasJeux.Focus();
-            minuteurJeu.Start();
+            this.canvasJeu.Focus();
+            ReprendreMinuteur();
             enChargement = false;
 
             if (carteActuelle.ActionCarteChargee != null)
@@ -707,8 +1357,8 @@ namespace SAE_dev_1
             jeuEnPause = false;
             grilleMenuPause.Visibility = Visibility.Hidden;
             this.Cursor = Cursors.None;
-            minuteurJeu.Start();
-            CanvasJeux.Focus();
+            ReprendreMinuteur();
+            canvasJeu.Focus();
         }
 
         private void btnOptions_Click(object sender, RoutedEventArgs e)
@@ -730,7 +1380,7 @@ namespace SAE_dev_1
             immunite = DUREE_IMMUNITE;
             ChangerCarte(carteActuelle.Nom, carteActuelle.Nom == "maison" ? 4 : derniereApparition);
             joueurMort = false;
-            minuteurJeu.Start();
+            ReprendreMinuteur();
         }
 
         private void Quitter(object sender, RoutedEventArgs e)
@@ -747,7 +1397,39 @@ namespace SAE_dev_1
             {
                 this.Close();
             }
-            else this.CanvasJeux.Focus();
+            else this.canvasJeu.Focus();
+        }
+
+        private void utiliserPotionVie_Click(object sender, RoutedEventArgs e)
+        {
+            if (nombrePotionsVie > 0)
+            {
+                if (potionVie.Utiliser())
+                {
+                    nombrePotionsVie--;
+                    nbPotionsVie.Text = $"× {nombrePotionsVie}";
+                }
+            }
+            else
+                new Message(this, "Vous n'avez pas de potion de vie.", Brushes.Red).Afficher();
+
+            this.canvasJeu.Focus();
+        }
+
+        private void utiliserPotionForce_Click(object sender, RoutedEventArgs e)
+        {
+            if (nombrePotionsForce > 0)
+            {
+                if (potionForce.Utiliser())
+                {
+                    nombrePotionsForce--;
+                    nbPotionsForce.Text = $"× {nombrePotionsForce}";
+                }
+            }
+            else
+                new Message(this, "Vous n'avez pas de potion de force.", Brushes.Red).Afficher();
+
+            this.canvasJeu.Focus();
         }
 
         #endregion
@@ -761,43 +1443,50 @@ namespace SAE_dev_1
                 case "pause":
                     return enChargement || dialogueActuel != null;
                 case "chargement":
-                    return jeuEnPause || dialogueActuel != null || boutique != null;
+                    return jeuEnPause || dialogueActuel != null || boutique != null || dansInventaire;
                 case "dialogue":
-                    return jeuEnPause || enChargement || boutique != null;
+                    return jeuEnPause || enChargement || boutique != null || dansInventaire;
                 case "boutique":
-                    return jeuEnPause || enChargement || dialogueActuel != null;
+                    return jeuEnPause || enChargement || dialogueActuel != null || dansInventaire;
+                case "inventaire":
+                    return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
             }
-            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null;
+            return jeuEnPause || enChargement || dialogueActuel != null || boutique != null || dansInventaire;
         }
 
         private void CanvasKeyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
+            if (joueurMort)
+                return;
+
+            if (e.Key == touches[combinaisonTouches, 0] &&
+                !EmpecherAppuiTouche())
             {
                 gauche = true;
                 joueur.Direction = 3;
             }
-            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 1] &&
+                !EmpecherAppuiTouche())
             {
                 droite = true;
                 joueur.Direction = 1;
-
             }
-            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 2] &&
+                !EmpecherAppuiTouche())
             {
                 haut = true;
                 joueur.Direction = 0;
             }
-            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 3] &&
+                !EmpecherAppuiTouche())
             {
                 bas = true;
                 joueur.Direction = 2;
-
             }
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(2, "slime", 1);
+                CreeEnemis(2, "slime", VIE_ENNEMI);
             }
 
             if (e.Key == Key.F2 && !EmpecherAppuiTouche())
@@ -807,44 +1496,88 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F5 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(1, "boss", 50);
+                CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
             }
         }
 
         private void CanvasKeyIsUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == touches[combinaisonTouches, 0] && !EmpecherAppuiTouche())
+            if (joueurMort)
+                return;
+
+            bool focusCanvas = true;
+
+            if (e.Key == touches[combinaisonTouches, 0] &&
+                !EmpecherAppuiTouche())
             {
                 gauche = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 1] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 1] &&
+                !EmpecherAppuiTouche())
             {
                 droite = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 2] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 2] &&
+                !EmpecherAppuiTouche())
             {
                 haut = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
-            if (e.Key == touches[combinaisonTouches, 3] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 3] &&
+                !EmpecherAppuiTouche())
             {
                 bas = false;
                 joueur.Apparence = 0;
+                TutorielSuivant(0);
             }
 
-            if (e.Key == touches[combinaisonTouches, 4] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 4] &&
+                !EmpecherAppuiTouche() && (
+                    !tutoriel ||
+                    phaseTutoriel >= 3
+                ))
             {
                 Interagir();
             }
 
-            if (e.Key == touches[combinaisonTouches, 5] && !EmpecherAppuiTouche())
+            if (e.Key == touches[combinaisonTouches, 5] &&
+                !EmpecherAppuiTouche() && (
+                    !tutoriel ||
+                    phaseTutoriel >= 1
+                ))
             {
-                if (!ActionAttaque)
+                if (!actionAttaque)
                 {
                     Attaque();
                     tempsCoup = DUREE_COUP;
+                }
+            }
+            if (e.Key == touches[combinaisonTouches, 6] &&
+                !EmpecherAppuiTouche("inventaire") && (
+                    !tutoriel ||
+                    phaseTutoriel >= 2
+                ))
+            {
+                dansInventaire = !dansInventaire;
+                if (dansInventaire)
+                {
+                    this.Cursor = null;
+                    nbPotionsVie.Text = $"× {nombrePotionsVie}";
+                    nbPotionsForce.Text = $"× {nombrePotionsForce}";
+                    grilleInventaire.Visibility = Visibility.Visible;
+                    PauseMinuteur();
+                }
+                else
+                {
+                    this.Cursor = Cursors.None;
+                    grilleInventaire.Visibility = Visibility.Hidden;
+                    ReprendreMinuteur();
+                    TutorielSuivant(2);
                 }
             }
 
@@ -863,17 +1596,18 @@ namespace SAE_dev_1
                 }
             }
 
+#if DEBUG
             if (e.Key == Key.F3 && !EmpecherAppuiTouche("dialogue"))
             {
                 if (dialogueActuel == null)
                 {
                     haut = droite = bas = gauche = false;
 
-                    dialogueActuel = new Dialogue(new string[]
+                    dialogueActuel = new Dialogue(this, new string[]
                     {
                         "Bonjour !",
                         "Comment ça va ?"
-                    }, CanvasJeux);
+                    }, canvasJeu);
 
                     if (dialogueActuel.TexteSuivant())
                         dialogueActuel = null;
@@ -901,7 +1635,7 @@ namespace SAE_dev_1
                 {
                     boutique.Fermer();
                     boutique = null;
-                    minuteurJeu.Start();
+                    ReprendreMinuteur();
                 }
                 else
                 {
@@ -918,10 +1652,20 @@ namespace SAE_dev_1
                         ));
 
                     boutique = new Boutique(this, itemsBoutique);
-                    minuteurJeu.Stop();
+                    PauseMinuteur();
                     haut = droite = bas = gauche = false;
                 }
             }
+
+            if (e.Key == Key.F6 && !EmpecherAppuiTouche())
+            {
+                MainWindow.texturesRetireesEntites = false;
+                MainWindow.texturesRetireesObjets = false;
+                MainWindow.texturesRetireesTerrain = false;
+                cartes.Find((carte) => carte.Nom == "jardin")!.NombreVisites++;
+                ChangerCarte("jardin", 4);
+            }
+#endif
 
             if (e.Key == Key.Escape && !EmpecherAppuiTouche("pause"))
             {
@@ -929,28 +1673,39 @@ namespace SAE_dev_1
                 {
                     boutique.Fermer();
                     boutique = null;
-                    minuteurJeu.Start();
+                    ReprendreMinuteur();
+                }
+                else if (dansInventaire)
+                {
+                    dansInventaire = false;
+                    this.Cursor = Cursors.None;
+                    grilleInventaire.Visibility = Visibility.Hidden;
+                    ReprendreMinuteur();
+                    TutorielSuivant(2);
                 }
                 else
                 {
                     jeuEnPause = !jeuEnPause;
                     if (jeuEnPause)
                     {
+                        focusCanvas = false;
                         grilleMenuPause.Visibility = Visibility.Visible;
                         grilleMenuPause.Focus();
                         this.Cursor = null;
-                        minuteurJeu.Stop();
+                        PauseMinuteur();
                         haut = droite = bas = gauche = false;
                     }
                     else
                     {
                         grilleMenuPause.Visibility = Visibility.Hidden;
-                        this.CanvasJeux.Focus();
                         this.Cursor = Cursors.None;
-                        minuteurJeu.Start();
+                        ReprendreMinuteur();
                     }
                 }
             }
+
+            if (focusCanvas)
+                this.canvasJeu.Focus();
         }
 
         #endregion
@@ -959,27 +1714,26 @@ namespace SAE_dev_1
 
         public void CreeEnemis(int nombre, string type, int vie)
         {
-            Random aleatoire = new Random();
             for (int i = 0; i < nombre; i++)
             {
                 Rectangle nouveauxEnnemy = new Rectangle
                 {
                     Tag = "enemis," + type,
                     Height = TAILLE_ENNEMI,
-                    Width = TAILLE_ENNEMI
+                    Width = TAILLE_ENNEMI,
                 };
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
-                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next(500);
-                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
+                int x = (int)Canvas.GetLeft(ZoneApparition) + aleatoire.Next((int)ZoneApparition.Width);
+                int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next((int)ZoneApparition.Height);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
-                CanvasJeux.Children.Add(nouveauxEnnemy);
+                canvasJeu.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
+                ennemis.Add(new Entite(type, nouveauxEnnemy, x, y, vie));
             }
         }
 
-        public void CreeEnemis(int nombre, string type, int vie , int x, int y)
+        public void CreeEnemis(int nombre, string type, int vie, int x, int y)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -989,29 +1743,40 @@ namespace SAE_dev_1
                     Height = TAILLE_ENNEMI,
                     Width = TAILLE_ENNEMI
                 };
+                if (type == "boss")
+                {
+                    nouveauxEnnemy.Height = TAILLE_ENNEMI * 1.5;
+                    nouveauxEnnemy.Width = TAILLE_ENNEMI * 1.5;
+                }
                 Canvas.SetZIndex(nouveauxEnnemy, ZINDEX_ENTITES);
                 Canvas.SetLeft(nouveauxEnnemy, x);
                 Canvas.SetTop(nouveauxEnnemy, y);
-                CanvasJeux.Children.Add(nouveauxEnnemy);
+                canvasJeu.Children.Add(nouveauxEnnemy);
 
-                ennemis.Add(new Entite(nouveauxEnnemy, x, y, vie));
+                ennemis.Add(new Entite(type, nouveauxEnnemy, x, y, vie));
             }
         }
 
-        public void CreeTireEntiter(Rectangle ennemi, int angleVersJoueur)
+        public void CreeTireEntiter(Rectangle ennemi, int angleDirection, int nombre)
         {
-            Rectangle nouveauxTire = new Rectangle()
+
+            for (int i = 0; i < nombre; i++)
             {
-                Tag = "tire",
-                Height = TAILLE_TIRE_LARGEUR,
-                Width = TAILLE_TIRE_LONGUER,
-                Fill = Brushes.White,
-            };
-            Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES);
-            Canvas.SetTop(nouveauxTire, Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2);
-            Canvas.SetLeft(nouveauxTire, Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2);
-            CanvasJeux.Children.Add(nouveauxTire);
-            tires.Add(new Entite(angleVersJoueur, nouveauxTire, (int)Canvas.GetTop(ennemi) + TAILLE_ENNEMI / 2, (int)Canvas.GetLeft(ennemi) + TAILLE_ENNEMI / 2));
+                Rectangle nouveauxTire = new Rectangle()
+                {
+                    Tag = "tire",
+                    Height = TAILLE_TIRE,
+                    Width = TAILLE_TIRE,
+                    Fill = Brushes.White,
+                };
+                Canvas.SetZIndex(nouveauxTire, ZINDEX_ENTITES - 1);
+                int x = (int)(Canvas.GetLeft(ennemi) + ennemi.Width / 2);
+                int y = (int)(Canvas.GetTop(ennemi) + ennemi.Height / 2);
+                Canvas.SetLeft(nouveauxTire, x);
+                Canvas.SetTop(nouveauxTire, y);
+                canvasJeu.Children.Add(nouveauxTire);
+                tirs.Add(new Entite("tir", angleDirection, nouveauxTire, x, y));
+            }
         }
 
         public void CreePiece()
@@ -1029,9 +1794,9 @@ namespace SAE_dev_1
             int y = (int)Canvas.GetTop(ZoneApparition) + aleatoire.Next(200);
             Canvas.SetLeft(Piece, x);
             Canvas.SetTop(Piece, y);
-            CanvasJeux.Children.Add(Piece);
+            canvasJeu.Children.Add(Piece);
 
-            pieces.Add(new Entite(Piece, x, y));
+            pieces.Add(new Entite("piece", Piece, x, y));
 
         }
         public void CreePiece(int x, int y)
@@ -1046,15 +1811,15 @@ namespace SAE_dev_1
             Canvas.SetZIndex(Piece, ZINDEX_ITEMS);
             Canvas.SetLeft(Piece, x);
             Canvas.SetTop(Piece, y);
-            CanvasJeux.Children.Add(Piece);
+            canvasJeu.Children.Add(Piece);
 
-            pieces.Add(new Entite(Piece, x, y));
+            pieces.Add(new Entite("piece", Piece, x, y));
 
         }
 
         #endregion
 
-        #region Interraction & attaque
+        #region Interaction & attaque
 
         private Objet? ObjetSurTuile(int xTuile, int yTuile)
         {
@@ -1097,6 +1862,21 @@ namespace SAE_dev_1
             if (objet != null)
             {
                 Action<MainWindow, Objet>? actionObjet = objet!.Interraction;
+
+                if ((texturesRetireesObjets && objet.Type != "diamant") ||
+                        (objet.Type == "caillou" && (
+                            texturesRetireesEntites ||
+                            texturesRetireesObjets ||
+                            texturesRetireesTerrain
+                        )
+                    ))
+                {
+                    if (actionObjet != null)
+                        new Message(this, "Je ne peux pas interagir avec des objets sans texture...", Brushes.Gold).Afficher();
+
+                    return interaction;
+                }
+
                 if (actionObjet != null)
                 {
                     interaction = true;
@@ -1109,6 +1889,8 @@ namespace SAE_dev_1
 
         public void Attaque()
         {
+            sonEpee.Stop();
+            sonSlime.Stop();
             Rectangle epee = new Rectangle
             {
                 Tag = "epee",
@@ -1121,78 +1903,170 @@ namespace SAE_dev_1
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() - TAILLE_EPEE + 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 1:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() + TAILLE_EPEE - 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 2:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() + TAILLE_EPEE - 10;
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
                 case 3:
-                    Canvas.SetZIndex(epee, ZINDEX_JOUEUR - 1);
+                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                        ? ZINDEX_HUD + 1
+                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() - TAILLE_EPEE + 10;
                     y = joueur.Haut();
                     Canvas.SetLeft(epee, x);
                     Canvas.SetTop(epee, y);
-                    CanvasJeux.Children.Add(epee);
+                    canvasJeu.Children.Add(epee);
                     if (epeeTerain[0] == null)
                     {
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     else
                     {
-                        CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite(epee, x, y);
+                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+                        epeeTerain[0] = new Entite("epee", epee, x, y);
                     }
                     break;
             }
-            ActionAttaque = true;
+            actionAttaque = true;
+        }
+
+        private void PaterneTire(Entite ennemi, int typeTireActuel)
+        {
+            switch (typeTireActuel)
+            {
+                case 0:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 1);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                    break;
+                case 1:
+                    if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    }
+                    else
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    }
+                    break;
+                case 2:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    break;
+                case 3:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+
+                    break;
+                case 4:
+                    if (Canvas.GetTop(joueur.Rectangle) < Canvas.GetTop(ennemi.RectanglePhysique))
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    }
+                    else
+                    {
+                        CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    }
+                    break;
+                case 5:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    break;
+                case 6:
+                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
+                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    break;
+            }
         }
 
         #endregion
+
+        private void MusicFini(object sender, EventArgs e)
+        {
+            if (carteActuelle.Nom == "combat")
+            {
+                musiqueDuBoss.Position = TimeSpan.Zero;
+                musiqueDuBoss.Play();
+            }
+            else
+            {
+                musiqueDeFond.Position = TimeSpan.Zero;
+                musiqueDeFond.Play();
+            }
+        }
 
         #region Moteur du jeu
 
@@ -1202,18 +2076,47 @@ namespace SAE_dev_1
                 Dialogue();
             else
             {
+                List<Entite> tirsASupprimer = new List<Entite>();
+                List<Entite> piecesASupprimer = new List<Entite>();
+                List<Entite> ennemisASupprimer = new List<Entite>();
+                List<Objet> objetsASupprimer = new List<Objet>();
+
+                List<Objet> objetsAAjouter = new List<Objet>();
+
                 Deplacement();
 
                 ChangementCarte();
 
-                Collision();
+                Collision(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer,
+                    objetsAAjouter
+                );
 
-                EstAttaque();
+                EstAttaque(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer
+                );
 
                 Minuteur();
 
                 RechercheDeChemain();
+
+                AjouterSupprimer(
+                    tirsASupprimer,
+                    piecesASupprimer,
+                    ennemisASupprimer,
+                    objetsASupprimer,
+                    objetsAAjouter
+                );
             }
+            musiqueDeFond.MediaEnded += new EventHandler(MusicFini);
+            musiqueDuBoss.MediaEnded += new EventHandler(MusicFini);
+
         }
 
         private bool Deplacement()
@@ -1303,6 +2206,20 @@ namespace SAE_dev_1
                     joueur.ProchaineApparence();
                 }
                 else prochainChangementApparence--;
+
+                if (ennemis.Find((ennemi) => ennemi.Type.Contains("boss")) != null)
+                {
+                    Entite boss = ennemis.Find((ennemi) => ennemi.Type.Contains("boss"))!;
+
+                    if (joueur.Hitbox.Right < boss.Hitbox.Left)
+                        boss.Direction = 3;
+                    else if (joueur.Hitbox.Left > boss.Hitbox.Right)
+                        boss.Direction = 1;
+                    else if (joueur.Hitbox.Bottom < boss.Hitbox.Top)
+                        boss.Direction = 0;
+                    else if (joueur.Hitbox.Top > boss.Hitbox.Bottom)
+                        boss.Direction = 2;
+                }
             }
 
             return seDeplace;
@@ -1334,7 +2251,7 @@ namespace SAE_dev_1
                 apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(0)!;
             }
             // Joueur va à droite
-            else if (PositionJoueur(true, false).Item1 == CanvasJeux.Width - joueur.Hitbox.Width / 2 &&
+            else if (PositionJoueur(true, false).Item1 == canvasJeu.Width - joueur.Hitbox.Width / 2 &&
                      joueur.Direction == 1 &&
                      carteActuelle.CarteAdjacente(1) != null &&
                      VerifierPosition(PositionJoueur().Item2))
@@ -1343,7 +2260,7 @@ namespace SAE_dev_1
                 apparitionCarteAdjacente = carteActuelle.ApparitionCarteAdjacente(1)!;
             }
             // Joueur va en bas
-            else if (PositionJoueur(true, false).Item2 == CanvasJeux.Height - joueur.Hitbox.Height / 2 &&
+            else if (PositionJoueur(true, false).Item2 == canvasJeu.Height - joueur.Hitbox.Height / 2 &&
                      joueur.Direction == 2 &&
                      carteActuelle.CarteAdjacente(2) != null &&
                      VerifierPosition(PositionJoueur().Item1))
@@ -1365,69 +2282,138 @@ namespace SAE_dev_1
                 ChangerCarte(carteAdjacente.Nom, (int)apparitionCarteAdjacente!);
         }
 
-        private void Collision()
+        private void Collision(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer,
+            List<Objet> objetsAAjouter
+        )
         {
-            List<Entite> piecesASupprimer = new List<Entite>();
-
             foreach (Entite piece in pieces)
             {
                 if (piece.Hitbox.IntersectsWith(joueur.Hitbox))
                 {
                     nombrePiece++;
                     pieceNombre.Content = $"{nombrePiece:N0}";
-                    CanvasJeux.Children.Remove(piece.RectanglePhysique);
+                    canvasJeu.Children.Remove(piece.RectanglePhysique);
                     piecesASupprimer.Add(piece);
                 }
             }
 
-            foreach (Entite piece in piecesASupprimer)
-            {
-                pieces.Remove(piece);
-            }
-
             if (epeeTerain[0] != null)
             {
-                List<Entite> ennemiASupprimer = new List<Entite>();
                 foreach (Entite ennemi in ennemis)
                 {
                     if (ennemi.EnCollision(epeeTerain[0]))
                     {
-                        ennemi.DegatSurEntite(degatJoueur);
-                        if (ennemi.entiteEstMort)
+                        if (texturesRetireesEntites && (string)ennemi.RectanglePhysique.Tag != "enemis,diamant")
                         {
-                            CanvasJeux.Children.Remove(ennemi.RectanglePhysique);
-                            ennemiASupprimer.Add(ennemi);
+                            new Message(this, "Je ne peux pas attaquer des ennemis sans texture...", Brushes.Gold).Afficher();
+                            return;
+                        }
+
+                        ennemi.DegatSurEntite(joueur.Degats);
+                        if (ennemi.EstMort)
+                        {
+                            canvasJeu.Children.Remove(ennemi.RectanglePhysique);
+                            ennemisASupprimer.Add(ennemi);
+                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                            {
+                                Objet diamant = new Objet("diamant", 4, 4, null, false, (mainWindow, objet) =>
+                                {
+                                    MainWindow.texturesRetireesEntites = false;
+                                    new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
+                                    mainWindow.joueur.Apparence = joueur.Apparence;
+                                    objet.NeReapparaitPlus = true;
+                                    mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                                    objet.Hitbox = null;
+                                });
+
+                                objetsAAjouter.Add(diamant);
+
+                                diamantSimeMort = true;
+                            }
+                            if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
+                            {
+                                grilleEcranFin.Visibility = Visibility.Visible;
+                                this.Cursor = null;
+                                joueurMort = true;
+                                PauseMinuteur();
+                            }
+                        }
+                        if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
+                        {
+                            sonSlime.Play();
                         }
                     }
                 }
 
-                foreach (Entite ennemi in ennemiASupprimer)
-                {
-                    ennemis.Remove(ennemi);
-                }
-
-                List<Objet> buissonsASupprimer = new List<Objet>();
                 foreach (Objet buisson in objets)
                 {
-                    if (buisson.Type == "buisson")
+                    if (!texturesRetireesObjets || buisson.Type == "buisson,diamant")
                     {
-                        if (buisson.EnCollision(epeeTerain[0]))
+                        if (buisson.Type == "buisson" || buisson.Type == "buisson,diamant")
                         {
-                            CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE/2);
-                            CanvasJeux.Children.Remove(buisson.RectanglePhysique);
-                            buisson.Hitbox = null;
+                            if (buisson.EnCollision(epeeTerain[0]))
+                            {
+                                if (buisson.Type == "buisson,diamant")
+                                {
+                                    sonBuisson.Stop();
+                                    Objet diamant = new Objet("diamant", 4, 5, null, false, (mainWindow, objet) =>
+                                    {
+                                        MainWindow.texturesRetireesObjets = false;
+                                        new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
+                                        objet.NeReapparaitPlus = true;
+                                        mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
+                                        objet.Hitbox = null;
+                                    });
+
+                                    objetsAAjouter.Add(diamant);
+
+                                    objetsASupprimer.Add(buisson);
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    sonBuisson.Play();
+                                }
+                                else
+                                {
+                                    sonBuisson.Stop();
+                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                    canvasJeu.Children.Remove(buisson.RectanglePhysique);
+                                    buisson.Hitbox = null;
+                                    sonBuisson.Play();
+                                }
+                            }
                         }
                     }
                 }
 
-                foreach (Objet buisson in buissonsASupprimer)
+                sonEpee.Play();
+            }
+
+            foreach (Entite tir in tirs)
+            {
+                if (Canvas.GetTop(tir.RectanglePhysique) + TAILLE_TIRE > 600 || Canvas.GetTop(tir.RectanglePhysique) < 0 ||
+                    Canvas.GetLeft(tir.RectanglePhysique) + TAILLE_TIRE > 1200 || Canvas.GetLeft(tir.RectanglePhysique) < 0)
                 {
-                    objets.Remove(buisson);
+                    tirsASupprimer.Add(tir);
+                }
+
+                foreach (Objet objet in objets)
+                {
+                    if (tir.EnCollision(objet))
+                        tirsASupprimer.Add(tir);
                 }
             }
         }
 
-        private bool EstAttaque()
+        private bool EstAttaque(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer
+        )
         {
             bool estAttaque = false,
                 estMort = false;
@@ -1463,6 +2449,31 @@ namespace SAE_dev_1
                         coeurs[joueur.Vie].Fill = textureCoeurVide;
                         immunite = DUREE_IMMUNITE;
                         joueur.Immunise = true;
+                        break;
+                    }
+                }
+            }
+
+            foreach (Entite tir in tirs)
+            {
+                if (tir.EnCollision(joueur) && joueur.Vie > 0)
+                {
+                    estAttaque = true;
+                    joueur.PrendDesDegats();
+                    canvasJeu.Children.Remove(tir.RectanglePhysique);
+                    tirsASupprimer.Add(tir);
+
+                    if (joueur.Vie == 0)
+                    {
+                        estMort = true;
+                        break;
+                    }
+                    else
+                    {
+                        coeurs[joueur.Vie].Fill = textureCoeurVide;
+                        immunite = DUREE_IMMUNITE;
+                        joueur.Immunise = true;
+                        break;
                     }
                 }
             }
@@ -1471,10 +2482,17 @@ namespace SAE_dev_1
             {
                 grilleEcranMort.Visibility = Visibility.Visible;
                 this.Cursor = null;
-                CanvasJeux.Children.Clear();
+                canvasJeu.Children.Clear();
                 ennemis.Clear();
+                ennemisASupprimer.Clear();
+                tirs.Clear();
+                tirsASupprimer.Clear();
+                objets.Clear();
+                objetsASupprimer.Clear();
+                pieces.Clear();
+                piecesASupprimer.Clear();
                 joueurMort = true;
-                minuteurJeu.Stop();
+                PauseMinuteur();
             }
 
             return estAttaque;
@@ -1489,7 +2507,7 @@ namespace SAE_dev_1
 
         private void Minuteur()
         {
-            if (ActionAttaque)
+            if (actionAttaque)
             {
                 int x = joueur.Gauche(), y = joueur.Haut();
                 switch (joueur.Direction)
@@ -1535,15 +2553,16 @@ namespace SAE_dev_1
                 }
                 if (tempsCoup < 0)
                 {
-                    CanvasJeux.Children.Remove(epeeTerain[0].RectanglePhysique);
+                    canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
                     epeeTerain[0] = null;
-                    ActionAttaque = false;
+                    actionAttaque = false;
+                    TutorielSuivant(1);
 
                     foreach (Entite ennemi in ennemis)
                     {
-                        if (ennemi.estImmuniser)
+                        if (ennemi.EstImmunise)
                         {
-                            ennemi.estImmuniser = false;
+                            ennemi.EstImmunise = false;
                         }
                     }
                 }
@@ -1554,60 +2573,147 @@ namespace SAE_dev_1
         {
             foreach (Entite ennemi in ennemis)
             {
-                if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime")
+                if ((string)ennemi.RectanglePhysique.Tag == "enemis,slime" || (string)ennemi.RectanglePhysique.Tag == "enemis,diamant")
                 {
-                    int xCentre = (int)(ennemi.Hitbox.X + (ennemi.Hitbox.Width / 2));
-                    int yCentre = (int)(ennemi.Hitbox.Y + (ennemi.Hitbox.Height / 2));
 
-                    int xTuile = xCentre / TAILLE_TUILE;
-                    int yTuile = yCentre / TAILLE_TUILE;
-
-                    Objet? objet = ObjetSurTuile(xTuile, yTuile);
-
-                    if (objet != null)
+                    if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
                     {
-                        if (Canvas.GetLeft(ennemi.RectanglePhysique) > Canvas.GetLeft(joueur.Rectangle))
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            xTuile--;
-                        }
-                        else
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            xTuile++;
-                        }
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
+
                     }
                     else
                     {
+                        ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
 
-                        if (Canvas.GetTop(ennemi.RectanglePhysique) < Canvas.GetTop(joueur.Rectangle))
-                        {
-                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            yTuile++;
-                        }
-                        else
-                        {
-                            ennemi.ModifierHautEntite(Canvas.GetTop(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            yTuile--;
-                        }
-                        if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
-                            xTuile++;
-                        }
-                        else
-                        {
-                            ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
-                            xTuile--;
-                        }
-                        ennemi.ProchaineApparence();
                     }
+                    if (Canvas.GetLeft(ennemi.RectanglePhysique) < Canvas.GetLeft(joueur.Rectangle))
+                    {
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) + vitesseEnnemis);
+
+                    }
+                    else
+                    {
+                        ennemi.ModifierGaucheEntite(Canvas.GetLeft(ennemi.RectanglePhysique) - vitesseEnnemis);
+
+                    }
+
+                    ennemi.ChangementTextureEnnemi--;
+                    if (ennemi.ChangementTextureEnnemi <= 0)
+                    {
+                        ennemi.ProchaineApparence();
+                        ennemi.ChangementTextureEnnemi = TEMPS_CHANGEMENT_APPARENCE;
+                    }
+
+
                 }
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
-                    ennemi.RectanglePhysique.Fill = Brushes.Red;
-                    CreeTireEntiter(ennemi.RectanglePhysique,0);
-                } 
+                    dureeEntreAttaqueBoss--;
+                    dureeEntrePaterneBoss--;
+                    if (dureeEntrePaterneBoss < 0)
+                    {
+                        motifActuel++;
+                        dureeEntrePaterneBoss = DUREE_PATERNE;
+                        if (motifActuel >= TOUT_PATERNE.GetLength(0))
+                        {
+                            motifActuel = 0;
+                        }
+                    }
+                    if (dureeEntreAttaqueBoss < 0)
+                    {
+                        PaterneTire(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
+                        dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
+                        typeTireActuel++;
+                        if (typeTireActuel >= TOUT_PATERNE.GetLength(1))
+                        {
+                            typeTireActuel = 0;
+                        }
+                    }
+
+                    if (ennemi.Vie <= ennemi.VieMax / 2)
+                    {
+                        vitesseTire = 5;
+                    }
+                }
+            }
+
+            foreach (Entite tire in tirs)
+            {
+                switch (tire.DirectionProjectil)
+                {
+                    case 0:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 1:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 2:
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 3:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 4:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        break;
+                    case 5:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) + vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 6:
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                    case 7:
+                        tire.ModifierHautEntite(Canvas.GetTop(tire.RectanglePhysique) - vitesseTire);
+                        tire.ModifierGaucheEntite(Canvas.GetLeft(tire.RectanglePhysique) - vitesseTire);
+                        break;
+                }
+            }
+        }
+
+        private void AjouterSupprimer(
+            List<Entite> tirsASupprimer,
+            List<Entite> piecesASupprimer,
+            List<Entite> ennemisASupprimer,
+            List<Objet> objetsASupprimer,
+            List<Objet> objetsAAjouter
+        )
+        {
+            foreach (Entite tir in tirsASupprimer)
+            {
+                canvasJeu.Children.Remove(tir.RectanglePhysique);
+                tirs.Remove(tir);
+            }
+            foreach (Entite piece in piecesASupprimer)
+            {
+                pieces.Remove(piece);
+            }
+            foreach (Entite ennemi in ennemisASupprimer)
+            {
+                ennemis.Remove(ennemi);
+            }
+            foreach (Objet objet in objetsASupprimer)
+            {
+                if (objet.Type == "buisson,diamant")
+                {
+                    carteActuelle.Objets[0].NeReapparaitPlus = true;
+                    foreach (Objet objetCarte in carteActuelle.Objets)
+                    {
+                        objetCarte.ActualiserTexture();
+                    }
+                }
+                objets.Remove(objet);
+            }
+            foreach (Objet objet in objetsAAjouter)
+            {
+                carteActuelle.Objets.Add(objet);
+                if (objet.Hitbox == null)
+                    objet.RegenererHitbox();
+                objet.ActualiserTexture();
+                objets.Add(objet);
+                canvasJeu.Children.Add(objet.RectanglePhysique);
             }
         }
 

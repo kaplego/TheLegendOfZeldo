@@ -9,6 +9,8 @@ namespace SAE_dev_1
 {
     public class Objet
     {
+        #region Textures
+
         public ImageBrush texturePorte = new ImageBrush()
         {
             ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\porte.png"))
@@ -17,88 +19,26 @@ namespace SAE_dev_1
         {
             ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\buisson.png"))
         };
-
-        public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
+        public ImageBrush textureCaillou = new ImageBrush()
         {
-            int largeurObjet = 0,
-                hauteurObjet = 0;
-            ImageBrush? texture = null;
-            Brush? textureUnie = null;
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\caillou.png"))
+        };
+        public ImageBrush textureBoutique = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\boutique.png"))
+        };
+        public ImageBrush texturediamant = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\objets\\eclat_diamant.png"))
+        };
 
-            switch (type)
-            {
-                case "porte":
-                    largeurObjet = 1;
-                    hauteurObjet = 1;
+        #endregion
 
-                    texture = texturePorte;
-                    texture.Stretch = Stretch.Uniform;
-                    break;
-                case "buisson":
-                    largeurObjet = 1;
-                    hauteurObjet = 1;
-
-                    texture = textureBuisson;
-                    texture.Stretch = Stretch.Uniform;
-                    break;
-                case "caillou":
-                    largeurObjet = 2;
-                    hauteurObjet = 1;
-
-                    textureUnie = Brushes.Gray;
-                    break;
-            }
-
-            Rectangle rectangleObjet = new Rectangle()
-            {
-                Width = largeurObjet * MainWindow.TAILLE_TUILE,
-                Height = hauteurObjet * MainWindow.TAILLE_TUILE,
-            };
-
-            // Rotation aléatoire de l'objet
-            if (rotation == null)
-            {
-                Random aleatoire = new Random();
-                rotation = aleatoire.Next(4) * 90;
-            }
-
-            if (rotation != 0)
-            {
-                rectangleObjet.LayoutTransform = new RotateTransform()
-                {
-                    Angle = (double)rotation
-                };
-            }
-
-            rectangleObjet.Fill = texture == null ? textureUnie : texture;
-            Panel.SetZIndex(rectangleObjet, MainWindow.ZINDEX_OBJETS);
-            Canvas.SetLeft(rectangleObjet, x * MainWindow.TAILLE_TUILE);
-            Canvas.SetTop(rectangleObjet, y * MainWindow.TAILLE_TUILE);
-
-            this.type = type;
-            this.Hitbox = new Rect()
-            {
-                Width = rotation % 180 == 0 ?
-                    largeurObjet * MainWindow.TAILLE_TUILE :
-                    hauteurObjet * MainWindow.TAILLE_TUILE,
-                Height = rotation % 180 == 0 ?
-                    hauteurObjet * MainWindow.TAILLE_TUILE :
-                    largeurObjet * MainWindow.TAILLE_TUILE,
-                X = x * MainWindow.TAILLE_TUILE,
-                Y = y * MainWindow.TAILLE_TUILE,
-            };
-            this.RectanglePhysique = rectangleObjet;
-            this.X = x;
-            this.Y = y;
-            this.largeur = largeurObjet;
-            this.hauteur = hauteurObjet;
-            this.Interraction = interraction;
-            this.NeReapparaitPlus = neReapparaitPlus;
-        }
-
+        #region Champs
         private string type;
         private Rect? hitbox;
         private Rectangle rectanglePhysique;
+        private Brush textureParDefaut;
         private int x;
         private int y;
         private int largeur;
@@ -106,7 +46,9 @@ namespace SAE_dev_1
         private int? rotation;
         private Action<MainWindow, Objet>? interraction;
         private bool neReapparaitPlus;
+        #endregion
 
+        #region Propriétés
         public string Type
         {
             get { return type; }
@@ -124,6 +66,11 @@ namespace SAE_dev_1
             set { rectanglePhysique = value; }
         }
 
+        public Brush TextureParDefaut
+        {
+            get { return textureParDefaut; }
+        }
+
         public int X
         {
             get { return x; }
@@ -131,6 +78,14 @@ namespace SAE_dev_1
             {
                 if (value < 0 || value > 19)
                     throw new ArgumentOutOfRangeException("X doit être entre 0 et 19.");
+
+                Canvas.SetLeft(this.RectanglePhysique, value * MainWindow.TAILLE_TUILE);
+                if (this.Hitbox != null)
+                {
+                    Rect hitbox = (Rect)this.Hitbox;
+                    hitbox.X = value * MainWindow.TAILLE_TUILE;
+                    this.Hitbox = hitbox;
+                }
 
                 x = value;
             }
@@ -143,6 +98,14 @@ namespace SAE_dev_1
             {
                 if (value < 0 || value > 9)
                     throw new ArgumentOutOfRangeException("Y doit être entre 0 et 9.");
+
+                Canvas.SetTop(this.RectanglePhysique, value * MainWindow.TAILLE_TUILE);
+                if (this.Hitbox != null)
+                {
+                    Rect hitbox = (Rect)this.Hitbox;
+                    hitbox.Y = value * MainWindow.TAILLE_TUILE;
+                    this.Hitbox = hitbox;
+                }
 
                 y = value;
             }
@@ -187,6 +150,102 @@ namespace SAE_dev_1
             get { return neReapparaitPlus; }
             set { neReapparaitPlus = value; }
         }
+        #endregion
+
+        public Objet(string type, int x, int y, int? rotation, bool neReapparaitPlus, Action<MainWindow, Objet>? interraction)
+        {
+            int largeurObjet = 0,
+                hauteurObjet = 0;
+            ImageBrush texture = new ImageBrush();
+            texture.Stretch = Stretch.Uniform;
+
+            switch (type)
+            {
+                case "porte":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = texturePorte;
+                    break;
+                case "buisson":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = textureBuisson;
+                    break;
+                case "caillou":
+                    largeurObjet = 2;
+                    hauteurObjet = 1;
+
+                    texture = textureCaillou;
+                    break;
+                case "boutique":
+                    largeurObjet = 3;
+                    hauteurObjet = 2;
+
+                    texture = textureBoutique;
+                    break;
+                case "diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = texturediamant;
+                    break;
+                case "buisson,diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+
+                    texture = textureBuisson;
+                    break;
+            }
+
+            Rectangle rectangleObjet = new Rectangle()
+            {
+                Width = largeurObjet * MainWindow.TAILLE_TUILE,
+                Height = hauteurObjet * MainWindow.TAILLE_TUILE,
+            };
+
+            // Rotation aléatoire de l'objet
+            if (rotation == null)
+            {
+                Random aleatoire = new Random();
+                rotation = aleatoire.Next(4) * 90;
+            }
+
+            if (rotation != 0)
+            {
+                rectangleObjet.LayoutTransform = new RotateTransform()
+                {
+                    Angle = (double)rotation
+                };
+            }
+
+            textureParDefaut = texture;
+            rectangleObjet.Fill = MainWindow.Texture(type, texture);
+            Panel.SetZIndex(rectangleObjet, MainWindow.ZINDEX_OBJETS);
+            Canvas.SetLeft(rectangleObjet, x * MainWindow.TAILLE_TUILE);
+            Canvas.SetTop(rectangleObjet, y * MainWindow.TAILLE_TUILE);
+
+            this.type = type;
+            this.Hitbox = new Rect()
+            {
+                Width = rotation % 180 == 0 ?
+                    largeurObjet * MainWindow.TAILLE_TUILE :
+                    hauteurObjet * MainWindow.TAILLE_TUILE,
+                Height = rotation % 180 == 0 ?
+                    hauteurObjet * MainWindow.TAILLE_TUILE :
+                    largeurObjet * MainWindow.TAILLE_TUILE,
+                X = x * MainWindow.TAILLE_TUILE,
+                Y = y * MainWindow.TAILLE_TUILE,
+            };
+            this.rectanglePhysique = rectangleObjet;
+            this.X = x;
+            this.Y = y;
+            this.largeur = largeurObjet;
+            this.hauteur = hauteurObjet;
+            this.Interraction = interraction;
+            this.NeReapparaitPlus = neReapparaitPlus;
+        }
 
         public void RegenererHitbox()
         {
@@ -207,6 +266,18 @@ namespace SAE_dev_1
                     largeurObjet = 2;
                     hauteurObjet = 1;
                     break;
+                case "boutique":
+                    largeurObjet = 3;
+                    hauteurObjet = 2;
+                    break;
+                case "diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+                    break;
+                case "buisson,diamant":
+                    largeurObjet = 1;
+                    hauteurObjet = 1;
+                    break;
             }
 
             this.Hitbox = new Rect()
@@ -220,6 +291,12 @@ namespace SAE_dev_1
                 X = x * MainWindow.TAILLE_TUILE,
                 Y = y * MainWindow.TAILLE_TUILE,
             };
+        }
+
+        public void ActualiserTexture()
+        {
+
+            this.RectanglePhysique.Fill = MainWindow.Texture(type, this.textureParDefaut);
         }
 
         public bool EnCollision(Objet objet)

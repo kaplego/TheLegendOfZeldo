@@ -15,8 +15,34 @@ namespace SAE_dev_1
             Stretch = Stretch.Uniform
         };
 
-        public Dialogue(string[] textes, Canvas canvas)
+        private MainWindow mainWindow;
+        private Canvas canvas;
+        private Grid grille;
+        private TextBlock? texte;
+        private string[] textes;
+        private int indiceTexte = -1;
+        private Action<MainWindow>? quandTermine;
+
+        public Grid Grille
         {
+            get { return grille; }
+        }
+
+        public string[] Textes
+        {
+            get { return textes; }
+            set { textes = value; }
+        }
+
+        public Action<MainWindow>? QuandTermine
+        {
+            get { return this.quandTermine; }
+            set { this.quandTermine = value; }
+        }
+
+        public Dialogue(MainWindow mainWindow, string[] textes, Canvas canvas)
+        {
+            this.mainWindow = mainWindow;
             this.canvas = canvas;
             this.textes = textes;
             this.grille = new Grid()
@@ -31,23 +57,6 @@ namespace SAE_dev_1
             canvas.Children.Add(this.Grille);
         }
 
-        private Canvas canvas;
-        private Grid grille;
-        private TextBlock texte;
-        private string[] textes;
-        private int indiceTexte = -1;
-
-        public Grid Grille
-        {
-            get { return grille; }
-        }
-
-        public string[] Textes
-        {
-            get { return textes; }
-            set { textes = value; }
-        }
-
         public string TexteActuel()
         {
             return this.Textes[indiceTexte];
@@ -59,6 +68,8 @@ namespace SAE_dev_1
 
             if (indiceTexte >= this.Textes.Length)
             {
+                if (this.QuandTermine != null)
+                    this.QuandTermine(mainWindow);
                 this.Fermer();
                 return true;
             }

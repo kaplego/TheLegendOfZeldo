@@ -34,7 +34,7 @@ namespace SAE_dev_1
             (parent == null
                 ? mainWindow
                 : parent).Show();
-            mainWindow.CanvasJeux.Focus();
+            mainWindow.canvasJeu.Focus();
         }
     }
 }
