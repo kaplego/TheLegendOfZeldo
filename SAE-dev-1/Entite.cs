@@ -11,20 +11,7 @@ namespace SAE_dev_1
     {
         #region Textures
 
-        private ImageBrush[] textureEnnemiFace = new ImageBrush[2]
-        {
-            new ImageBrush()
-            {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-1.png")),
-                Stretch = Stretch.Uniform
-            },
-            new ImageBrush()
-            {
-                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-2.png")),
-                Stretch = Stretch.Uniform
-            }
-        };
-        private ImageBrush[] textureEnnemiDos = new ImageBrush[2]
+        private ImageBrush[] textureSlimeDos = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -37,7 +24,7 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             },
         };
-        private ImageBrush[] textureEnnemiDroite = new ImageBrush[2]
+        private ImageBrush[] textureSlimeDroite = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -50,7 +37,20 @@ namespace SAE_dev_1
                 Stretch = Stretch.Uniform
             },
         };
-        private ImageBrush[] textureEnnemiGauche = new ImageBrush[2]
+        private ImageBrush[] textureSlimeFace = new ImageBrush[2]
+        {
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-1.png")),
+                Stretch = Stretch.Uniform
+            },
+            new ImageBrush()
+            {
+                ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-face-2.png")),
+                Stretch = Stretch.Uniform
+            }
+        };
+        private ImageBrush[] textureSlimeGauche = new ImageBrush[2]
         {
             new ImageBrush()
             {
@@ -62,6 +62,30 @@ namespace SAE_dev_1
                 ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\slime-gauche-2.png")),
                 Stretch = Stretch.Uniform
             },
+        };
+
+        private ImageBrush textureAraigneeDos = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-dos.png")),
+            Stretch = Stretch.Uniform
+        };
+
+        private ImageBrush textureAraigneeDroite = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-droite.png")),
+            Stretch = Stretch.Uniform
+        };
+
+        private ImageBrush textureAraigneeFace = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-face.png")),
+            Stretch = Stretch.Uniform
+        };
+
+        private ImageBrush textureAraigneeGauche = new ImageBrush()
+        {
+            ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "ressources\\ennemi\\araignee-gauche.png")),
+            Stretch = Stretch.Uniform
         };
 
         #endregion
@@ -159,6 +183,7 @@ namespace SAE_dev_1
                 X = x,
                 Y = y
             };
+            ChangerImageRectangle();
         }
 
         public Entite(string type, Rectangle rectangle, int x, int y, int vie)
@@ -174,6 +199,7 @@ namespace SAE_dev_1
             };
             this.vie = vie;
             vieMax = vie;
+            ChangerImageRectangle();
         }
 
         public Entite(string type, int angleDirection, Rectangle rectangle, int x, int y)
@@ -188,6 +214,7 @@ namespace SAE_dev_1
                 Y = y
             };
             directionProjectil = angleDirection;
+            ChangerImageRectangle();
         }
 
         public Entite(string type, Rectangle rectangle, Rect rect)
@@ -195,6 +222,7 @@ namespace SAE_dev_1
             this.type = type;
             this.rectanglePhysique = rectangle;
             this.Hitbox = rect;
+            ChangerImageRectangle();
         }
 
         public bool EnCollision(Entite entite)
@@ -261,14 +289,24 @@ namespace SAE_dev_1
 
         public void ChangerImageRectangle()
         {
-            this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
-                this.direction == 0
-                    ? textureEnnemiDos[apparence]
-                    : this.direction == 1
-                        ? textureEnnemiDroite[apparence]
-                        : this.direction == 2
-                            ? textureEnnemiFace[0]
-                            : textureEnnemiGauche[apparence]);
+            if (this.Type.Contains("slime"))
+                this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
+                    this.direction == 0
+                        ? textureSlimeDos[apparence]
+                        : this.direction == 1
+                            ? textureSlimeDroite[apparence]
+                            : this.direction == 2
+                                ? textureSlimeFace[0]
+                                : textureSlimeGauche[apparence]);
+            else if (this.Type.Contains("boss"))
+                this.RectanglePhysique.Fill = MainWindow.Texture(this.type,
+                    this.direction == 0
+                        ? textureAraigneeDos
+                        : this.direction == 1
+                            ? textureAraigneeDroite
+                            : this.direction == 2
+                                ? textureAraigneeFace
+                                : textureAraigneeGauche);
         }
 
         public void ProchaineApparence()

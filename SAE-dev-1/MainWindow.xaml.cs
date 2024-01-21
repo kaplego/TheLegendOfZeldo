@@ -1575,6 +1575,7 @@ namespace SAE_dev_1
                 }
             }
 
+#if DEBUG
             if (e.Key == Key.F3 && !EmpecherAppuiTouche("dialogue"))
             {
                 if (dialogueActuel == null)
@@ -1634,6 +1635,16 @@ namespace SAE_dev_1
                     haut = droite = bas = gauche = false;
                 }
             }
+
+            if (e.Key == Key.F6 && !EmpecherAppuiTouche())
+            {
+                MainWindow.texturesRetireesEntites = false;
+                MainWindow.texturesRetireesObjets = false;
+                MainWindow.texturesRetireesTerrain = false;
+                cartes.Find((carte) => carte.Nom == "jardin")!.NombreVisites++;
+                ChangerCarte("jardin", 4);
+            }
+#endif
 
             if (e.Key == Key.Escape && !EmpecherAppuiTouche("pause"))
             {
@@ -2538,7 +2549,6 @@ namespace SAE_dev_1
                 }
                 else if ((string)ennemi.RectanglePhysique.Tag == "enemis,boss")
                 {
-                    ennemi.RectanglePhysique.Fill = Brushes.Red;
                     dureeEntreAttaqueBoss--;
                     dureeEntrePaterneBoss--;
                     if (dureeEntrePaterneBoss < 0)
