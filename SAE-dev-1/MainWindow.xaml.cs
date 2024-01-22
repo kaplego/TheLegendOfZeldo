@@ -1930,27 +1930,19 @@ namespace SAE_dev_1
             switch (typeTireActuel)
             {
                 case 0:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                    for (int i = 0; i <= 7; i++)
+                        CreeTireEntiter(ennemi.RectanglePhysique, i, 1);
                     break;
                 case 1:
                     if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        for (int i = 5; i <= 7; i++)
+                            CreeTireEntiter(ennemi.RectanglePhysique, i, 2);
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                        for (int i = 1; i <= 3; i++)
+                            CreeTireEntiter(ennemi.RectanglePhysique, i, 2);
                     }
                     break;
                 case 2:
@@ -1964,7 +1956,6 @@ namespace SAE_dev_1
                     CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
                     CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
                     CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-
                     break;
                 case 4:
                     if (Canvas.GetTop(joueur.Rectangle) < Canvas.GetTop(ennemi.RectanglePhysique))
@@ -1975,9 +1966,8 @@ namespace SAE_dev_1
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        for (int i = 3; i <= 5; i++)
+                            CreeTireEntiter(ennemi.RectanglePhysique, i, 2);
                     }
                     break;
                 case 5:
@@ -1987,10 +1977,8 @@ namespace SAE_dev_1
                     CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
                     break;
                 case 6:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    for (int i = 0; i <= 6; i += 2)
+                        CreeTireEntiter(ennemi.RectanglePhysique, i, 2);
                     break;
             }
         }
