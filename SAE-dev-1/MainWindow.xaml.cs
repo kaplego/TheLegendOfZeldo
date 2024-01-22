@@ -1154,11 +1154,12 @@ namespace SAE_dev_1
                         Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
 
+                        tuile.Tag = "mur";
+
                         if (orientation == "n" || orientation == "s" || orientation == "e" || orientation == "o")
                         {
                             // Nord / Sud
                             fondTuile = Texture("mur", textureMurDroit);
-                            tuile.Tag = "mur";
 
                             tuile.LayoutTransform = new RotateTransform()
                             {
@@ -1174,7 +1175,6 @@ namespace SAE_dev_1
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
                             fondTuile = Texture("mur", textureMurAngle);
-                            tuile.Tag = "mur";
 
                             tuile.LayoutTransform = new RotateTransform()
                             {
@@ -1195,19 +1195,18 @@ namespace SAE_dev_1
                         string type = correspondance.Groups[1].Value;
                         string orientation = correspondance.Groups[2].Value;
 
+                        tuile.Tag = "chemin";
+
                         switch (type)
                         {
                             case "I":
                                 fondTuile = Texture("chemin", textureCheminI);
-                                tuile.Tag = "chemin";
                                 break;
                             case "L":
                                 fondTuile = Texture("chemin", textureCheminL);
-                                tuile.Tag = "chemin";
                                 break;
                             case "U":
                                 fondTuile = Texture("chemin", textureCheminU);
-                                tuile.Tag = "chemin";
                                 break;
                         }
 
