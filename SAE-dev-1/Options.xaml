@@ -45,6 +45,12 @@
 
             </ComboBox>
 
+            <Label Margin="20,134,20,0" VerticalAlignment="Top" Height="50" FontSize="20" Foreground="White" VerticalContentAlignment="Center">Volume de la music :</Label>
+            <Slider x:Name="sliderMusic" HorizontalAlignment="Center" Margin="0,189,0,0" VerticalAlignment="Top" Width="330" Maximum="1"/>
+
+            <Label Margin="20,222,20,0" VerticalAlignment="Top" Height="50" FontSize="20" Foreground="White" VerticalContentAlignment="Center">Volume des effets sonores :</Label>
+            <Slider x:Name="sliderEffect" HorizontalAlignment="Center" Margin="0,291,0,0" VerticalAlignment="Top" Width="330" Maximum="1"/>
+
             <Button
                 x:Name="btnAnnuler"
                 Width="300"
@@ -83,6 +89,7 @@
                     </Style>
                 </Button.Resources>
             </Button>
+
         </Grid>
     </Grid>
 </Window>
