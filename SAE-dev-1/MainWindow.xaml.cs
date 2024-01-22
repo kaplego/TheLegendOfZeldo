@@ -549,7 +549,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
                     musiqueDeFond.Pause();
-                    CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    CreerEnnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
                     Rectangle Zeldo = new Rectangle
                     {
                         Tag = "Zeldo",
@@ -691,9 +691,9 @@ namespace SAE_dev_1
                 new (int, int)?[4]
                 {
                     null,
-                    (4, 6),
+                    (3, 5),
                     null,
-                    (4, 6)
+                    (3, 5)
                 }
             ));
 
@@ -725,7 +725,7 @@ namespace SAE_dev_1
                 new (int, int)?[4]
                 {
                     null,
-                    (4, 6),
+                    (3, 5),
                     null,
                     null
                 },
@@ -733,7 +733,7 @@ namespace SAE_dev_1
                 {
                     if (!diamantSimeMort)
                     {
-                        CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                        CreerEnnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
                     }
                 }
             ));
@@ -773,7 +773,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
 
-                    CreeEnemis(2, "slime", VIE_ENNEMI);
+                    CreerEnnemis(2, "slime", VIE_ENNEMI);
 
                 }
             ));
@@ -873,7 +873,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
 
-                    CreeEnemis(4, "slime", VIE_ENNEMI);
+                    CreerEnnemis(4, "slime", VIE_ENNEMI);
 
                 }
             ));
@@ -1154,44 +1154,38 @@ namespace SAE_dev_1
                         Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
 
-                        if (orientation == "n" || orientation == "s")
+                        tuile.Tag = "mur";
+
+                        if (orientation == "n" || orientation == "s" || orientation == "e" || orientation == "o")
                         {
                             // Nord / Sud
                             fondTuile = Texture("mur", textureMurDroit);
-                            tuile.Tag = "mur";
 
                             tuile.LayoutTransform = new RotateTransform()
                             {
-                                Angle = orientation == "n" ? 90 : -90
+                                Angle = orientation == "n"
+                                    ? 90 : orientation == "e"
+                                        ? 180
+                                        : orientation == "s"
+                                            ? -90
+                                            : 0
                             };
-                        }
-                        else if (orientation == "e" || orientation == "o")
-                        {
-                            // Est / Ouest
-                            fondTuile = Texture("mur", textureMurDroit);
-                            tuile.Tag = "mur";
-
-                            if (orientation == "e")
-                                tuile.LayoutTransform = new RotateTransform()
-                                {
-                                    Angle = 180
-                                };
                         }
                         else
                         {
                             // Nord-Ouest / Nord-Est / Sud-Est / Sud-Ouest
                             fondTuile = Texture("mur", textureMurAngle);
-                            tuile.Tag = "mur";
 
-                            if (orientation != "no")
-                                tuile.LayoutTransform = new RotateTransform()
-                                {
-                                    Angle = orientation == "ne"
-                                        ? 90
-                                        : orientation == "se"
-                                            ? 180
-                                            : -90
-                                };
+                            tuile.LayoutTransform = new RotateTransform()
+                            {
+                                Angle = orientation == "ne"
+                                    ? 90
+                                    : orientation == "se"
+                                        ? 180
+                                        : orientation == "so"
+                                            ? -90
+                                            : 0
+                            };
                         }
                     }
                     else if (regexTextureChemin.IsMatch(textureTuile))
@@ -1201,19 +1195,18 @@ namespace SAE_dev_1
                         string type = correspondance.Groups[1].Value;
                         string orientation = correspondance.Groups[2].Value;
 
+                        tuile.Tag = "chemin";
+
                         switch (type)
                         {
                             case "I":
                                 fondTuile = Texture("chemin", textureCheminI);
-                                tuile.Tag = "chemin";
                                 break;
                             case "L":
                                 fondTuile = Texture("chemin", textureCheminL);
-                                tuile.Tag = "chemin";
                                 break;
                             case "U":
                                 fondTuile = Texture("chemin", textureCheminU);
-                                tuile.Tag = "chemin";
                                 break;
                         }
 
@@ -1484,17 +1477,17 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(2, "slime", VIE_ENNEMI);
+                CreerEnnemis(2, "slime", VIE_ENNEMI);
             }
 
             if (e.Key == Key.F2 && !EmpecherAppuiTouche())
             {
-                CreePiece();
+                CreerPiece();
             }
 
             if (e.Key == Key.F5 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                CreerEnnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
             }
         }
 
@@ -1710,7 +1703,7 @@ namespace SAE_dev_1
 
         #region Creations d'entités
 
-        public void CreeEnemis(int nombre, string type, int vie)
+        public void CreerEnnemis(int nombre, string type, int vie)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -1731,7 +1724,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeEnemis(int nombre, string type, int vie, int x, int y)
+        public void CreerEnnemis(int nombre, string type, int vie, int x, int y)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -1755,7 +1748,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeTireEntiter(Rectangle ennemi, int angleDirection, int nombre)
+        public void CreerTir(Rectangle ennemi, int angleDirection, int nombre)
         {
 
             for (int i = 0; i < nombre; i++)
@@ -1777,7 +1770,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreePiece()
+        public void CreerPiece()
         {
             Random aleatoire = new Random();
             Rectangle Piece = new Rectangle
@@ -1797,7 +1790,7 @@ namespace SAE_dev_1
             pieces.Add(new Entite("piece", Piece, x, y));
 
         }
-        public void CreePiece(int x, int y)
+        public void CreerPiece(int x, int y)
         {
             Rectangle Piece = new Rectangle
             {
@@ -1896,156 +1889,96 @@ namespace SAE_dev_1
                 Width = TAILLE_EPEE,
                 Fill = textureEpee1,
             };
-            int x;
-            int y;
+            int x = 0;
+            int y = 0;
+
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() - TAILLE_EPEE + 10;
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 1:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() + TAILLE_EPEE - 10;
                     y = joueur.Haut();
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 2:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() + TAILLE_EPEE - 10;
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 3:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() - TAILLE_EPEE + 10;
                     y = joueur.Haut();
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
             }
+
+            Canvas.SetLeft(epee, x);
+            Canvas.SetTop(epee, y);
+            Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                ? ZINDEX_HUD + 1
+                : ZINDEX_JOUEUR - 1);
+            canvasJeu.Children.Add(epee);
+            if (epeeTerain[0] != null)
+                canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+            epeeTerain[0] = new Entite("epee", epee, x, y);
+
             actionAttaque = true;
         }
 
-        private void PaterneTire(Entite ennemi, int typeTireActuel)
+        private void MotifTir(Entite ennemi, int typeTireActuel)
         {
             switch (typeTireActuel)
             {
                 case 0:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                    for (int i = 0; i <= 7; i++)
+                        CreerTir(ennemi.RectanglePhysique, i, 1);
                     break;
                 case 1:
                     if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        for (int i = 5; i <= 7; i++)
+                            CreerTir(ennemi.RectanglePhysique, i, 2);
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                        for (int i = 1; i <= 3; i++)
+                            CreerTir(ennemi.RectanglePhysique, i, 2);
                     }
                     break;
                 case 2:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    CreerTir(ennemi.RectanglePhysique, 1, 2);
+                    CreerTir(ennemi.RectanglePhysique, 3, 2);
+                    CreerTir(ennemi.RectanglePhysique, 4, 2);
+                    CreerTir(ennemi.RectanglePhysique, 6, 2);
                     break;
                 case 3:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-
+                    CreerTir(ennemi.RectanglePhysique, 5, 2);
+                    CreerTir(ennemi.RectanglePhysique, 7, 2);
+                    CreerTir(ennemi.RectanglePhysique, 0, 2);
+                    CreerTir(ennemi.RectanglePhysique, 2, 2);
                     break;
                 case 4:
                     if (Canvas.GetTop(joueur.Rectangle) < Canvas.GetTop(ennemi.RectanglePhysique))
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                        CreerTir(ennemi.RectanglePhysique, 0, 2);
+                        CreerTir(ennemi.RectanglePhysique, 7, 2);
+                        CreerTir(ennemi.RectanglePhysique, 1, 2);
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        for (int i = 3; i <= 5; i++)
+                            CreerTir(ennemi.RectanglePhysique, i, 2);
                     }
                     break;
                 case 5:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    CreerTir(ennemi.RectanglePhysique, 1, 2);
+                    CreerTir(ennemi.RectanglePhysique, 3, 2);
+                    CreerTir(ennemi.RectanglePhysique, 5, 2);
+                    CreerTir(ennemi.RectanglePhysique, 7, 2);
                     break;
                 case 6:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    for (int i = 0; i <= 6; i += 2)
+                        CreerTir(ennemi.RectanglePhysique, i, 2);
                     break;
             }
         }
@@ -2377,7 +2310,7 @@ namespace SAE_dev_1
                                 else
                                 {
                                     sonBuisson.Stop();
-                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                    CreerPiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
                                     canvasJeu.Children.Remove(buisson.RectanglePhysique);
                                     buisson.Hitbox = null;
                                     sonBuisson.Play();
@@ -2619,7 +2552,7 @@ namespace SAE_dev_1
                     }
                     if (dureeEntreAttaqueBoss < 0)
                     {
-                        PaterneTire(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
+                        MotifTir(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
                         dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
                         typeTireActuel++;
                         if (typeTireActuel >= TOUT_PATERNE.GetLength(1))
