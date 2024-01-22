@@ -549,7 +549,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
                     musiqueDeFond.Pause();
-                    CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                    CreerEnnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
                     Rectangle Zeldo = new Rectangle
                     {
                         Tag = "Zeldo",
@@ -733,7 +733,7 @@ namespace SAE_dev_1
                 {
                     if (!diamantSimeMort)
                     {
-                        CreeEnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                        CreerEnnemis(1, "diamant", VIE_ENNEMI * 2, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
                     }
                 }
             ));
@@ -773,7 +773,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
 
-                    CreeEnemis(2, "slime", VIE_ENNEMI);
+                    CreerEnnemis(2, "slime", VIE_ENNEMI);
 
                 }
             ));
@@ -873,7 +873,7 @@ namespace SAE_dev_1
                 (mainWindow, carte) =>
                 {
 
-                    CreeEnemis(4, "slime", VIE_ENNEMI);
+                    CreerEnnemis(4, "slime", VIE_ENNEMI);
 
                 }
             ));
@@ -1484,17 +1484,17 @@ namespace SAE_dev_1
 
             if (e.Key == Key.F1 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(2, "slime", VIE_ENNEMI);
+                CreerEnnemis(2, "slime", VIE_ENNEMI);
             }
 
             if (e.Key == Key.F2 && !EmpecherAppuiTouche())
             {
-                CreePiece();
+                CreerPiece();
             }
 
             if (e.Key == Key.F5 && !EmpecherAppuiTouche())
             {
-                CreeEnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
+                CreerEnnemis(1, "boss", VIE_BOSS, 600 - TAILLE_ENNEMI, 300 - TAILLE_ENNEMI);
             }
         }
 
@@ -1710,7 +1710,7 @@ namespace SAE_dev_1
 
         #region Creations d'entités
 
-        public void CreeEnemis(int nombre, string type, int vie)
+        public void CreerEnnemis(int nombre, string type, int vie)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -1731,7 +1731,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeEnemis(int nombre, string type, int vie, int x, int y)
+        public void CreerEnnemis(int nombre, string type, int vie, int x, int y)
         {
             for (int i = 0; i < nombre; i++)
             {
@@ -1755,7 +1755,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreeTireEntiter(Rectangle ennemi, int angleDirection, int nombre)
+        public void CreerTir(Rectangle ennemi, int angleDirection, int nombre)
         {
 
             for (int i = 0; i < nombre; i++)
@@ -1777,7 +1777,7 @@ namespace SAE_dev_1
             }
         }
 
-        public void CreePiece()
+        public void CreerPiece()
         {
             Random aleatoire = new Random();
             Rectangle Piece = new Rectangle
@@ -1797,7 +1797,7 @@ namespace SAE_dev_1
             pieces.Add(new Entite("piece", Piece, x, y));
 
         }
-        public void CreePiece(int x, int y)
+        public void CreerPiece(int x, int y)
         {
             Rectangle Piece = new Rectangle
             {
@@ -1980,72 +1980,72 @@ namespace SAE_dev_1
             actionAttaque = true;
         }
 
-        private void PaterneTire(Entite ennemi, int typeTireActuel)
+        private void MotifTir(Entite ennemi, int typeTireActuel)
         {
             switch (typeTireActuel)
             {
                 case 0:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 1);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 1);
+                    CreerTir(ennemi.RectanglePhysique, 0, 1);
+                    CreerTir(ennemi.RectanglePhysique, 1, 1);
+                    CreerTir(ennemi.RectanglePhysique, 2, 1);
+                    CreerTir(ennemi.RectanglePhysique, 3, 1);
+                    CreerTir(ennemi.RectanglePhysique, 4, 1);
+                    CreerTir(ennemi.RectanglePhysique, 5, 1);
+                    CreerTir(ennemi.RectanglePhysique, 6, 1);
+                    CreerTir(ennemi.RectanglePhysique, 7, 1);
                     break;
                 case 1:
                     if (Canvas.GetLeft(joueur.Rectangle) < Canvas.GetLeft(ennemi.RectanglePhysique))
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        CreerTir(ennemi.RectanglePhysique, 6, 2);
+                        CreerTir(ennemi.RectanglePhysique, 7, 2);
+                        CreerTir(ennemi.RectanglePhysique, 5, 2);
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
+                        CreerTir(ennemi.RectanglePhysique, 2, 2);
+                        CreerTir(ennemi.RectanglePhysique, 1, 2);
+                        CreerTir(ennemi.RectanglePhysique, 3, 2);
                     }
                     break;
                 case 2:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    CreerTir(ennemi.RectanglePhysique, 1, 2);
+                    CreerTir(ennemi.RectanglePhysique, 3, 2);
+                    CreerTir(ennemi.RectanglePhysique, 4, 2);
+                    CreerTir(ennemi.RectanglePhysique, 6, 2);
                     break;
                 case 3:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
+                    CreerTir(ennemi.RectanglePhysique, 5, 2);
+                    CreerTir(ennemi.RectanglePhysique, 7, 2);
+                    CreerTir(ennemi.RectanglePhysique, 0, 2);
+                    CreerTir(ennemi.RectanglePhysique, 2, 2);
 
                     break;
                 case 4:
                     if (Canvas.GetTop(joueur.Rectangle) < Canvas.GetTop(ennemi.RectanglePhysique))
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
+                        CreerTir(ennemi.RectanglePhysique, 0, 2);
+                        CreerTir(ennemi.RectanglePhysique, 7, 2);
+                        CreerTir(ennemi.RectanglePhysique, 1, 2);
                     }
                     else
                     {
-                        CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                        CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
+                        CreerTir(ennemi.RectanglePhysique, 4, 2);
+                        CreerTir(ennemi.RectanglePhysique, 3, 2);
+                        CreerTir(ennemi.RectanglePhysique, 5, 2);
                     }
                     break;
                 case 5:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 1, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 3, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 5, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 7, 2);
+                    CreerTir(ennemi.RectanglePhysique, 1, 2);
+                    CreerTir(ennemi.RectanglePhysique, 3, 2);
+                    CreerTir(ennemi.RectanglePhysique, 5, 2);
+                    CreerTir(ennemi.RectanglePhysique, 7, 2);
                     break;
                 case 6:
-                    CreeTireEntiter(ennemi.RectanglePhysique, 0, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 2, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 4, 2);
-                    CreeTireEntiter(ennemi.RectanglePhysique, 6, 2);
+                    CreerTir(ennemi.RectanglePhysique, 0, 2);
+                    CreerTir(ennemi.RectanglePhysique, 2, 2);
+                    CreerTir(ennemi.RectanglePhysique, 4, 2);
+                    CreerTir(ennemi.RectanglePhysique, 6, 2);
                     break;
             }
         }
@@ -2377,7 +2377,7 @@ namespace SAE_dev_1
                                 else
                                 {
                                     sonBuisson.Stop();
-                                    CreePiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
+                                    CreerPiece(buisson.X * TAILLE_TUILE + TAILLE_TUILE / 2, buisson.Y * TAILLE_TUILE + TAILLE_TUILE / 2);
                                     canvasJeu.Children.Remove(buisson.RectanglePhysique);
                                     buisson.Hitbox = null;
                                     sonBuisson.Play();
@@ -2619,7 +2619,7 @@ namespace SAE_dev_1
                     }
                     if (dureeEntreAttaqueBoss < 0)
                     {
-                        PaterneTire(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
+                        MotifTir(ennemi, TOUT_PATERNE[motifActuel, typeTireActuel]);
                         dureeEntreAttaqueBoss = DUREE_ATTAQUE_BOSS;
                         typeTireActuel++;
                         if (typeTireActuel >= TOUT_PATERNE.GetLength(1))
