@@ -69,6 +69,12 @@ namespace SAE_dev_1
             ElementSection("Adeline BERGEON");
             ElementSection("Lou MAGNENAT");
             ElementSection("Safia EZZAMARI");
+            TitreSection("Musics et Sons");
+            ElementSection("Music de fond : “middel age” fait par Aleksey Chistilin sur Pixabay");
+            ElementSection("Music du boss : “A song of Wolves and Dragons” fait par 17406877 sur Pixabay");
+            ElementSection("effet sonore de l’épée : fait par 666HeroHero sur Pixabay");
+            ElementSection("effet sonore des buissons : fait par Pixabay sur Pixabay");
+            ElementSection("effet sonore des ennemis : fait par Pixabay sur Pixabay");
         }
 
         private void btnRetour_Click(object sender, RoutedEventArgs e)
