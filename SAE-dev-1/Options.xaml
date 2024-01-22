@@ -39,11 +39,17 @@
                 Height="30"
                 VerticalContentAlignment="Center"
                 Padding="8,3,8,3" FontSize="14">
-                <ComboBoxItem x:Name="touchesFleches" Content="Flèches directionelles ; E/A" IsSelected="True"/>
-                <ComboBoxItem x:Name="touchesZQSD" Content="Z/Q/S/D ; E/A"/>
-                <ComboBoxItem x:Name="touchesWASD" Content="W/A/S/D ; E/Q"/>
+                <ComboBoxItem x:Name="touchesFleches" Content="Flèches directionelles ; E/A/Espace" IsSelected="True"/>
+                <ComboBoxItem x:Name="touchesZQSD" Content="Z/Q/S/D ; E/A/Espace"/>
+                <ComboBoxItem x:Name="touchesWASD" Content="W/A/S/D ; E/Q/Espace"/>
 
             </ComboBox>
+
+            <Label Margin="20,134,20,0" VerticalAlignment="Top" Height="50" FontSize="20" Foreground="White" VerticalContentAlignment="Center">Volume de la musique</Label>
+            <Slider x:Name="sliderMusique" HorizontalAlignment="Center" Margin="0,189,0,0" VerticalAlignment="Top" Width="330" Maximum="1"/>
+
+            <Label Margin="20,222,20,0" VerticalAlignment="Top" Height="50" FontSize="20" Foreground="White" VerticalContentAlignment="Center">Volume des effets sonores</Label>
+            <Slider x:Name="sliderEffetsSonores" HorizontalAlignment="Center" Margin="0,291,0,0" VerticalAlignment="Top" Width="330" Maximum="1"/>
 
             <Button
                 x:Name="btnAnnuler"
@@ -83,6 +89,7 @@
                     </Style>
                 </Button.Resources>
             </Button>
+
         </Grid>
     </Grid>
 </Window>

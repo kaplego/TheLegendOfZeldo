@@ -69,6 +69,12 @@ namespace SAE_dev_1
             ElementSection("Adeline BERGEON");
             ElementSection("Lou MAGNENAT");
             ElementSection("Safia EZZAMARI");
+            TitreSection("Musiques et Sons");
+            ElementSection("“Middel Age” par Aleksey Chistilin (Pixabay)");
+            ElementSection("“A song of Wolves and Dragons” par 17406877 (Pixabay)");
+            ElementSection("Effet sonore de l’épée par 666HeroHero (Pixabay)");
+            ElementSection("Effet sonore des buissons par Pixabay");
+            ElementSection("Effet sonore des ennemis par Pixabay");
         }
 
         private void btnRetour_Click(object sender, RoutedEventArgs e)

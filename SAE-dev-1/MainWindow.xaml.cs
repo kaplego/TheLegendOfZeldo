@@ -458,8 +458,7 @@ namespace SAE_dev_1
                         {
                             mainWindow.NouveauDialogue(new string[]
                             {
-                                "Zeldo se trouve de l'autre côté.",
-                                "Il me faut une bombe pour détruire le rocher",
+                                "Zeldo se trouve de l'autre côté.\nIl me faut une bombe pour détruire le rocher...",
                                 "Je crois que le marchand en vend.",
                             });
                         }
@@ -485,13 +484,11 @@ namespace SAE_dev_1
                     {
                         mainWindow.NouveauDialogue(new string[]
                         {
-                            "tu voulais me voir Zeldo.",
-                            "Tu voulais me dire quelque chose ?",
-                            "Zeldo : Regarde j'ai trouvé ce diamant",
-                            "Zeldo : n'est-il pas ma...",
-                            "*Zeldo glisse* *diamant qui ce casse*",
-                            "Oh non c'est le diamant de la création. ",
-                            "Maintenant qu'il est cassé le monde va être corrompu."
+                            "Tu voulais me voir Zeldo,\ntu voulais me dire quelque chose ?",
+                            "Zeldo:\nRegarde, j'ai trouvé ce diamant !",
+                            "Zeldo:\nN'est-il pas magn...",
+                            "*Zeldo glisse*\n*Le diamant se casse*",
+                            "Oh non ! C'est le diamant de la création !\nMaintenant qu'il est cassé, le monde sera corrompu !"
                         });
                         mainWindow.dialogueActuel!.QuandTermine = (mainWindow) =>
                         {
@@ -508,6 +505,7 @@ namespace SAE_dev_1
                                 tuile.Fill = MainWindow.Texture(tuile.Tag.ToString()!, tuile.Fill);
                             }
                             joueur.Apparence = joueur.Apparence;
+                            new Message(mainWindow, "Je dois retrouver les textures pour sauver Zeldo !", Brushes.Gold).Afficher();
                         };
                     }
                     musiqueDuBoss.Pause();
@@ -842,7 +840,7 @@ namespace SAE_dev_1
                         if(ennemis.Count == 0)
                         {
                             texturesRetireesTerrain = false;
-                            new Message(mainWindow, "Il semblerait que certaines textures aient réapparu...", Brushes.CornflowerBlue).Afficher();
+                            new Message(mainWindow, "Toutes les textures sont réapparues. Je dois sauver Zeldo !", Brushes.CornflowerBlue).Afficher();
                             objet.NeReapparaitPlus = true;
                             mainWindow.canvasJeu.Children.Remove(objet.RectanglePhysique);
                             objet.Hitbox = null;
@@ -2054,7 +2052,7 @@ namespace SAE_dev_1
 
         #endregion
 
-        private void MusicFini(object sender, EventArgs e)
+        private void MusiqueFin(object sender, EventArgs e)
         {
             if (carteActuelle.Nom == "combat")
             {
@@ -2114,8 +2112,8 @@ namespace SAE_dev_1
                     objetsAAjouter
                 );
             }
-            musiqueDeFond.MediaEnded += new EventHandler(MusicFini);
-            musiqueDuBoss.MediaEnded += new EventHandler(MusicFini);
+            musiqueDeFond.MediaEnded += new EventHandler(MusiqueFin);
+            musiqueDuBoss.MediaEnded += new EventHandler(MusiqueFin);
 
         }
 

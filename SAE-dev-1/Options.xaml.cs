@@ -16,6 +16,8 @@ namespace SAE_dev_1
             this.mainWindow = mainWindow;
             this.parent = parent;
             comboboxTouches.SelectedIndex = mainWindow.combinaisonTouches;
+            sliderMusique.Value = mainWindow.musiqueDeFond.Volume;
+            sliderEffetsSonores.Value = mainWindow.sonBuisson.Volume;
         }
 
         private void btnAnnuler_Click(object sender, RoutedEventArgs e)
@@ -26,6 +28,11 @@ namespace SAE_dev_1
         private void btnSauvegarder_Click(object sender, RoutedEventArgs e)
         {
             mainWindow.combinaisonTouches = comboboxTouches.SelectedIndex;
+            mainWindow.musiqueDeFond.Volume = sliderMusique.Value;
+            mainWindow.musiqueDuBoss.Volume = sliderMusique.Value;
+            mainWindow.sonBuisson.Volume = sliderEffetsSonores.Value;
+            mainWindow.sonEpee.Volume = sliderEffetsSonores.Value;
+            mainWindow.sonSlime.Volume = sliderEffetsSonores.Value;
             Close();
         }
 
