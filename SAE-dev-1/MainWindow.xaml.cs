@@ -1889,87 +1889,39 @@ namespace SAE_dev_1
                 Width = TAILLE_EPEE,
                 Fill = textureEpee1,
             };
-            int x;
-            int y;
+            int x = 0;
+            int y = 0;
+
             switch (joueur.Direction)
             {
                 case 0:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() - TAILLE_EPEE + 10;
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 1:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() + TAILLE_EPEE - 10;
                     y = joueur.Haut();
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 2:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche();
                     y = joueur.Haut() + TAILLE_EPEE - 10;
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
                 case 3:
-                    Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
-                        ? ZINDEX_HUD + 1
-                        : ZINDEX_JOUEUR - 1);
                     x = joueur.Gauche() - TAILLE_EPEE + 10;
                     y = joueur.Haut();
-                    Canvas.SetLeft(epee, x);
-                    Canvas.SetTop(epee, y);
-                    canvasJeu.Children.Add(epee);
-                    if (epeeTerain[0] == null)
-                    {
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
-                    else
-                    {
-                        canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
-                        epeeTerain[0] = new Entite("epee", epee, x, y);
-                    }
                     break;
             }
+
+            Canvas.SetLeft(epee, x);
+            Canvas.SetTop(epee, y);
+            Canvas.SetZIndex(epee, (tutoriel && phaseTutoriel == 1)
+                ? ZINDEX_HUD + 1
+                : ZINDEX_JOUEUR - 1);
+            canvasJeu.Children.Add(epee);
+            if (epeeTerain[0] != null)
+                canvasJeu.Children.Remove(epeeTerain[0].RectanglePhysique);
+            epeeTerain[0] = new Entite("epee", epee, x, y);
+
             actionAttaque = true;
         }
 
