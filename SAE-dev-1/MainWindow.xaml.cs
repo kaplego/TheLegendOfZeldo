@@ -1154,7 +1154,7 @@ namespace SAE_dev_1
                         Match correspondance = regexTextureMur.Match(textureTuile);
                         string orientation = correspondance.Groups[1].Value;
 
-                        if (orientation == "n" || orientation == "s")
+                        if (orientation == "n" || orientation == "s" || orientation == "e" || orientation == "o")
                         {
                             // Nord / Sud
                             fondTuile = Texture("mur", textureMurDroit);
@@ -1162,20 +1162,13 @@ namespace SAE_dev_1
 
                             tuile.LayoutTransform = new RotateTransform()
                             {
-                                Angle = orientation == "n" ? 90 : -90
+                                Angle = orientation == "n"
+                                    ? 90 : orientation == "e"
+                                        ? 180
+                                        : orientation == "s"
+                                            ? -90
+                                            : 0
                             };
-                        }
-                        else if (orientation == "e" || orientation == "o")
-                        {
-                            // Est / Ouest
-                            fondTuile = Texture("mur", textureMurDroit);
-                            tuile.Tag = "mur";
-
-                            if (orientation == "e")
-                                tuile.LayoutTransform = new RotateTransform()
-                                {
-                                    Angle = 180
-                                };
                         }
                         else
                         {
@@ -1183,15 +1176,16 @@ namespace SAE_dev_1
                             fondTuile = Texture("mur", textureMurAngle);
                             tuile.Tag = "mur";
 
-                            if (orientation != "no")
-                                tuile.LayoutTransform = new RotateTransform()
-                                {
-                                    Angle = orientation == "ne"
-                                        ? 90
-                                        : orientation == "se"
-                                            ? 180
-                                            : -90
-                                };
+                            tuile.LayoutTransform = new RotateTransform()
+                            {
+                                Angle = orientation == "ne"
+                                    ? 90
+                                    : orientation == "se"
+                                        ? 180
+                                        : orientation == "so"
+                                            ? -90
+                                            : 0
+                            };
                         }
                     }
                     else if (regexTextureChemin.IsMatch(textureTuile))
